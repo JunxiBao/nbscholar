@@ -1,40 +1,24 @@
 <!-- 智能工具 -->
 
-<!-- 额度条 -->
-<div style="background:var(--bg-primary);border-bottom:1px solid var(--separator);padding:16px;">
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-    <div style="text-align:center;">
-      <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">22</div>
-      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">今日剩余</div>
-    </div>
-    <div style="text-align:center;border-left:1px solid var(--separator);border-right:1px solid var(--separator);">
-      <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">78</div>
-      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">月度额度</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">5</div>
-      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">已挂载 Agent</div>
-    </div>
-  </div>
-</div>
+
 
 <!-- AI 助手 -->
 <div class="section-label">
   AI 文献助手
-  <span class="chip chip-green" style="font-size:11px;">● 在线</span>
 </div>
 
 <div class="chat-wrap fade-up">
   <div class="chat-header">
     <div class="chat-status">
       <div class="chat-dot"></div>
-      <select style="background:transparent;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:0;appearance:none;cursor:pointer;outline:none;">
-        <option>Claude Sonnet 4.5</option>
-        <option>DeepSeek-R1</option>
-        <option>Gemini 2.5 Pro</option>
-      </select>
+      <div style="position:relative; display:flex; align-items:center; background:var(--bg-secondary); padding:4px 28px 4px 10px; border-radius:var(--r-full); border:1px solid var(--separator); cursor:pointer;">
+        <select style="background:transparent; border:none; color:var(--text-primary); font-size:13px; font-weight:500; padding:0; margin:0; appearance:none; cursor:pointer; outline:none; font-family:var(--font); z-index:1; width:100%;">
+          <option>DeepSeek Chat</option>
+          <option>DeepSeek Reasoner</option>
+        </select>
+        <ion-icon name="chevron-down-outline" style="font-size:12px; color:var(--text-tertiary); position:absolute; right:10px; pointer-events:none; z-index:0;"></ion-icon>
+      </div>
     </div>
-    <span class="chip chip-blue" style="font-size:11px;">MCP 协议</span>
   </div>
 
   <div id="chat-messages">
@@ -117,14 +101,4 @@ function fillChat(text) {
   <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;align-self:center;"></ion-icon>
 </div>
 
-<!-- 挂载 Agent -->
-<div class="section-label">
-  定制化学术 Agent
-  <span class="section-label-action" onclick="showToast('查看 Agent 配置文档')">配置文档</span>
-</div>
 
-<div style="margin:0 16px 24px;background:var(--bg-primary);border:1.5px dashed var(--gray-200);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;" class="fade-up d3" onclick="showToast('请配置 MCP / ACP 协议端点')">
-  <ion-icon name="add-circle-outline" style="font-size:36px;color:var(--blue-600);margin-bottom:8px;display:block;"></ion-icon>
-  <div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:4px;">挂载定制化学术 Agent</div>
-  <div style="font-size:13px;color:var(--text-secondary);">通过 MCP / ACP 协议接入本地或云端自定义 Agent，扩展专属科研能力</div>
-</div>

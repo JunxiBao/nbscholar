@@ -21,9 +21,9 @@
   <link rel="stylesheet" href="css/theme.css" />
 
   <style>
-    /* 初始化时读取系统偏好 */
-    html { background: #F5F5F7; }
-    @media (prefers-color-scheme: dark) { html { background: #000000; } }
+    html { background: var(--bg-base, #F5F5F7); }
+    html[data-theme="dark"] { background: #000000; color-scheme: dark; }
+    html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
   </style>
 </head>
 <body>
@@ -114,13 +114,8 @@
 
       <!-- 操作按钮 -->
       <div class="topbar-actions">
-        <!-- 深色模式切换 -->
-        <button class="topbar-btn" id="theme-toggle" onclick="toggleTheme(event)" title="切换深浅色">
-          <ion-icon name="moon-outline" id="theme-icon"></ion-icon>
-        </button>
-        <button class="topbar-btn" onclick="showToast('暂无新消息')" title="通知">
-          <ion-icon name="notifications-outline"></ion-icon>
-        </button>
+
+
         <!-- 移动端/顶部用户图标 -->
         <button class="topbar-btn" id="mobile-avatar" onclick="toggleUserPopover(event)" title="账户选项">
           <ion-icon name="person-circle-outline"></ion-icon>
@@ -254,72 +249,55 @@
     console.log('[甬学阁] Platform:', platform);
   })();
 
-  // ===== 深色模式初始化 =====
-  (function initTheme() {
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = saved ? saved === 'dark' : prefersDark;
-    if (isDark) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      const icon = document.getElementById('theme-icon');
-      if (icon) icon.name = 'sunny-outline';
-      const fav = document.getElementById('favicon');
-      if (fav) fav.href = 'statics/images/darkicon.png?v=3';
+  // ===== 主题管理 =====
+  function applyTheme(theme) {
+    const activeTheme = theme || localStorage.getItem('theme') || 'system';
+    let isDark = false;
+    if (activeTheme === 'system') {
+      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } else {
+      isDark = activeTheme === 'dark';
     }
-  })();
+    
+    const html = document.documentElement;
+    const fav = document.getElementById('favicon');
+    
+    if (isDark) {
+      html.setAttribute('data-theme', 'dark');
+      if (fav) fav.href = 'statics/images/darkicon.png?v=3';
+    } else {
+      html.setAttribute('data-theme', 'light');
+      if (fav) fav.href = 'statics/images/lighticon.png?v=3';
+    }
+    
+    // Sync the select dropdown if it exists in the DOM
+    const select = document.getElementById('theme-select');
+    if (select) {
+      select.value = activeTheme;
+    }
+  }
 
-  function toggleTheme(event) {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-
-    const switchTheme = () => {
-      const html = document.documentElement;
-      const icon = document.getElementById('theme-icon');
-      const fav = document.getElementById('favicon');
-      if (isDark) {
-        html.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        if (icon) icon.name = 'moon-outline';
-        if (fav) fav.href = 'statics/images/lighticon.png?v=3';
-      } else {
-        html.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        if (icon) icon.name = 'sunny-outline';
-        if (fav) fav.href = 'statics/images/darkicon.png?v=3';
-      }
-    };
-
-    if (!document.startViewTransition || !event) {
-      switchTheme();
+  window.setTheme = function(theme) {
+    localStorage.setItem('theme', theme);
+    if (!document.startViewTransition) {
+      applyTheme(theme);
       return;
     }
-
-    const x = event.clientX;
-    const y = event.clientY;
-    const endRadius = Math.hypot(
-      Math.max(x, innerWidth - x),
-      Math.max(y, innerHeight - y)
-    );
-
-    const transition = document.startViewTransition(() => {
-      switchTheme();
+    document.startViewTransition(() => {
+      applyTheme(theme);
     });
+  };
 
-    transition.ready.then(() => {
-      document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${endRadius}px at ${x}px ${y}px)`
-          ]
-        },
-        {
-          duration: 500,
-          easing: "ease-in-out",
-          pseudoElement: "::view-transition-new(root)"
-        }
-      );
-    });
-  }
+  // 立即初始化当前主题
+  applyTheme(localStorage.getItem('theme') || 'system');
+
+  // 监听系统深浅色切换
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const current = localStorage.getItem('theme') || 'system';
+    if (current === 'system') {
+      applyTheme('system');
+    }
+  });
 
   // ===== 移动端侧边栏 =====
   function toggleSidebar() {
@@ -344,22 +322,7 @@
   updateMobileUI();
   window.addEventListener('resize', updateMobileUI);
 
-  // 系统深色模式变化
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (!localStorage.getItem('theme')) {
-      const icon = document.getElementById('theme-icon');
-      const fav = document.getElementById('favicon');
-      if (e.matches) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        if (icon) icon.name = 'sunny-outline';
-        if (fav) fav.href = 'statics/images/darkicon.png?v=3';
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-        if (icon) icon.name = 'moon-outline';
-        if (fav) fav.href = 'statics/images/lighticon.png?v=3';
-      }
-    }
-  });
+
 </script>
 </body>
 </html>

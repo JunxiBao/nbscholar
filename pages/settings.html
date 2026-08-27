@@ -3,45 +3,22 @@
   
   <div class="list-group fade-up d1">
     <div class="list-row">
-      <ion-icon name="moon-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
+      <ion-icon name="color-palette-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
       <div class="list-text">
-        <div class="list-title">深色模式</div>
-        <div class="list-subtitle">切换深色或浅色主题</div>
+        <div class="list-title">主题设置</div>
+        <div class="list-subtitle">选择界面的深浅色模式</div>
       </div>
       <div>
-        <button class="btn btn-secondary btn-sm" onclick="toggleTheme()">切换</button>
-      </div>
-    </div>
-    
-    <div class="list-row">
-      <ion-icon name="notifications-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
-      <div class="list-text">
-        <div class="list-title">消息通知</div>
-        <div class="list-subtitle">接收平台更新、会议和审稿提醒</div>
-      </div>
-      <div style="display:flex; align-items:center;">
-        <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--blue-600);" onchange="showToast('通知设置已更新')">
-      </div>
-    </div>
-    
-
-    <div class="list-row">
-      <ion-icon name="cloud-download-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
-      <div class="list-text">
-        <div class="list-title">文献下载偏好</div>
-        <div class="list-subtitle">默认下载 PDF 并同时解析文本</div>
-      </div>
-      <div style="display:flex; align-items:center;">
-        <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--blue-600);" onchange="showToast('下载偏好已更新')">
+        <select id="theme-select" style="background:transparent;border:1px solid var(--separator);border-radius:var(--r-sm);color:var(--text-primary);font-size:13px;padding:4px 8px;outline:none;" onchange="window.setTheme && window.setTheme(this.value)">
+          <option value="system">跟随系统</option>
+          <option value="dark">深色</option>
+          <option value="light">浅色</option>
+        </select>
       </div>
     </div>
   </div>
 
-  <div style="margin: 24px 16px 0;">
-    <button class="btn btn-primary btn-full" onclick="showToast('设置已保存')">保存更改</button>
-  </div>
-  
   <div style="margin: 16px 16px 0;">
-    <button class="btn btn-muted btn-full" style="color:var(--red-600);" onclick="showToast('已退出登录')">退出登录</button>
+    <button class="btn btn-full" style="background:#EF4444;color:#FFFFFF;border:none;" onclick="showToast('已退出登录')">退出登录</button>
   </div>
 </div>

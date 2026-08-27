@@ -22,6 +22,7 @@
   </div>
 </div>
 
+<div class="deposit-panel" id="deposit-step-1">
 <!-- 存缴自测 -->
 <div class="section-label">存缴匹配度自测</div>
 
@@ -134,7 +135,10 @@
   </div>
 </div>
 
-<!-- 当前步骤操作 -->
+</div>
+
+<div class="deposit-panel" id="deposit-step-2" style="display:none;">
+<!-- 当前步骤：数据脱敏 -->
 <div class="section-label">当前步骤：数据脱敏</div>
 <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-xs);border:1px solid var(--separator);" class="fade-up d3">
   <div style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
@@ -166,11 +170,34 @@
     </button>
   </div>
 </div>
+</div>
+
+<div class="deposit-panel" id="deposit-step-3" style="display:none;">
+  <div class="section-label">平台注册与配置</div>
+  <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-xs);border:1px solid var(--separator);" class="fade-up d3">
+    <div style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
+      请在选定的目标平台完成账号注册，并授权绑定您的研究学者身份。
+    </div>
+    <button class="btn btn-secondary btn-full">前往授权绑定</button>
+  </div>
+</div>
+
+<div class="deposit-panel" id="deposit-step-4" style="display:none;">
+  <div class="section-label">上传与审核</div>
+  <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-xs);border:1px solid var(--separator);" class="fade-up d3">
+    <div style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
+      准备工作已就绪。请确认所有信息无误后，点击底部按钮提交至平台进行预审。
+    </div>
+    <div style="padding:12px;background:var(--bg-secondary);border-radius:var(--r-md);font-size:13px;color:var(--text-primary);">
+      <ion-icon name="document-text-outline" style="vertical-align:middle;margin-right:6px;"></ion-icon> 附件：data_package_v1.zip (42.5 MB)
+    </div>
+  </div>
+</div>
 
 <!-- 操作按钮 -->
 <div style="padding:16px;display:flex;gap:10px;">
-  <button id="deposit-prev" class="btn btn-muted" style="width:auto;padding:10px 20px;" disabled>← 上一步</button>
-  <button id="deposit-next" class="btn btn-primary btn-full">下一步 →</button>
+  <button id="deposit-prev" class="btn btn-muted" style="flex:1;padding:10px 0;text-align:center;white-space:nowrap;" disabled>← 上一步</button>
+  <button id="deposit-next" class="btn btn-primary" style="flex:2;padding:10px 0;text-align:center;">下一步 →</button>
 </div>
 
 <div style="height:8px;"></div>

@@ -109,6 +109,19 @@ function initPage(tabId) {
     case 'tab-data':     initDeposit(); break;
     case 'tab-journal':  initJournal(); break;
     case 'tab-training': initTraining(); break;
+    case 'tab-settings': initSettings(); break;
+  }
+}
+
+function initSettings() {
+  const select = document.getElementById('theme-select');
+  if (select) {
+    select.value = localStorage.getItem('theme') || 'system';
+    select.addEventListener('change', (e) => {
+      if (window.setTheme) {
+        window.setTheme(e.target.value);
+      }
+    });
   }
 }
 
@@ -235,6 +248,11 @@ function updateWizard() {
     s.classList.remove('active', 'done');
     if (i + 1 === depositStep)     s.classList.add('active');
     else if (i + 1 < depositStep)  s.classList.add('done');
+  });
+
+  document.querySelectorAll('.deposit-panel').forEach((p, i) => {
+    if (i + 1 === depositStep) p.style.display = 'block';
+    else p.style.display = 'none';
   });
 
   const prev = document.getElementById('deposit-prev');
