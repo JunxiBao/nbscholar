@@ -7,9 +7,9 @@
     <!-- 用户信息 + 搜索 -->
     <div style="background:var(--bg-elevated);border-bottom:1px solid var(--separator);padding:20px 20px 16px;" class="fade-up">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-        <div class="avatar" style="width:50px;height:50px;font-size:19px;font-weight:600;">王</div>
+        <img class="avatar" src="statics/images/wang.png" alt="王" style="width:50px;height:50px;object-fit:cover;">
         <div style="flex:1;">
-          <div style="font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;">早上好，王研究员 👋</div>
+          <div style="font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;"><span id="greeting-text">早上好</span>，王研究员 👋</div>
           <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">中国科学院 · 信息技术研究所</div>
         </div>
         <div style="text-align:right;">
@@ -71,10 +71,6 @@
       <div class="module-tile" data-navigate="tab-training">
         <div class="tile-icon" style="background:#DC2626;"><ion-icon name="school"></ion-icon></div>
         <div class="tile-label">培训<br>报名</div>
-      </div>
-      <div class="module-tile" onclick="showToast('更多功能即将上线')">
-        <div class="tile-icon" style="background:#0891B2;"><ion-icon name="grid"></ion-icon></div>
-        <div class="tile-label">全部<br>功能</div>
       </div>
     </div>
 

@@ -7,6 +7,9 @@ const PAGE_TITLES = {
   'tab-data':     '数据存缴指引',
   'tab-journal':  '期刊投稿服务',
   'tab-training': '公益培训报名',
+  'tab-favorites': '收藏夹',
+  'tab-history': '检索历史',
+  'tab-settings': '偏好设置',
 };
 
 const ROUTES = {
@@ -16,6 +19,9 @@ const ROUTES = {
   'tab-data':     'pages/data-deposit.html',
   'tab-journal':  'pages/journal.html',
   'tab-training': 'pages/training.html',
+  'tab-favorites': 'pages/favorites.html',
+  'tab-history': 'pages/history.html',
+  'tab-settings': 'pages/settings.html',
 };
 
 let currentTab = 'tab-home';
@@ -77,6 +83,28 @@ function switchTab(tabId) {
     }
   });
 
+  // 底部滑块动画
+  const indicator = document.getElementById('tab-indicator');
+  if (indicator) {
+    const tabs = Array.from(document.querySelectorAll('.bottom-tabs .tab-btn'));
+    const index = tabs.findIndex(t => t.dataset.tab === tabId);
+    if (index !== -1) {
+      indicator.style.transform = `translateX(${index * 100}%)`;
+      indicator.className = `tab-indicator ${tabId}`;
+    }
+  }
+
+  // 侧边栏滑块动画
+  const sidebarIndicator = document.getElementById('sidebar-indicator');
+  if (sidebarIndicator) {
+    const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+    if (activeNavItem) {
+      sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
+      sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
+      sidebarIndicator.className = `sidebar-indicator ${tabId}`;
+    }
+  }
+
   // 更新顶栏标题
   const titleEl = document.getElementById('topbar-title');
   if (titleEl) titleEl.textContent = PAGE_TITLES[tabId] ?? '';
@@ -106,6 +134,14 @@ function initPage(tabId) {
 
 // ===== 首页 =====
 function initHome() {
+  const hour = new Date().getHours();
+  let greeting = '晚上好';
+  if (hour >= 5 && hour < 12) greeting = '早上好';
+  else if (hour >= 12 && hour < 14) greeting = '中午好';
+  else if (hour >= 14 && hour < 18) greeting = '下午好';
+  const greetingEl = document.getElementById('greeting-text');
+  if (greetingEl) greetingEl.textContent = greeting;
+
   // 数字滚动动画
   document.querySelectorAll('.stat-val[data-to]').forEach(el => {
     const target = +el.dataset.to;
@@ -293,6 +329,41 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab-btn[data-tab]').forEach(el => {
     el.addEventListener('click', () => switchTab(el.dataset.tab));
   });
-  // 加载首页
-  loadPage('tab-home');
+  // 加载首页并触发高亮动画
+  currentTab = null;
+  switchTab('tab-home');
+});
+
+// ===== Popover Logic =====
+function toggleUserPopover(event) {
+  const popover = document.getElementById('user-popover');
+  if (!popover) return;
+  if (event) {
+    event.stopPropagation();
+    
+    if (popover.classList.contains('show')) {
+      popover.classList.remove('show');
+      return;
+    }
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    popover.classList.add('show'); // Add show class first to get dimensions
+    const popWidth = popover.offsetWidth || 150;
+    
+    let leftPos = rect.left;
+    if (leftPos + popWidth > window.innerWidth) {
+      leftPos = window.innerWidth - popWidth - 16;
+    }
+    
+    popover.style.top = (rect.bottom + 16) + 'px'; // Increased gap from menu bar
+    popover.style.left = leftPos + 'px';
+  } else {
+    popover.classList.remove('show');
+  }
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.user-popover') && !e.target.closest('.avatar') && !e.target.closest('.sidebar-user')) {
+    const popover = document.getElementById('user-popover');
+    if (popover) popover.classList.remove('show');
+  }
 });

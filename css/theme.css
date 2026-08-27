@@ -247,25 +247,58 @@ body {
   padding:9px 10px;border-radius:var(--r-md);
   cursor:pointer;color:var(--text-secondary);
   font-size:14px;font-weight:500;
-  transition:background 0.12s,color 0.12s;
+  transition:color 0.12s;
   margin-bottom:1px;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-item ion-icon { font-size:18px;flex-shrink:0;transition:color 0.12s; }
-.nav-item:hover { background:var(--bg-hover);color:var(--text-primary); }
+.nav-item:hover { color:var(--text-primary); }
 
-.nav-item.active {
-  background: var(--blue-50);
-  color: var(--blue-600);
-}
+/* 宽屏侧边栏激活态 - 文字颜色 */
+.nav-item.active[data-tab="tab-home"] { color: #EF4444; }
+.nav-item.active[data-tab="tab-search"] { color: #F97316; }
+.nav-item.active[data-tab="tab-tools"] { color: #EAB308; }
+.nav-item.active[data-tab="tab-data"] { color: #10B981; }
+.nav-item.active[data-tab="tab-journal"] { color: #3B82F6; }
+.nav-item.active[data-tab="tab-training"] { color: #8B5CF6; }
+.nav-item.active[data-tab="tab-favorites"], .nav-item.active[data-tab="tab-history"], .nav-item.active[data-tab="tab-settings"] { color: var(--blue-600); }
 
-[data-theme="dark"] .nav-item.active {
-  background: rgba(96,165,250,0.12);
-  color: #60A5FA;
+[data-theme="dark"] .nav-item.active[data-tab="tab-home"] { color: #F87171; }
+[data-theme="dark"] .nav-item.active[data-tab="tab-search"] { color: #FB923C; }
+[data-theme="dark"] .nav-item.active[data-tab="tab-tools"] { color: #FACC15; }
+[data-theme="dark"] .nav-item.active[data-tab="tab-data"] { color: #34D399; }
+[data-theme="dark"] .nav-item.active[data-tab="tab-journal"] { color: #60A5FA; }
+[data-theme="dark"] .nav-item.active[data-tab="tab-training"] { color: #A78BFA; }
+[data-theme="dark"] .nav-item.active[data-tab="tab-favorites"], [data-theme="dark"] .nav-item.active[data-tab="tab-history"], [data-theme="dark"] .nav-item.active[data-tab="tab-settings"] { color: #60A5FA; }
+
+/* 侧边栏滑块 Indicator */
+.sidebar-indicator {
+  position: absolute;
+  top: 0;
+  left: 8px; right: 8px;
+  border-radius: var(--r-md);
+  background: rgba(239,68,68,0.1);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.35s ease;
+  z-index: 0;
+  pointer-events: none;
 }
-@media (prefers-color-scheme: dark) {
-  .nav-item.active { background: rgba(96,165,250,0.12); color: #60A5FA; }
-}
+.sidebar-indicator.tab-home { background: rgba(239,68,68,0.1); }
+.sidebar-indicator.tab-search { background: rgba(249,115,22,0.1); }
+.sidebar-indicator.tab-tools { background: rgba(234,179,8,0.1); }
+.sidebar-indicator.tab-data { background: rgba(16,185,129,0.1); }
+.sidebar-indicator.tab-journal { background: rgba(59,130,246,0.1); }
+.sidebar-indicator.tab-training { background: rgba(139,92,246,0.1); }
+.sidebar-indicator.tab-favorites, .sidebar-indicator.tab-history, .sidebar-indicator.tab-settings { background: rgba(37,99,235,0.1); }
+
+[data-theme="dark"] .sidebar-indicator.tab-home { background: rgba(248,113,113,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-search { background: rgba(251,146,60,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-tools { background: rgba(250,204,21,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-data { background: rgba(52,211,153,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-journal { background: rgba(96,165,250,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-training { background: rgba(167,139,250,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-favorites, [data-theme="dark"] .sidebar-indicator.tab-history, [data-theme="dark"] .sidebar-indicator.tab-settings { background: rgba(96,165,250,0.15); }
 
 .nav-item.active ion-icon { color:inherit; }
 
@@ -392,6 +425,11 @@ body {
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
   background:var(--bg-base);
+  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 90px);
+}
+@media (min-width: 900px) {
+  .page-content { padding-bottom: 0; }
+  #mobile-avatar { display: none !important; }
 }
 
 /* ===== 宽屏内容网格 ===== */
@@ -437,268 +475,127 @@ body {
    底部标签栏 — 双平台适配
    platform-ios    → Apple HIG Tab Bar
    platform-android → Material Design 3
-   platform-web / 默认 → iOS 风格兜底
-   ======================================== */
+/* ===== 底部悬浮毛玻璃导航栏 (Floating Glassmorphism Island) ===== */
 .bottom-tabs {
   display: flex;
-  flex-shrink: 0;
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 12px) + 16px);
+  left: 16px; right: 16px;
+  height: 68px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-radius: 34px;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   z-index: 100;
-  position: relative;
-  /* ── 默认兜底（浏览器 / web 平台均可见）── */
-  background: rgba(249,249,249,0.94);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-top: 0.5px solid rgba(60,60,67,0.29);
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding: 0 6px;
+  align-items: center;
+  overflow: hidden;
 }
 
 [data-theme="dark"] .bottom-tabs {
-  background: rgba(28,28,30,0.92);
-  border-top-color: rgba(84,84,88,0.60);
-}
-@media (prefers-color-scheme: dark) {
-  .bottom-tabs {
-    background: rgba(28,28,30,0.92);
-    border-top-color: rgba(84,84,88,0.60);
-  }
+  background: rgba(28, 28, 30, 0.65);
+  border: 1px solid rgba(84, 84, 88, 0.4);
+  box-shadow: 0 10px 32px rgba(0,0,0,0.3);
 }
 
 @media (min-width: 900px) { .bottom-tabs { display: none; } }
 
-/* ─── 通用 tab 按钮基础 ─── */
 .tab-btn {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 8px 4px 4px;
-  gap: 3px;
-  min-height: 49px;
+  justify-content: center;
+  height: 56px;
+  border-radius: 20px;
   border: none;
   background: transparent;
   cursor: pointer;
-  font-family: var(--font);
+  color: #9CA3AF;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
-  -webkit-tap-highlight-color: transparent;
-  outline: none;
-  color: #AEAEB2;
-  transition: color 0.15s ease;
+  z-index: 1;
 }
 
-.tab-btn ion-icon { font-size: 24px; }
-.tab-btn span     { font-size: 10px; font-weight: 500; line-height: 1.1; }
+.tab-btn ion-icon {
+  font-size: 24px;
+  margin-bottom: 3px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-.tab-btn.active   { color: #007AFF; }
-[data-theme="dark"] .tab-btn.active { color: #0A84FF; }
-@media (prefers-color-scheme: dark) { .tab-btn.active { color: #0A84FF; } }
+.tab-btn span {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
 
-/* 红点通知 */
+/* 激活态动画 */
+.tab-btn.active ion-icon {
+  transform: scale(1.15);
+}
+.tab-btn.active span {
+  opacity: 1;
+}
+
+/* 五彩缤纷的文字高亮配置 (Light Mode) - 红橙黄绿蓝紫 */
+.tab-btn.active[data-tab="tab-home"] { color: #EF4444; } /* Red */
+.tab-btn.active[data-tab="tab-search"] { color: #F97316; } /* Orange */
+.tab-btn.active[data-tab="tab-tools"] { color: #EAB308; } /* Yellow */
+.tab-btn.active[data-tab="tab-data"] { color: #10B981; } /* Green */
+.tab-btn.active[data-tab="tab-journal"] { color: #3B82F6; } /* Blue */
+.tab-btn.active[data-tab="tab-training"] { color: #8B5CF6; } /* Purple */
+
+/* 五彩缤纷的文字高亮配置 (Dark Mode) - 红橙黄绿蓝紫 */
+[data-theme="dark"] .tab-btn.active[data-tab="tab-home"] { color: #F87171; }
+[data-theme="dark"] .tab-btn.active[data-tab="tab-search"] { color: #FB923C; }
+[data-theme="dark"] .tab-btn.active[data-tab="tab-tools"] { color: #FACC15; }
+[data-theme="dark"] .tab-btn.active[data-tab="tab-data"] { color: #34D399; }
+[data-theme="dark"] .tab-btn.active[data-tab="tab-journal"] { color: #60A5FA; }
+[data-theme="dark"] .tab-btn.active[data-tab="tab-training"] { color: #A78BFA; }
+
+/* 底部滑块 Indicator */
+.tab-indicator {
+  position: absolute;
+  top: 6px; bottom: 6px;
+  width: calc((100% - 12px) / 6);
+  border-radius: 28px; /* 匹配外层 34px - 6px padding */
+  background: rgba(239,68,68,0.12); /* Default Red */
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+.tab-indicator.tab-home { background: rgba(239,68,68,0.12); } /* Red */
+.tab-indicator.tab-search { background: rgba(249,115,22,0.12); } /* Orange */
+.tab-indicator.tab-tools { background: rgba(234,179,8,0.12); } /* Yellow */
+.tab-indicator.tab-data { background: rgba(16,185,129,0.12); } /* Green */
+.tab-indicator.tab-journal { background: rgba(59,130,246,0.12); } /* Blue */
+.tab-indicator.tab-training { background: rgba(139,92,246,0.12); } /* Purple */
+
+[data-theme="dark"] .tab-indicator.tab-home { background: rgba(248,113,113,0.18); }
+[data-theme="dark"] .tab-indicator.tab-search { background: rgba(251,146,60,0.18); }
+[data-theme="dark"] .tab-indicator.tab-tools { background: rgba(250,204,21,0.18); }
+[data-theme="dark"] .tab-indicator.tab-data { background: rgba(52,211,153,0.18); }
+[data-theme="dark"] .tab-indicator.tab-journal { background: rgba(96,165,250,0.18); }
+[data-theme="dark"] .tab-indicator.tab-training { background: rgba(167,139,250,0.18); }
+
+/* 悬浮红点通知 */
 .tab-dot {
   position: absolute;
-  top: 6px;
+  top: 8px;
   right: calc(50% - 16px);
-  width: 6px; height: 6px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--red-500);
-  border: 1.5px solid rgba(249,249,249,0.94);
+  border: 1.5px solid transparent;
   z-index: 2;
 }
 
-[data-theme="dark"] .tab-dot { border-color: rgba(28,28,30,0.92); }
-
-/* ================================================
-   iOS — Apple Human Interface Guidelines Tab Bar
-   ================================================ */
-[data-platform="ios"] .bottom-tabs {
-  background: rgba(249,249,249,0.94);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  /* iOS hairline separator */
-  border-top: 0.5px solid rgba(60, 60, 67, 0.29);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  /* iOS tab height: 49pt */
-  padding-top: 0;
-}
-
-[data-theme="dark"][data-platform="ios"] .bottom-tabs {
-  background: rgba(28,28,30,0.92);
-  border-top-color: rgba(84,84,88,0.60);
-}
-@media (prefers-color-scheme: dark) {
-  [data-platform="ios"] .bottom-tabs {
-    background: rgba(28,28,30,0.92);
-    border-top-color: rgba(84,84,88,0.60);
-  }
-}
-
-[data-platform="ios"] .tab-btn {
-  padding: 8px 4px 3px;
-  gap: 2px;
-  color: var(--gray-400, #AEAEB2);
-  transition: color 0.15s ease;
-  /* iOS 最小触控区 44×44pt */
-  min-height: 49px;
-}
-
-[data-platform="ios"] .tab-btn ion-icon {
-  font-size: 24px;
-  transition: transform 0.12s ease;
-}
-
-[data-platform="ios"] .tab-btn span {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.1;
-}
-
-/* iOS 激活态：仅变色，无背景 */
-[data-platform="ios"] .tab-btn.active {
-  color: #007AFF; /* iOS 系统蓝 */
-}
-
-[data-theme="dark"][data-platform="ios"] .tab-btn.active { color: #0A84FF; }
-@media (prefers-color-scheme: dark) {
-  [data-platform="ios"] .tab-btn.active { color: #0A84FF; }
-}
-
-[data-platform="ios"] .tab-btn.active ion-icon {
-  transform: scale(1.0); /* iOS 不放大图标 */
-}
-
-/* iOS 红点位置 */
-[data-platform="ios"] .tab-dot {
-  top: 6px;
-  right: calc(50% - 16px);
-  border: 1.5px solid rgba(249,249,249,0.94);
-}
-
-[data-theme="dark"][data-platform="ios"] .tab-dot {
-  border-color: rgba(28,28,30,0.92);
-}
-
-/* ==========================================================
-   Android — Material Design 3 Navigation Bar
-   使用 pill 选中指示器 + filled/outline 图标切换 + 涟漪
-   ========================================================== */
-[data-platform="android"] .bottom-tabs {
-  background: var(--md-nav-bg, #FFFBFE); /* MD3 Surface */
-  /* MD3 Navigation Bar 高度 80dp */
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  /* MD3 elevation 2 - 顶部无边框，用 shadow */
-  box-shadow: 0 -1px 0 0 rgba(0,0,0,0.08);
-}
-
-[data-theme="dark"][data-platform="android"] .bottom-tabs {
-  background: #1C1B1F;
-  box-shadow: 0 -1px 0 0 rgba(255,255,255,0.08);
-}
-@media (prefers-color-scheme: dark) {
-  [data-platform="android"] .bottom-tabs {
-    background: #1C1B1F;
-    box-shadow: 0 -1px 0 0 rgba(255,255,255,0.08);
-  }
-}
-
-[data-platform="android"] .tab-btn {
-  padding: 12px 0 16px;
-  gap: 4px;
-  color: rgba(28,27,31,0.68); /* MD3 on-surface-variant */
-  transition: color 0.2s ease;
-  overflow: hidden; /* 限制涟漪范围 */
-  min-height: 80px;
-}
-
-[data-theme="dark"][data-platform="android"] .tab-btn { color: rgba(230,225,229,0.68); }
-@media (prefers-color-scheme: dark) {
-  [data-platform="android"] .tab-btn { color: rgba(230,225,229,0.68); }
-}
-
-[data-platform="android"] .tab-btn ion-icon {
-  font-size: 24px;
-  position: relative;
-  z-index: 1;
-  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-}
-
-[data-platform="android"] .tab-btn span {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  position: relative;
-  z-index: 1;
-}
-
-/* MD3 pill 选中指示器 */
-[data-platform="android"] .tab-btn::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 64px;
-  height: 32px;
-  border-radius: 16px;
-  background: transparent;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 0;
-}
-
-/* Android 激活态 */
-[data-platform="android"] .tab-btn.active {
-  color: #6750A4; /* MD3 primary */
-}
-
-[data-theme="dark"][data-platform="android"] .tab-btn.active { color: #D0BCFF; }
-@media (prefers-color-scheme: dark) {
-  [data-platform="android"] .tab-btn.active { color: #D0BCFF; }
-}
-
-[data-platform="android"] .tab-btn.active::before {
-  background: #EADDFF;
-  transform: translateX(-50%) scaleX(1);
-}
-
-[data-theme="dark"][data-platform="android"] .tab-btn.active::before {
-  background: rgba(208,188,255,0.18);
-}
-@media (prefers-color-scheme: dark) {
-  [data-platform="android"] .tab-btn.active::before {
-    background: rgba(208,188,255,0.18);
-  }
-}
-
-[data-platform="android"] .tab-btn.active ion-icon {
-  transform: translateY(-1px) scale(1.0);
-}
-
-/* MD3 涟漪 (Ripple) */
-[data-platform="android"] .tab-btn .md-ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(103,80,164,0.12);
-  transform: scale(0);
-  animation: md-ripple-anim 0.5s ease-out forwards;
-  pointer-events: none;
-  z-index: 0;
-}
-
-@keyframes md-ripple-anim {
-  to { transform: scale(4); opacity: 0; }
-}
-
-/* Android 红点位置 */
-[data-platform="android"] .tab-dot {
-  top: 8px;
-  right: calc(50% - 18px);
-  width: 7px; height: 7px;
-  border: 2px solid var(--md-nav-bg, #FFFBFE);
-}
-
-[data-theme="dark"][data-platform="android"] .tab-dot {
-  border-color: var(--md-nav-bg-dark, #1C1B1F);
-}
+/* 移除不再需要的旧 Ripple */
+.tab-btn .md-ripple { display: none !important; }
 
 /* ===== 用户头像 ===== */
 .avatar {
@@ -1301,3 +1198,42 @@ input, textarea {
   -webkit-backdrop-filter:saturate(180%) blur(20px);
   border-bottom:1px solid var(--separator);
 }
+
+/* ===== Popover ===== */
+.user-popover {
+  display: none;
+  position: absolute;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--separator);
+  padding: 4px;
+  z-index: 1000;
+  min-width: 150px;
+}
+.user-popover.show {
+  display: block;
+  animation: fadeUp 0.15s ease;
+}
+.popover-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  font-size: 14px; color: var(--text-primary);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.popover-item:hover { background: var(--bg-hover); }
+.popover-item ion-icon { font-size: 18px; color: var(--text-secondary); }
+
+/* ===== Logo Theme Switch ===== */
+html[data-theme="dark"] .logo-light { display: none; }
+html:not([data-theme="dark"]) .logo-dark { display: none; }
+
+/* ===== View Transition 涟漪动画 ===== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 9999; }
