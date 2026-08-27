@@ -1,0 +1,130 @@
+<!-- 智能工具 -->
+
+<!-- 额度条 -->
+<div style="background:var(--bg-primary);border-bottom:1px solid var(--separator);padding:16px;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+    <div style="text-align:center;">
+      <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">22</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">今日剩余</div>
+    </div>
+    <div style="text-align:center;border-left:1px solid var(--separator);border-right:1px solid var(--separator);">
+      <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">78</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">月度额度</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">5</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">已挂载 Agent</div>
+    </div>
+  </div>
+</div>
+
+<!-- AI 助手 -->
+<div class="section-label">
+  AI 文献助手
+  <span class="chip chip-green" style="font-size:11px;">● 在线</span>
+</div>
+
+<div class="chat-wrap fade-up">
+  <div class="chat-header">
+    <div class="chat-status">
+      <div class="chat-dot"></div>
+      <select style="background:transparent;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:0;appearance:none;cursor:pointer;outline:none;">
+        <option>Claude Sonnet 4.5</option>
+        <option>DeepSeek-R1</option>
+        <option>Gemini 2.5 Pro</option>
+      </select>
+    </div>
+    <span class="chip chip-blue" style="font-size:11px;">MCP 协议</span>
+  </div>
+
+  <div id="chat-messages">
+    <div class="msg-row">
+      <div class="msg-avatar">
+        <ion-icon name="sparkles-outline"></ion-icon>
+      </div>
+      <div class="msg-bubble ai">
+        您好！我是您的科研 AI 助手。您可以粘贴文献内容让我生成摘要、提取数据，或者直接提问。
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-shortcuts">
+    <button class="shortcut-pill" onclick="fillChat('请帮我总结这篇文献的核心方法和主要结论')">总结文献</button>
+    <button class="shortcut-pill" onclick="fillChat('提取这篇文献的核心数据和实验结果')">提取数据</button>
+    <button class="shortcut-pill" onclick="fillChat('分析该研究的创新点和局限性')">分析创新点</button>
+    <button class="shortcut-pill" onclick="fillChat('将以下摘要翻译为中文并润色')">翻译润色</button>
+  </div>
+
+  <div class="chat-input-row">
+    <textarea id="chat-input" placeholder="输入问题或粘贴文献内容..." rows="1"></textarea>
+    <button id="chat-send"><ion-icon name="arrow-up"></ion-icon></button>
+  </div>
+</div>
+
+<script>
+function fillChat(text) {
+  const inp = document.getElementById('chat-input');
+  if (inp) { inp.value = text; inp.focus(); }
+}
+</script>
+
+<!-- 工具列表 -->
+<div class="section-label">可用工具</div>
+
+<div class="tool-row fade-up" onclick="showToast('打开双语翻译工具...')">
+  <div class="tool-row-icon" style="background:#0891B2;">
+    <ion-icon name="language-outline"></ion-icon>
+  </div>
+  <div class="tool-row-body">
+    <div class="tool-row-name">双语翻译与专业润色</div>
+    <div class="tool-row-desc">针对学术术语优化，支持中英互译、段落润色及划词翻译</div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <span class="chip chip-blue">中→英</span>
+      <span class="chip chip-blue">英→中</span>
+      <span class="chip chip-gray">润色</span>
+    </div>
+  </div>
+  <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;align-self:center;"></ion-icon>
+</div>
+
+<div class="tool-row fade-up d1" onclick="showToast('打开数据可视化工具...')">
+  <div class="tool-row-icon" style="background:#059669;">
+    <ion-icon name="bar-chart-outline"></ion-icon>
+  </div>
+  <div class="tool-row-body">
+    <div class="tool-row-name">数据可视化轻工具</div>
+    <div class="tool-row-desc">导入 CSV 一键生成折线图、散点图、热图，支持导出高分辨率图片</div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <span class="chip chip-green">CSV 导入</span>
+      <span class="chip chip-green">高清导出</span>
+    </div>
+  </div>
+  <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;align-self:center;"></ion-icon>
+</div>
+
+<div class="tool-row fade-up d2" onclick="showToast('打开引用格式转换工具...')">
+  <div class="tool-row-icon" style="background:#D97706;">
+    <ion-icon name="swap-horizontal-outline"></ion-icon>
+  </div>
+  <div class="tool-row-body">
+    <div class="tool-row-name">引用格式批量转换</div>
+    <div class="tool-row-desc">支持 APA、MLA、GB/T 7714、Vancouver、BibTeX、RIS 等格式互转</div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <span class="chip chip-amber">BibTeX</span>
+      <span class="chip chip-amber">GB/T 7714</span>
+    </div>
+  </div>
+  <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;align-self:center;"></ion-icon>
+</div>
+
+<!-- 挂载 Agent -->
+<div class="section-label">
+  定制化学术 Agent
+  <span class="section-label-action" onclick="showToast('查看 Agent 配置文档')">配置文档</span>
+</div>
+
+<div style="margin:0 16px 24px;background:var(--bg-primary);border:1.5px dashed var(--gray-200);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;" class="fade-up d3" onclick="showToast('请配置 MCP / ACP 协议端点')">
+  <ion-icon name="add-circle-outline" style="font-size:36px;color:var(--blue-600);margin-bottom:8px;display:block;"></ion-icon>
+  <div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:4px;">挂载定制化学术 Agent</div>
+  <div style="font-size:13px;color:var(--text-secondary);">通过 MCP / ACP 协议接入本地或云端自定义 Agent，扩展专属科研能力</div>
+</div>

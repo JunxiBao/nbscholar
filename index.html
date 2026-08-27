@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="一站式科研信息服务门户 — 简化操作、降低门槛，助力基层科研人员高效开展学术研究" />
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1C1C1E" media="(prefers-color-scheme: dark)" />
+  <title>甬学阁 — 一站式科研信息服务门户</title>
+
+  <!-- Ionic -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <!-- Ionicons -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons/dist/ionicons/ionicons.js"></script>
+
+  <link rel="stylesheet" href="css/theme.css" />
+
+  <style>
+    /* 初始化时读取系统偏好 */
+    html { background: #F5F5F7; }
+    @media (prefers-color-scheme: dark) { html { background: #000000; } }
+  </style>
+</head>
+<body>
+
+<!-- 侧边栏遮罩 (移动端) -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div class="app-shell">
+
+  <!-- ===== 侧边栏 ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <ion-icon name="telescope-outline"></ion-icon>
+        </div>
+        <div>
+          <div class="sidebar-logo-name">甬学阁</div>
+          <div class="sidebar-logo-sub">科研信息服务门户</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">主要功能</div>
+      <div class="nav-item active" data-tab="tab-home">
+        <ion-icon name="home-outline"></ion-icon>首页概览
+      </div>
+      <div class="nav-item" data-tab="tab-search">
+        <ion-icon name="search-outline"></ion-icon>学术资源检索
+      </div>
+      <div class="nav-item" data-tab="tab-tools">
+        <ion-icon name="flash-outline"></ion-icon>智能工具
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" data-tab="tab-data">
+        <ion-icon name="cloud-upload-outline"></ion-icon>数据存缴指引
+      </div>
+      <div class="nav-item" data-tab="tab-journal">
+        <ion-icon name="newspaper-outline"></ion-icon>期刊投稿服务
+      </div>
+      <div class="nav-item" data-tab="tab-training">
+        <ion-icon name="school-outline"></ion-icon>公益培训报名
+      </div>
+
+      <div class="sidebar-section">我的账户</div>
+      <div class="nav-item" onclick="showToast('收藏夹功能开发中')">
+        <ion-icon name="bookmark-outline"></ion-icon>收藏夹
+        <span class="nav-count">58</span>
+      </div>
+      <div class="nav-item" onclick="showToast('检索历史功能开发中')">
+        <ion-icon name="time-outline"></ion-icon>检索历史
+      </div>
+      <div class="nav-item" onclick="showToast('设置功能开发中')">
+        <ion-icon name="settings-outline"></ion-icon>偏好设置
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="showToast('个人资料')">
+        <div class="avatar" style="width:32px;height:32px;font-size:13px;">王</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);">王研究员</div>
+          <div style="font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">中国科学院</div>
+        </div>
+        <ion-icon name="ellipsis-horizontal" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== 主区域 ===== -->
+  <div class="main-area">
+
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <!-- 移动端汉堡按钮 -->
+      <button class="topbar-menu-btn" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="菜单">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+
+      <!-- 移动端 Logo -->
+      <div class="topbar-logo">
+        <div class="topbar-logo-icon">
+          <ion-icon name="telescope-outline"></ion-icon>
+        </div>
+        <span class="topbar-brand">甬学阁</span>
+      </div>
+
+      <!-- 宽屏页面标题 -->
+      <div class="topbar-page-title" id="topbar-title">首页概览</div>
+
+      <!-- 操作按钮 -->
+      <div class="topbar-actions">
+        <!-- 深色模式切换 -->
+        <button class="topbar-btn" id="theme-toggle" onclick="toggleTheme()" title="切换深浅色">
+          <ion-icon name="moon-outline" id="theme-icon"></ion-icon>
+        </button>
+        <button class="topbar-btn" onclick="showToast('暂无新消息')" title="通知">
+          <ion-icon name="notifications-outline"></ion-icon>
+        </button>
+        <!-- 移动端用户头像 -->
+        <div class="avatar" id="mobile-avatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;display:none;" onclick="showToast('个人资料')">王</div>
+      </div>
+    </header>
+
+    <!-- 页面内容 -->
+    <main class="page-content" id="main-content">
+      <!-- 动态注入 -->
+    </main>
+
+    <!-- ===== 底部标签栏 (移动端，必须在 main-area 内) ===== -->
+    <nav class="bottom-tabs" id="bottom-tabs">
+      <button class="tab-btn active" data-tab="tab-home"
+              data-icon-outline="home-outline"
+              data-icon-filled="home">
+        <ion-icon name="home"></ion-icon>
+        <span>首页</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-search"
+              data-icon-outline="search-outline"
+              data-icon-filled="search">
+        <ion-icon name="search-outline"></ion-icon>
+        <span>检索</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-tools"
+              data-icon-outline="flash-outline"
+              data-icon-filled="flash">
+        <ion-icon name="flash-outline"></ion-icon>
+        <span>工具</span>
+        <div class="tab-dot"></div>
+      </button>
+      <button class="tab-btn" data-tab="tab-data"
+              data-icon-outline="cloud-upload-outline"
+              data-icon-filled="cloud-upload">
+        <ion-icon name="cloud-upload-outline"></ion-icon>
+        <span>存缴</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-journal"
+              data-icon-outline="newspaper-outline"
+              data-icon-filled="newspaper">
+        <ion-icon name="newspaper-outline"></ion-icon>
+        <span>投稿</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-training"
+              data-icon-outline="school-outline"
+              data-icon-filled="school">
+        <ion-icon name="school-outline"></ion-icon>
+        <span>培训</span>
+      </button>
+    </nav>
+
+  </div><!-- /.main-area -->
+</div><!-- /.app-shell -->
+
+
+
+<!-- Toast -->
+<div id="toast" style="display:none;"></div>
+
+<script src="js/app.js"></script>
+<script>
+  // ===== 平台检测 =====
+  (function detectPlatform() {
+    const ua = navigator.userAgent;
+    // Capacitor 原生信息
+    const cap = window.Capacitor;
+    let platform = 'android'; // 网页端默认 Android MD3 风格
+
+    if (cap) {
+      // Capacitor 封装模式：直接读取平台
+      platform = cap.getPlatform?.() || cap.platform || 'web';
+    } else {
+      // 纯 Web UA 检测
+      if (/iPhone|iPad|iPod/.test(ua)) platform = 'ios';
+      else if (/Android/.test(ua)) platform = 'android';
+    }
+
+    // 写入 html 属性（CSS 选择器依据）
+    document.documentElement.setAttribute('data-platform', platform);
+
+    // iOS 配置邨底安全区颜色
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (platform === 'ios') {
+      // Safari 状态栏
+      document.querySelector('meta[name="apple-mobile-web-app-capable"]')?.remove();
+      const cap1 = document.createElement('meta');
+      cap1.name = 'apple-mobile-web-app-capable';
+      cap1.content = 'yes';
+      document.head.appendChild(cap1);
+      const cap2 = document.createElement('meta');
+      cap2.name = 'apple-mobile-web-app-status-bar-style';
+      cap2.content = 'default';
+      document.head.appendChild(cap2);
+    }
+
+    // Android 注入 MD3 涟漪事件
+    if (platform === 'android') {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.tab-btn');
+        if (!btn) return;
+        // 创建涟漪元素
+        const ripple = document.createElement('span');
+        ripple.className = 'md-ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) * 0.6;
+        ripple.style.cssText = `
+          width: ${size}px; height: ${size}px;
+          left: ${e.clientX - rect.left - size/2}px;
+          top:  ${e.clientY - rect.top  - size/2}px;
+        `;
+        btn.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+      }, true);
+    }
+
+    console.log('[甬学阁] Platform:', platform);
+  })();
+
+  // ===== 深色模式初始化 =====
+  (function initTheme() {
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = saved ? saved === 'dark' : prefersDark;
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.name = 'sunny-outline';
+    }
+  })();
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const icon = document.getElementById('theme-icon');
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      if (icon) icon.name = 'moon-outline';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      if (icon) icon.name = 'sunny-outline';
+    }
+  }
+
+  // ===== 移动端侧边栏 =====
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebar-overlay');
+    sb.classList.toggle('open');
+    ov.classList.toggle('show');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('show');
+  }
+
+  // UI 更新
+  function updateMobileUI() {
+    const isMobile = window.innerWidth < 900;
+    const avatar = document.getElementById('mobile-avatar');
+    if (avatar) avatar.style.display = isMobile ? 'flex' : 'none';
+  }
+
+  updateMobileUI();
+  window.addEventListener('resize', updateMobileUI);
+
+  // 系统深色模式变化
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      const icon = document.getElementById('theme-icon');
+      if (e.matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (icon) icon.name = 'sunny-outline';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        if (icon) icon.name = 'moon-outline';
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!-- 期刊投稿服务 -->
+
+<!-- 分段选择 -->
+<div style="padding:12px 16px;background:var(--bg-primary);border-bottom:1px solid var(--separator);">
+  <ion-segment value="match" id="journal-segment">
+    <ion-segment-button value="match"><ion-label>智能选刊</ion-label></ion-segment-button>
+    <ion-segment-button value="guide"><ion-label>期刊指南</ion-label></ion-segment-button>
+    <ion-segment-button value="check"><ion-label>格式预检</ion-label></ion-segment-button>
+  </ion-segment>
+</div>
+
+<!-- ===== 智能选刊面板 ===== -->
+<div id="panel-match">
+  <div style="margin:16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--separator);" class="fade-up">
+    <div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:14px;">输入论文信息，AI 推荐最合适的期刊</div>
+
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">论文标题</label>
+      <input type="text" value="基于多头自注意力机制的中文医学文本信息抽取" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'"/>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">研究摘要</label>
+      <textarea style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;resize:none;height:90px;line-height:1.6;transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'">本研究提出融合领域知识的多头自注意力模型，用于中文医学文本中实体、关系的精确抽取，在三个标准数据集上F1值达到92.3%...</textarea>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <select style="flex:1;">
+        <option>影响因子：不限</option>
+        <option>IF &gt; 5</option>
+        <option>IF 2–5</option>
+        <option>IF 1–2</option>
+      </select>
+      <select style="flex:1;">
+        <option>版面费：不限</option>
+        <option>无版面费</option>
+        <option>&lt; 1000 USD</option>
+        <option>开放获取</option>
+      </select>
+    </div>
+
+    <button id="journal-match-btn" class="btn btn-primary btn-full">
+      <ion-icon name="sparkles-outline" style="font-size:16px;"></ion-icon>
+      AI 智能匹配期刊
+    </button>
+  </div>
+
+  <!-- 加载态 -->
+  <div id="match-loading" style="display:none;text-align:center;padding:36px 16px;flex-direction:column;align-items:center;gap:10px;">
+    <ion-spinner name="crescent" style="width:32px;height:32px;"></ion-spinner>
+    <p style="font-size:14px;color:var(--text-secondary);margin:0;">正在语义分析中，请稍候...</p>
+  </div>
+
+  <!-- 匹配结果 -->
+  <div id="match-result" style="display:none;">
+    <div class="section-label">推荐期刊 <span style="font-weight:400;color:var(--text-secondary);">共 5 个匹配</span></div>
+
+    <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--separator);">
+      <!-- 期刊 1 -->
+      <div class="list-row" onclick="showToast('查看投稿指南...')">
+        <div style="width:40px;height:40px;border-radius:var(--r-md);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">📊</div>
+        <div class="list-text">
+          <div class="list-title">Journal of Biomedical Informatics</div>
+          <div class="list-subtitle">Elsevier · IF: 8.9 · Q1 · 审稿 6–8 周 · 版面费 $3,200</div>
+        </div>
+        <span class="chip chip-green" style="flex-shrink:0;">98%</span>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+      <!-- 期刊 2 -->
+      <div class="list-row" onclick="showToast('查看投稿指南...')">
+        <div style="width:40px;height:40px;border-radius:var(--r-md);background:var(--purple-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">🤖</div>
+        <div class="list-text">
+          <div class="list-title">Artificial Intelligence in Medicine</div>
+          <div class="list-subtitle">Elsevier · IF: 7.5 · Q1 · 审稿 4–6 周 · 免版面费</div>
+        </div>
+        <span class="chip chip-green" style="flex-shrink:0;">91%</span>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+      <!-- 期刊 3 -->
+      <div class="list-row" onclick="showToast('查看投稿指南...')">
+        <div style="width:40px;height:40px;border-radius:var(--r-md);background:var(--red-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">🔬</div>
+        <div class="list-text">
+          <div class="list-title">计算机学报</div>
+          <div class="list-subtitle">中国计算机学会 · 中文核心 CSCD · 审稿 3–5 月</div>
+        </div>
+        <span class="chip chip-amber" style="flex-shrink:0;">85%</span>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+    </div>
+    <div style="height:24px;"></div>
+  </div>
+</div>
+
+<!-- ===== 期刊指南面板 ===== -->
+<div id="panel-guide" style="display:none;">
+  <div style="padding:12px 16px;">
+    <div class="search-field">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="text" placeholder="搜索期刊名称..." />
+    </div>
+  </div>
+
+  <div class="chip-bar">
+    <div class="filter-chip active">全部学科</div>
+    <div class="filter-chip">医学生命</div>
+    <div class="filter-chip">计算机</div>
+    <div class="filter-chip">物理化学</div>
+    <div class="filter-chip">工程技术</div>
+    <div class="filter-chip">社会科学</div>
+  </div>
+
+  <div style="margin-top:8px;background:var(--bg-primary);border-radius:var(--r-lg);overflow:hidden;margin:8px 16px 24px;box-shadow:var(--shadow-xs);border:1px solid var(--separator);">
+    <div class="list-row" onclick="showToast('查看 Nature 投稿指南')">
+      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:700;">N</div>
+      <div class="list-text">
+        <div class="list-title">Nature</div>
+        <div class="list-subtitle">IF: 50.5 · 综合科学 · 审稿 ~4 月</div>
+      </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+    </div>
+    <div class="list-row" onclick="showToast('查看 Science 投稿指南')">
+      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#DC2626;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:700;">S</div>
+      <div class="list-text">
+        <div class="list-title">Science</div>
+        <div class="list-subtitle">IF: 44.7 · 综合科学 · 审稿 ~3 月</div>
+      </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+    </div>
+    <div class="list-row" onclick="showToast('查看 Cell 投稿指南')">
+      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#D97706;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:700;">C</div>
+      <div class="list-text">
+        <div class="list-title">Cell</div>
+        <div class="list-subtitle">IF: 41.6 · 生命科学 · 审稿 ~6 周</div>
+      </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+    </div>
+    <div class="list-row" onclick="showToast('查看计算机学报投稿指南')">
+      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:white;font-weight:700;">学报</div>
+      <div class="list-text">
+        <div class="list-title">计算机学报</div>
+        <div class="list-subtitle">CCF 推荐 · 中文核心 · 免费投稿</div>
+      </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 格式预检面板 ===== -->
+<div id="panel-check" style="display:none;">
+  <div style="margin:16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--separator);">
+    <div class="upload-zone" id="upload-area" onclick="showToast('请选择 Word / LaTeX 文件')">
+      <ion-icon name="cloud-upload-outline"></ion-icon>
+      <h4>点击上传或拖拽文件</h4>
+      <p>支持 .docx / .tex / .pdf · 最大 20 MB</p>
+    </div>
+
+    <div style="margin-top:14px;">
+      <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">目标期刊（可选）</label>
+      <select style="width:100%;padding:10px 12px;">
+        <option>不限，使用通用检测规则</option>
+        <option>Nature</option>
+        <option>Science</option>
+        <option>Journal of Biomedical Informatics</option>
+        <option>计算机学报</option>
+      </select>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="showToast('下载 Word 模板...')">
+        <ion-icon name="document-outline" style="font-size:14px;"></ion-icon>Word 模板
+      </button>
+      <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="showToast('下载 LaTeX 模板...')">
+        <ion-icon name="code-slash-outline" style="font-size:14px;"></ion-icon>LaTeX 模板
+      </button>
+    </div>
+  </div>
+  <div style="height:24px;"></div>
+</div>
+
+<script>
+document.getElementById('journal-segment')?.addEventListener('ionChange', e => {
+  const v = e.detail.value;
+  ['match','guide','check'].forEach(id => {
+    document.getElementById('panel-' + id).style.display = v === id ? 'block' : 'none';
+  });
+});
+</script>

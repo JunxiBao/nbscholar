@@ -1,0 +1,209 @@
+<!-- 首页 — 宽屏双列布局 -->
+<div class="page-2col">
+
+  <!-- ===== 主列 ===== -->
+  <div class="col-main">
+
+    <!-- 用户信息 + 搜索 -->
+    <div style="background:var(--bg-elevated);border-bottom:1px solid var(--separator);padding:20px 20px 16px;" class="fade-up">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+        <div class="avatar" style="width:50px;height:50px;font-size:19px;font-weight:600;">王</div>
+        <div style="flex:1;">
+          <div style="font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;">早上好，王研究员 👋</div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">中国科学院 · 信息技术研究所</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;color:var(--text-secondary);">工具额度</div>
+          <div style="font-size:22px;font-weight:700;color:var(--blue-600);letter-spacing:-0.5px;">78<span style="font-size:13px;font-weight:400;color:var(--text-secondary);">/100</span></div>
+        </div>
+      </div>
+      <!-- 搜索框 -->
+      <div class="search-field" style="height:46px;">
+        <ion-icon name="search-outline"></ion-icon>
+        <input id="hero-search" type="text" placeholder="搜索文献、作者、关键词或 DOI..." />
+        <button id="hero-search-btn" class="btn btn-primary btn-sm" style="flex-shrink:0;">搜索</button>
+      </div>
+      <!-- 热门搜索 -->
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;">
+        <span style="font-size:12px;color:var(--text-tertiary);">热门：</span>
+        <span class="chip chip-blue" style="cursor:pointer;" onclick="document.getElementById('hero-search').value='大语言模型'">大语言模型</span>
+        <span class="chip chip-blue" style="cursor:pointer;" onclick="document.getElementById('hero-search').value='碳中和'">碳中和</span>
+        <span class="chip chip-blue" style="cursor:pointer;" onclick="document.getElementById('hero-search').value='CRISPR'">CRISPR</span>
+        <span class="chip chip-blue" style="cursor:pointer;" onclick="document.getElementById('hero-search').value='量子计算'">量子计算</span>
+      </div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stat-row" style="padding-top:16px;" class="fade-up d1">
+      <div class="stat-card fade-up d1">
+        <div class="stat-val" data-to="247">0</div>
+        <div class="stat-lbl">历史检索</div>
+      </div>
+      <div class="stat-card fade-up d1">
+        <div class="stat-val" data-to="58">0</div>
+        <div class="stat-lbl">收藏文献</div>
+      </div>
+      <div class="stat-card fade-up d1">
+        <div class="stat-val" data-to="12">0</div>
+        <div class="stat-lbl">培训报名</div>
+      </div>
+    </div>
+
+    <!-- 六大功能 -->
+    <div class="section-label fade-up d2">核心功能</div>
+    <div class="module-grid fade-up d2" style="padding-bottom:4px;">
+      <div class="module-tile" data-navigate="tab-search">
+        <div class="tile-icon" style="background:#2563EB;"><ion-icon name="search"></ion-icon></div>
+        <div class="tile-label">学术<br>检索</div>
+      </div>
+      <div class="module-tile" data-navigate="tab-tools">
+        <div class="tile-icon" style="background:#7C3AED;"><ion-icon name="flash"></ion-icon></div>
+        <div class="tile-label">智能<br>工具</div>
+      </div>
+      <div class="module-tile" data-navigate="tab-data">
+        <div class="tile-icon" style="background:#059669;"><ion-icon name="cloud-upload"></ion-icon></div>
+        <div class="tile-label">数据<br>存缴</div>
+      </div>
+      <div class="module-tile" data-navigate="tab-journal">
+        <div class="tile-icon" style="background:#D97706;"><ion-icon name="newspaper"></ion-icon></div>
+        <div class="tile-label">期刊<br>投稿</div>
+      </div>
+      <div class="module-tile" data-navigate="tab-training">
+        <div class="tile-icon" style="background:#DC2626;"><ion-icon name="school"></ion-icon></div>
+        <div class="tile-label">培训<br>报名</div>
+      </div>
+      <div class="module-tile" onclick="showToast('更多功能即将上线')">
+        <div class="tile-icon" style="background:#0891B2;"><ion-icon name="grid"></ion-icon></div>
+        <div class="tile-label">全部<br>功能</div>
+      </div>
+    </div>
+
+    <!-- 最近检索 -->
+    <div class="section-label fade-up d3">最近检索</div>
+    <div class="list-group fade-up d3" style="margin-bottom:0;">
+      <div class="list-row" onclick="switchTab('tab-search')">
+        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
+        <div class="list-text"><div class="list-title">Transformer 注意力机制综述</div></div>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+      <div class="list-row" onclick="switchTab('tab-search')">
+        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
+        <div class="list-text"><div class="list-title">CRISPR 基因编辑安全性评估</div></div>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+      <div class="list-row" onclick="switchTab('tab-search')">
+        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
+        <div class="list-text"><div class="list-title">碳捕获与封存技术进展 2024</div></div>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+    </div>
+
+    <!-- 收藏的文献预览 (宽屏主列补充内容) -->
+    <div class="section-label fade-up d4">
+      收藏文献
+      <span class="section-label-action" onclick="switchTab('tab-search')">全部 58 篇</span>
+    </div>
+
+    <div class="paper-card fade-up d4">
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <span class="chip chip-red">arXiv</span>
+        <span class="chip chip-green">IF 15.2</span>
+      </div>
+      <div class="paper-title">Attention Is All You Need: Transformer 架构在自然语言处理中的突破</div>
+      <div class="paper-meta">Vaswani A. 等 · Nature Machine Intelligence · 2024 · 引用 89,234</div>
+      <div class="paper-abstract">本文提出了一种完全基于注意力机制的序列转换模型，摒弃了循环神经网络和卷积网络的结构…</div>
+      <div class="paper-actions">
+        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
+        <button class="btn btn-muted btn-sm" onclick="showToast('打开阅读器...')">阅读全文</button>
+      </div>
+    </div>
+
+    <div style="height:24px;"></div>
+  </div><!-- /.col-main -->
+
+  <!-- ===== 副列 (宽屏右侧面板) ===== -->
+  <div class="col-aside">
+    <!-- 近期日程 -->
+    <div class="section-label">
+      近期日程
+      <span class="section-label-action" onclick="switchTab('tab-training')">查看全部</span>
+    </div>
+
+    <div class="list-group" style="margin-bottom:0;">
+      <div class="list-row" onclick="showToast('查看日程详情')">
+        <div class="list-icon" style="background:#2563EB;"><ion-icon name="videocam-outline"></ion-icon></div>
+        <div class="list-text">
+          <div class="list-title" style="font-size:14px;">数据分析基础培训</div>
+          <div class="list-subtitle">09/15 14:00 · 线上直播</div>
+        </div>
+        <span class="chip chip-green" style="font-size:11px;">已报名</span>
+      </div>
+      <div class="list-row" onclick="showToast('查看日程详情')">
+        <div class="list-icon" style="background:#7C3AED;"><ion-icon name="location-outline"></ion-icon></div>
+        <div class="list-text">
+          <div class="list-title" style="font-size:14px;">高水平论文写作技巧</div>
+          <div class="list-subtitle">10/08 10:00 · 北京</div>
+        </div>
+        <span class="chip chip-amber" style="font-size:11px;">待签到</span>
+      </div>
+    </div>
+
+    <!-- 工具额度 -->
+    <div class="section-label">工具使用额度</div>
+    <div style="margin:0 16px;background:var(--bg-elevated);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-xs);border:1px solid var(--separator);">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13px;color:var(--text-primary);">AI 文献摘要生成</span>
+            <span style="font-size:12px;color:var(--blue-600);font-weight:500;">45/60</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:75%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13px;color:var(--text-primary);">双语翻译润色</span>
+            <span style="font-size:12px;color:var(--green-600);font-weight:500;">12/30</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:40%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13px;color:var(--text-primary);">数据可视化</span>
+            <span style="font-size:12px;color:var(--amber-500);font-weight:500;">9/10</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill amber" style="width:90%;"></div></div>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm btn-full" style="margin-top:14px;" onclick="switchTab('tab-tools')">查看全部工具</button>
+    </div>
+
+    <!-- 近期培训快报 -->
+    <div class="section-label">近期培训</div>
+    <div style="margin:0 16px;background:var(--bg-elevated);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--separator);box-shadow:var(--shadow-xs);">
+      <div style="height:4px;background:#2563EB;"></div>
+      <div style="padding:12px 14px;">
+        <div style="font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:4px;">科学数据分析基础：R 语言</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">09/15 · 线上 · 128/200 人</div>
+        <button class="btn btn-primary btn-sm btn-full" onclick="showToast('已成功报名！')">一键报名</button>
+      </div>
+    </div>
+
+    <!-- 快速导航 -->
+    <div class="section-label">快速操作</div>
+    <div style="margin:0 16px;display:flex;flex-direction:column;gap:8px;padding-bottom:24px;">
+      <button class="btn btn-muted btn-full" style="justify-content:flex-start;gap:10px;" onclick="switchTab('tab-data')">
+        <ion-icon name="cloud-upload-outline" style="font-size:18px;color:var(--green-600);"></ion-icon>
+        开始数据存缴向导
+      </button>
+      <button class="btn btn-muted btn-full" style="justify-content:flex-start;gap:10px;" onclick="switchTab('tab-journal')">
+        <ion-icon name="sparkles-outline" style="font-size:18px;color:var(--amber-500);"></ion-icon>
+        AI 智能选刊
+      </button>
+      <button class="btn btn-muted btn-full" style="justify-content:flex-start;gap:10px;" onclick="switchTab('tab-tools')">
+        <ion-icon name="language-outline" style="font-size:18px;color:var(--blue-600);"></ion-icon>
+        打开双语翻译工具
+      </button>
+    </div>
+  </div><!-- /.col-aside -->
+
+</div><!-- /.page-2col -->
