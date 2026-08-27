@@ -6,7 +6,7 @@
   <meta name="description" content="一站式科研信息服务门户 — 简化操作、降低门槛，助力基层科研人员高效开展学术研究" />
   <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#1C1C1E" media="(prefers-color-scheme: dark)" />
-  <link id="favicon" rel="icon" type="image/png" href="statics/images/lighticon.png" />
+  <link id="favicon" rel="icon" type="image/png" href="statics/images/lighticon.png?v=2" />
   <title>甬学阁 — 一站式科研信息服务门户</title>
 
   <!-- Ionic -->
@@ -264,7 +264,7 @@
       const icon = document.getElementById('theme-icon');
       if (icon) icon.name = 'sunny-outline';
       const fav = document.getElementById('favicon');
-      if (fav) fav.href = 'statics/images/darkicon.png';
+      if (fav) fav.href = 'statics/images/darkicon.png?v=2';
     }
   })();
 
@@ -279,12 +279,12 @@
         html.removeAttribute('data-theme');
         localStorage.setItem('theme', 'light');
         if (icon) icon.name = 'moon-outline';
-        if (fav) fav.href = 'statics/images/lighticon.png';
+        if (fav) fav.href = 'statics/images/lighticon.png?v=2';
       } else {
         html.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
         if (icon) icon.name = 'sunny-outline';
-        if (fav) fav.href = 'statics/images/darkicon.png';
+        if (fav) fav.href = 'statics/images/darkicon.png?v=2';
       }
     };
 
@@ -352,11 +352,11 @@
       if (e.matches) {
         document.documentElement.setAttribute('data-theme', 'dark');
         if (icon) icon.name = 'sunny-outline';
-        if (fav) fav.href = 'statics/images/darkicon.png';
+        if (fav) fav.href = 'statics/images/darkicon.png?v=2';
       } else {
         document.documentElement.removeAttribute('data-theme');
         if (icon) icon.name = 'moon-outline';
-        if (fav) fav.href = 'statics/images/lighticon.png';
+        if (fav) fav.href = 'statics/images/lighticon.png?v=2';
       }
     }
   });

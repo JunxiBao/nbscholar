@@ -83,27 +83,7 @@ function switchTab(tabId) {
     }
   });
 
-  // 底部滑块动画
-  const indicator = document.getElementById('tab-indicator');
-  if (indicator) {
-    const tabs = Array.from(document.querySelectorAll('.bottom-tabs .tab-btn'));
-    const index = tabs.findIndex(t => t.dataset.tab === tabId);
-    if (index !== -1) {
-      indicator.style.transform = `translateX(${index * 100}%)`;
-      indicator.className = `tab-indicator ${tabId}`;
-    }
-  }
-
-  // 侧边栏滑块动画
-  const sidebarIndicator = document.getElementById('sidebar-indicator');
-  if (sidebarIndicator) {
-    const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
-    if (activeNavItem) {
-      sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
-      sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
-      sidebarIndicator.className = `sidebar-indicator ${tabId}`;
-    }
-  }
+  updateIndicators();
 
   // 更新顶栏标题
   const titleEl = document.getElementById('topbar-title');
@@ -333,6 +313,34 @@ document.addEventListener('DOMContentLoaded', () => {
   currentTab = null;
   switchTab('tab-home');
 });
+
+function updateIndicators() {
+  if (!currentTab) return;
+  // 底部滑块动画
+  const indicator = document.getElementById('tab-indicator');
+  if (indicator) {
+    const tabs = Array.from(document.querySelectorAll('.bottom-tabs .tab-btn'));
+    const index = tabs.findIndex(t => t.dataset.tab === currentTab);
+    if (index !== -1) {
+      indicator.style.transform = `translateX(${index * 100}%)`;
+      indicator.className = `tab-indicator ${currentTab}`;
+    }
+  }
+
+  // 侧边栏滑块动画
+  const sidebarIndicator = document.getElementById('sidebar-indicator');
+  if (sidebarIndicator) {
+    const activeNavItem = document.querySelector(`.nav-item[data-tab="${currentTab}"]`);
+    if (activeNavItem) {
+      sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
+      sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
+      sidebarIndicator.className = `sidebar-indicator ${currentTab}`;
+    }
+  }
+}
+
+window.addEventListener('load', updateIndicators);
+window.addEventListener('resize', updateIndicators);
 
 // ===== Popover Logic =====
 function toggleUserPopover(event) {
