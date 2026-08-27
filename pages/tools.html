@@ -55,7 +55,7 @@ function fillChat(text) {
 <!-- 工具列表 -->
 <div class="section-label">可用工具</div>
 
-<div class="tool-row fade-up" onclick="showToast('打开双语翻译工具...')">
+<div class="tool-row fade-up" onclick="openToolModal('demo-translate', '双语翻译与专业润色')">
   <div class="tool-row-icon" style="background:#0891B2;">
     <ion-icon name="language-outline"></ion-icon>
   </div>
@@ -71,7 +71,7 @@ function fillChat(text) {
   <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;align-self:center;"></ion-icon>
 </div>
 
-<div class="tool-row fade-up d1" onclick="showToast('打开数据可视化工具...')">
+<div class="tool-row fade-up d1" onclick="openToolModal('demo-vis', '数据可视化轻工具')">
   <div class="tool-row-icon" style="background:#059669;">
     <ion-icon name="bar-chart-outline"></ion-icon>
   </div>
@@ -86,7 +86,7 @@ function fillChat(text) {
   <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;align-self:center;"></ion-icon>
 </div>
 
-<div class="tool-row fade-up d2" onclick="showToast('打开引用格式转换工具...')">
+<div class="tool-row fade-up d2" onclick="openToolModal('demo-cite', '引用格式批量转换')">
   <div class="tool-row-icon" style="background:#D97706;">
     <ion-icon name="swap-horizontal-outline"></ion-icon>
   </div>
@@ -102,3 +102,93 @@ function fillChat(text) {
 </div>
 
 
+
+<!-- ===== 工具全屏演示弹窗 ===== -->
+<div id="tool-demo-modal" class="tool-modal">
+  <div class="tool-modal-header">
+    <button class="tool-modal-close" onclick="closeToolModal()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      返回工具列表
+    </button>
+    <div class="tool-modal-title" id="tool-modal-title">工具演示</div>
+    <div style="width:100px;"></div>
+  </div>
+  
+  <div class="tool-modal-content">
+    
+    <!-- 1. 双语翻译与专业润色 -->
+    <div id="demo-translate" class="demo-panel" style="display:none;">
+      <div class="demo-controls">
+        <select id="trans-type" class="demo-select">
+          <option value="zh2en">中译英</option>
+          <option value="en2zh">英译中</option>
+          <option value="polish">学术润色</option>
+        </select>
+        <button class="btn btn-primary" onclick="demoTranslate()">
+          <ion-icon name="language-outline"></ion-icon>
+          开始处理
+        </button>
+      </div>
+      <div class="trans-split">
+        <div class="trans-col">
+          <label class="trans-label">原文</label>
+          <textarea id="trans-src" class="trans-textarea" placeholder="输入或粘贴需要翻译/润色的文本...">本文提出了一种融合领域知识的多头自注意力模型，用于中文医学文本中实体、关系的精确抽取。</textarea>
+        </div>
+        <div class="trans-col">
+          <label class="trans-label">结果 <ion-spinner name="dots" id="trans-spinner" style="display:none;width:16px;height:16px;margin-left:8px;"></ion-spinner></label>
+          <div id="trans-res" class="trans-result-area">
+            <div class="trans-placeholder">处理结果将在此显示...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 2. 数据可视化 -->
+    <div id="demo-vis" class="demo-panel" style="display:none; flex-direction:column; height:100%;">
+      <div class="demo-controls">
+        <button class="btn btn-secondary" onclick="demoLoadCSV()">
+          <ion-icon name="document-text-outline"></ion-icon>
+          加载示例数据 (CSV)
+        </button>
+        <div style="display:flex;gap:8px;margin-left:auto;">
+          <button class="btn btn-muted btn-sm" onclick="demoChartType('line')">折线图</button>
+          <button class="btn btn-muted btn-sm" onclick="demoChartType('bar')">柱状图</button>
+          <button class="btn btn-muted btn-sm" onclick="demoChartType('scatter')">散点图</button>
+        </div>
+      </div>
+      <div id="echarts-container" style="flex:1; width:100%; background:var(--bg-elevated); border-radius:var(--r-md); border:1px solid var(--separator); margin-top:16px;"></div>
+    </div>
+    
+    <!-- 3. 引用格式转换 -->
+    <div id="demo-cite" class="demo-panel" style="display:none;">
+      <div class="trans-col" style="height:150px; margin-bottom:16px;">
+        <label class="trans-label">输入 BibTeX 或 RIS</label>
+        <textarea id="cite-src" class="trans-textarea" placeholder="粘贴引用代码...">@article{vaswani2017attention,
+  title={Attention is all you need},
+  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}</textarea>
+      </div>
+      <div class="demo-controls" style="margin-bottom:16px;">
+        <select id="cite-format" class="demo-select">
+          <option value="gbt">GB/T 7714-2015</option>
+          <option value="apa">APA 7th</option>
+          <option value="mla">MLA 9th</option>
+        </select>
+        <button class="btn btn-primary" onclick="demoCite()">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          批量转换
+        </button>
+      </div>
+      <div class="trans-col" style="flex:1;">
+        <label class="trans-label">转换结果 <ion-spinner name="dots" id="cite-spinner" style="display:none;width:16px;height:16px;margin-left:8px;"></ion-spinner></label>
+        <div id="cite-res" class="trans-result-area" style="font-family:serif; font-size:16px; line-height:1.8;">
+          <div class="trans-placeholder">格式化结果将在此显示...</div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

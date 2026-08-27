@@ -1,0 +1,127 @@
+/* ===================================
+   甬学阁 — 设计系统 v3
+   Apple HIG + Material Design 3
+   支持 Light / Dark / 宽屏响应式
+   iOS & Android 双平台底栏适配
+   =================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+/* ===== 亮色 token (默认 / data-theme="light") ===== */
+:root,
+html[data-theme="light"] {
+  --blue-50:   #EFF6FF;
+  --blue-100:  #DBEAFE;
+  --blue-200:  #BFDBFE;
+  --blue-500:  #3B82F6;
+  --blue-600:  #2563EB;
+  --blue-700:  #1D4ED8;
+  --green-50:  #F0FDF4;
+  --green-500: #22C55E;
+  --green-600: #16A34A;
+  --amber-50:  #FFFBEB;
+  --amber-500: #F59E0B;
+  --red-50:    #FEF2F2;
+  --red-500:   #EF4444;
+  --red-600:   #DC2626;
+  --purple-50: #FAF5FF;
+  --purple-500:#A855F7;
+  --teal-500:  #14B8A6;
+
+  /* 语义色 — 亮色 */
+  --bg-base:       #F5F5F7;
+  --bg-elevated:   #FFFFFF;
+  --bg-grouped:    #F5F5F7;
+  --bg-header:     rgba(255,255,255,0.88);
+  --bg-tabbar:     rgba(249,249,249,0.94);
+  --bg-sidebar:    #FFFFFF;
+  --bg-input:      #F0F0F5;
+  --bg-hover:      rgba(0,0,0,0.04);
+  --bg-active:     rgba(0,0,0,0.08);
+
+  --text-primary:   #1C1C1E;
+  --text-secondary: #8E8E93;
+  --text-tertiary:  #AEAEB2;
+  --text-link:      #2563EB;
+
+  --separator:        rgba(60,60,67,0.12);
+  --separator-opaque: #E5E5EA;
+  --border-input:     #D1D1D6;
+
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:  0 12px 24px rgba(0,0,0,0.09),0 4px 8px rgba(0,0,0,0.04);
+  --shadow-xl:  0 24px 40px rgba(0,0,0,0.10),0 8px 16px rgba(0,0,0,0.05);
+  --shadow-sidebar: 1px 0 0 0 var(--separator-opaque);
+
+  --r-xs:   4px;
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --r-full: 9999px;
+
+  --font: 'Inter','Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+
+  --sidebar-width:   240px;
+  --topbar-h:        52px;
+  --tabbar-h:        60px;
+  --content-max:     860px;
+}
+
+/* ===== 深色 token (data-theme="dark") ===== */
+html[data-theme="dark"] {
+  --bg-base:       #000000;
+  --bg-elevated:   #1C1C1E;
+  --bg-grouped:    #000000;
+  --bg-header:     rgba(28,28,30,0.90);
+  --bg-tabbar:     rgba(28,28,30,0.92);
+  --bg-sidebar:    #1C1C1E;
+  --bg-input:      #2C2C2E;
+  --bg-hover:      rgba(255,255,255,0.06);
+  --bg-active:     rgba(255,255,255,0.10);
+
+  --text-primary:   #FFFFFF;
+  --text-secondary: rgba(235,235,245,0.60);
+  --text-tertiary:  rgba(235,235,245,0.30);
+  --text-link:      #60A5FA;
+
+  --separator:        rgba(84,84,88,0.60);
+  --separator-opaque: #3A3A3C;
+  --border-input:     #48484A;
+
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.4);
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.5),0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.5),0 2px 6px rgba(0,0,0,0.3);
+  --shadow-lg:  0 12px 28px rgba(0,0,0,0.6),0 4px 10px rgba(0,0,0,0.4);
+  --shadow-xl:  0 24px 48px rgba(0,0,0,0.7),0 8px 20px rgba(0,0,0,0.5);
+  --shadow-sidebar: 1px 0 0 0 var(--separator-opaque);
+
+  --blue-50:   rgba(37,99,235,0.15);
+  --blue-100:  rgba(37,99,235,0.22);
+  --green-50:  rgba(22,163,74,0.15);
+  --amber-50:  rgba(245,158,11,0.15);
+  --red-50:    rgba(239,68,68,0.15);
+  --red-500:   #EF4444;
+  --red-600:   #DC2626;
+  --purple-50: rgba(168,85,247,0.15);
+}
+
+/* ===== 全局 ===== */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+html {
+  font-family: var(--font);
+  font-size: 16px;
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+}
+
