@@ -65,17 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pwd !== confirm) { _showLoginToast('两次密码不一致'); return; }
       if (pwd.length < 6)  { _showLoginToast('密码至少 6 位'); return; }
 
-      const institution = regForm.querySelectorAll('input[type="text"]')[1]?.value?.trim() || '';
-      const age         = regForm.querySelector('input[type="number"]')?.value || null;
-      const gender      = regForm.querySelector('select')?.value || '';
-
       const btn = regForm.querySelector('.btn-submit');
       btn.disabled = true;
       btn.querySelector('span').textContent = '注册中...';
 
       try {
-        await _apiRegister({ account, password: pwd, institution, age, gender,
-                             avatar_url: _croppedDataUrl });
+        await _apiRegister({ account, password: pwd });
         window.location.href = 'index.html';
       } catch (err) {
         _showLoginToast(err.message || '注册失败');
