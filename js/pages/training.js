@@ -38,13 +38,8 @@ function _changeMonth(delta) {
   _selectedDay = null;
   _updateCalendarTitle();
 
-  const container = document.getElementById('training-calendar-days');
-  if (container) {
-    container.classList.remove('cal-slide-left', 'cal-slide-right');
-    void container.offsetWidth; // 触发回流重启动画
-    container.classList.add(delta > 0 ? 'cal-slide-left' : 'cal-slide-right');
-  }
-
+  const animClass = delta > 0 ? 'cal-slide-left' : 'cal-slide-right';
+  _renderCalendar(_allEvents, animClass);
   _loadTrainingEvents();
 }
 
@@ -69,7 +64,7 @@ async function _loadTrainingEvents() {
   }
 }
 
-function _renderCalendar(events) {
+function _renderCalendar(events, animClass = '') {
   const container = document.getElementById('training-calendar-days');
   if (!container) return;
 
@@ -102,31 +97,25 @@ function _renderCalendar(events) {
     const hasEvent = !!(eventsByDay[d] && eventsByDay[d].length > 0);
     const isToday = isThisMonth && d === todayDate;
     const isSelected = _selectedDay === d;
-
-    let numHtml = '';
-    if (isToday) {
-      numHtml = `<div style="width:30px;height:30px;background:var(--blue-600);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin:0 auto;box-shadow:var(--shadow-xs);">${d}</div>`;
-    } else if (isSelected) {
-      numHtml = `<div style="width:30px;height:30px;background:var(--blue-50);border:1.5px solid var(--blue-600);color:var(--blue-600);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin:0 auto;">${d}</div>`;
-    } else {
-      numHtml = `<div style="text-align:center;font-size:14px;color:${hasEvent ? 'var(--text-primary)' : 'var(--text-secondary)'};font-weight:${hasEvent ? '600' : '400'};height:30px;display:flex;align-items:center;justify-content:center;">${d}</div>`;
-    }
-
-    let dotHtml = '<div style="height:6px;margin-top:2px;"></div>';
-    if (hasEvent) {
-      const dotColor = isToday ? 'var(--blue-600)' : (eventsByDay[d][0].color || 'var(--blue-600)');
-      dotHtml = `<div style="width:5px;height:5px;border-radius:50%;background:${dotColor};margin:2px auto 0;"></div>`;
-    }
+    const dotColor = hasEvent ? (eventsByDay[d][0].color || 'var(--blue-600)') : 'transparent';
 
     html += `
-      <div onclick="_selectDay(${d})" style="display:flex;flex-direction:column;align-items:center;padding:3px 0;cursor:pointer;user-select:none;border-radius:var(--r-md);transition:background 0.15s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
-        ${numHtml}
-        ${dotHtml}
+      <div style="display:flex;flex-direction:column;align-items:center;padding:2px 0;">
+        <div onclick="_selectDay(${d})" class="cal-day-btn ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEvent ? 'has-event' : 'no-event'}">
+          ${d}
+        </div>
+        <div style="width:4px;height:4px;border-radius:50%;background:${hasEvent ? (isToday ? 'var(--blue-600)' : dotColor) : 'transparent'};margin-top:3px;"></div>
       </div>
     `;
   }
 
   container.innerHTML = html;
+
+  if (animClass) {
+    container.classList.remove('cal-slide-left', 'cal-slide-right');
+    void container.offsetWidth; // 触发回流重启动画
+    container.classList.add(animClass);
+  }
 }
 
 function _selectDay(day) {

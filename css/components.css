@@ -571,23 +571,77 @@ ion-segment-button {
 .d3 { animation-delay:.15s; }
 .d4 { animation-delay:.20s; }
 
-/* ===== 日历切月动画 ===== */
+/* ===== 日历切月动画与日期按钮 ===== */
 @keyframes calSlideLeft {
-  from { opacity:0; transform:translateX(24px); }
-  to   { opacity:1; transform:translateX(0); }
+  0%   { opacity: 0; transform: translateX(36px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes calSlideRight {
-  from { opacity:0; transform:translateX(-24px); }
-  to   { opacity:1; transform:translateX(0); }
+  0%   { opacity: 0; transform: translateX(-36px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 .cal-slide-left {
-  animation: calSlideLeft 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: calSlideLeft 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .cal-slide-right {
-  animation: calSlideRight 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: calSlideRight 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cal-day-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.16s ease;
+  margin: 0 auto;
+}
+
+.cal-day-btn:hover {
+  background: var(--bg-hover);
+  transform: scale(1.08);
+}
+
+.cal-day-btn.no-event {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.cal-day-btn.has-event {
+  font-weight: 600;
+}
+
+.cal-day-btn.today {
+  background: var(--blue-600) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.35);
+}
+
+.cal-day-btn.today:hover {
+  background: var(--blue-700) !important;
+}
+
+.cal-day-btn.selected:not(.today) {
+  background: var(--blue-50) !important;
+  border: 1.5px solid var(--blue-600) !important;
+  color: var(--blue-600) !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="dark"] .cal-day-btn.selected:not(.today) {
+  background: rgba(37, 99, 235, 0.2) !important;
+  border-color: #60A5FA !important;
+  color: #60A5FA !important;
 }
 
 /* ===== Toast ===== */
