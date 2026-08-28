@@ -397,14 +397,6 @@ window.updateUserInfoUI = function() {
   const sAvatar = document.getElementById('sidebar-avatar');
   if (sAvatar) sAvatar.src = avatar;
 
-  // Mobile Topbar (强制只显示图标)
-  const mAvatar = document.getElementById('mobile-avatar');
-  const mIcon = document.getElementById('mobile-avatar-icon');
-  if (mAvatar && mIcon) {
-    mAvatar.style.display = 'none';
-    mIcon.style.display = 'block';
-  }
-
   // Home Page
   const hName = document.getElementById('greeting-name');
   if (hName) hName.textContent = name;

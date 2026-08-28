@@ -122,9 +122,8 @@
 
 
         <!-- 右侧动作 -->
-        <button class="topbar-btn" id="mobile-avatar-btn" onclick="toggleUserPopover(event)" title="账户选项" style="padding:0; border-radius:50%; overflow:hidden;">
-          <img id="mobile-avatar" src="" style="width:32px; height:32px; object-fit:cover; display:none; border-radius:50%;" />
-          <ion-icon id="mobile-avatar-icon" name="person-circle-outline"></ion-icon>
+        <button class="topbar-btn" id="mobile-avatar-btn" onclick="toggleUserPopover(event)" title="账户选项" style="padding:0; background:transparent;">
+          <ion-icon id="mobile-avatar-icon" name="person-circle-outline" style="font-size:28px;"></ion-icon>
         </button>
       </div>
     </header>
@@ -181,7 +180,7 @@
 
 
 <!-- Toast -->
-<div id="toast" style="display:none;"></div>
+<div id="toast" class="toast-message" style="display:none;">操作成功</div>
 
 <!-- 用户菜单 Popover -->
 <div id="user-popover" class="user-popover">
@@ -196,9 +195,9 @@
   </div>
   <div style="height:1px; background:var(--separator); margin:4px 0;"></div>
   <div class="popover-item" style="color:var(--red-600);" onclick="Auth.logout()">
-    <div id="toast" class="toast-message">操作成功</div>
+    <ion-icon name="log-out-outline"></ion-icon>退出登录
   </div>
-
+</div>
   <!-- 头像裁剪弹窗 -->
   <div id="settings-crop-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
     <div style="background:var(--bg-elevated); width:360px; border-radius:var(--r-lg); overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-xl); transform:scale(0.95); animation:modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;">

@@ -268,7 +268,7 @@
 }
 @media (min-width: 900px) {
   .page-content { padding-bottom: 0; }
-  #mobile-avatar { display: none !important; }
+  #mobile-avatar-btn { display: none !important; }
 }
 
 /* ===== 宽屏内容网格 ===== */
