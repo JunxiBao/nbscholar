@@ -26,21 +26,49 @@
     html[data-theme="dark"] { background: #000000; color-scheme: dark; }
     html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
     
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; }
+    .admin-header-wrap {
+      background: var(--bg-elevated, #FFFFFF);
+      border-bottom: 1px solid var(--separator, #E5E5EA);
+      padding: 24px 28px 20px;
+    }
+    .admin-header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .admin-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary, #1C1C1E);
+      letter-spacing: -0.4px;
+      margin: 0 0 6px 0;
+    }
+    .admin-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary, #8E8E93);
+      margin: 0;
+    }
+    .admin-content-wrap {
+      padding: 24px 28px 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary, #1C1C1E); margin-bottom: 8px; }
     .form-input { 
         width: 100%; 
         background: var(--bg-input, #F0F0F5); 
         border: 1px solid var(--border-input, #D1D1D6); 
-        border-radius: 8px; 
+        border-radius: var(--r-md, 8px); 
         padding: 10px 14px; 
         font-size: 14px; 
-        color: var(--text-primary); 
+        color: var(--text-primary, #1C1C1E); 
         transition: all 0.2s; 
+        box-sizing: border-box;
     }
-    .form-input:focus { outline: none; border-color: var(--blue-500); box-shadow: 0 0 0 3px var(--blue-100); }
-    html[data-theme="dark"] .form-input { background: var(--bg-input, #2C2C2E); border-color: var(--border-input, #48484A); }
-    html[data-theme="dark"] .form-input:focus { box-shadow: 0 0 0 3px var(--blue-900); }
+    .form-input:focus { outline: none; border-color: var(--blue-500, #0055FF); box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.15); background: var(--bg-elevated, #FFFFFF); }
+    html[data-theme="dark"] .form-input { background: var(--bg-input, #2C2C2E); border-color: var(--border-input, #48484A); color: #FFF; }
+    html[data-theme="dark"] .form-input:focus { box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.3); background: #1C1C1E; }
   </style>
 </head>
 <body>
@@ -99,7 +127,7 @@
     </header>
 
     <!-- 页面内容 -->
-    <main class="page-content" id="main-content" style="padding:24px;">
+    <main class="page-content" id="main-content">
       <!-- 动态注入 -->
     </main>
   </div>

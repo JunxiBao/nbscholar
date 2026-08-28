@@ -50,7 +50,7 @@ def list_all_admins():
 @super_admin_required
 def get_approval_history():
     """获取审批记录"""
-    admins = AdminUser.query.filter(AdminUser.status != 'pending').order_by(AdminUser.updated_at.desc()).all()
+    admins = AdminUser.query.filter(AdminUser.status != 'pending').order_by(AdminUser.created_at.desc()).all()
     return ok({'admins': [a.to_dict() for a in admins]})
 
 

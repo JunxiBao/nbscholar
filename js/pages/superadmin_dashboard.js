@@ -162,53 +162,52 @@ async function loadPendingAdmins() {
 
 function renderPendingList(admins) {
     const container = document.getElementById('pending-list');
+    const badge = document.getElementById('badge-pending');
+    if (badge) {
+        if (admins.length > 0) {
+            badge.textContent = admins.length;
+            badge.style.display = 'inline-flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
     if(admins.length === 0) {
         container.innerHTML = `
-            <div class="fade-up d4" style="grid-column: 1/-1; padding:60px 20px; text-align:center; background:var(--bg-elevated); border-radius:12px; border:1px dashed var(--border-color);">
-                <ion-icon name="folder-open-outline" style="font-size:48px; color:var(--text-tertiary); margin-bottom:16px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
-                <div style="font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">暂无账号</div>
-                <div style="font-size:13px; color:var(--text-secondary);">目前没有待审批或已拒绝的管理员申请</div>
+            <div class="fade-up d2" style="grid-column: 1/-1; padding:64px 24px; text-align:center; background:var(--bg-elevated, #FFFFFF); border-radius:var(--r-lg, 12px); border:1px dashed var(--separator, #E5E5EA); box-shadow:var(--shadow-xs);">
+                <div style="width:56px; height:56px; border-radius:50%; background:var(--bg-base, #F5F5F7); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <ion-icon name="checkmark-done-circle-outline" style="font-size:32px; color:var(--blue-600, #0055FF);"></ion-icon>
+                </div>
+                <div style="font-size:16px; font-weight:600; color:var(--text-primary, #1C1C1E); margin-bottom:6px;">全部处理完毕</div>
+                <div style="font-size:13px; color:var(--text-secondary, #8E8E93);">当前暂无等待审批的管理员申请</div>
             </div>`;
         return;
     }
     
     let html = '';
     admins.forEach((a, i) => {
-        let statusBadge = '';
-        if(a.status === 'pending') {
-            statusBadge = `<span class="chip chip-blue">待审批</span>`;
-        } else if (a.status === 'rejected') {
-            statusBadge = `<span class="chip chip-red">已拒绝</span>`;
-        }
-        
-        const actionButtons = a.status === 'pending' ? `
-                <button class="btn btn-primary" onclick="approveAdmin(${a.id}, 'approved')" style="flex:1;"><ion-icon name="checkmark-circle-outline"></ion-icon>同意</button>
-                <button class="btn btn-outline" onclick="approveAdmin(${a.id}, 'rejected')" style="flex:1;"><ion-icon name="close-circle-outline"></ion-icon>拒绝</button>
-            ` : `<div style="text-align:center; width:100%; color:var(--text-tertiary); font-size:14px;">${a.status==='approved'?'已同意':'已拒绝'}</div>`;
-            
-            // 使用交错动画
-            const animDelay = (i % 5) + 1;
-            
-            html += `
-            <div class="paper-card fade-up d${animDelay}" style="display:flex; flex-direction:column; gap:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <div style="width:40px; height:40px; border-radius:50%; background:var(--blue-50); color:var(--blue-600); display:flex; align-items:center; justify-content:center; font-size:20px;">
-                            <ion-icon name="person-outline"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 style="font-size:16px; font-weight:600; margin:0; color:var(--text-primary);">${a.account}</h3>
-                            <div style="font-size:12px; color:var(--text-tertiary); margin-top:2px;">${a.created_at}</div>
-                        </div>
+        const animDelay = (i % 5) + 1;
+        html += `
+        <div class="card fade-up d${animDelay}" style="padding:20px; border:1px solid var(--separator, #E5E5EA); display:flex; flex-direction:column; gap:14px; box-shadow:var(--shadow-xs);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:44px; height:44px; border-radius:var(--r-md, 10px); background:var(--blue-50, #EFF6FF); color:var(--blue-600, #2563EB); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">
+                        <ion-icon name="person-outline"></ion-icon>
                     </div>
-                    ${statusBadge}
+                    <div>
+                        <div style="font-size:15px; font-weight:600; color:var(--text-primary, #1C1C1E);">${a.account}</div>
+                        <div style="font-size:12px; color:var(--text-secondary, #8E8E93); margin-top:2px;">申请时间: ${a.created_at}</div>
+                    </div>
                 </div>
-                ${a.remark ? `<div style="background:var(--bg-base); padding:8px 12px; border-radius:8px; font-size:13px; color:var(--text-secondary); border-left:3px solid var(--blue-500);"><ion-icon name="chatbox-ellipses-outline" style="vertical-align:text-bottom; margin-right:4px;"></ion-icon>${a.remark}</div>` : ''}
-                <div style="display:flex; gap:12px; margin-top:8px;">
-                    ${actionButtons}
-                </div>
+                <span class="chip chip-blue">待审批</span>
             </div>
-            `;
+            ${a.remark ? `<div style="background:var(--bg-input, #F2F2F7); padding:10px 14px; border-radius:var(--r-md, 8px); font-size:13px; color:var(--text-secondary, #636366); line-height:1.5;"><strong style="color:var(--text-primary, #1C1C1E); font-weight:500;">申请备注：</strong>${a.remark}</div>` : ''}
+            <div style="display:flex; gap:10px; margin-top:auto; padding-top:4px;">
+                <button class="btn btn-primary btn-sm" onclick="approveAdmin(${a.id}, 'approved')" style="flex:1;"><ion-icon name="checkmark-outline"></ion-icon>同意</button>
+                <button class="btn btn-muted btn-sm" onclick="approveAdmin(${a.id}, 'rejected')" style="flex:1;"><ion-icon name="close-outline"></ion-icon>拒绝</button>
+            </div>
+        </div>
+        `;
     });
     container.innerHTML = html;
 }
@@ -240,42 +239,44 @@ function renderHistoryList(admins) {
     const container = document.getElementById('history-list');
     if(admins.length === 0) {
         container.innerHTML = `
-            <div class="fade-up d4" style="grid-column: 1/-1; padding:60px 20px; text-align:center; background:var(--bg-elevated); border-radius:12px; border:1px dashed var(--border-color, #E5E5EA);">
-                <ion-icon name="time-outline" style="font-size:48px; color:var(--text-tertiary); margin-bottom:16px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
-                <div style="font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">暂无记录</div>
-                <div style="font-size:13px; color:var(--text-secondary);">暂无任何审批通过或拒绝的管理员记录</div>
+            <div class="fade-up d2" style="grid-column: 1/-1; padding:64px 24px; text-align:center; background:var(--bg-elevated, #FFFFFF); border-radius:var(--r-lg, 12px); border:1px dashed var(--separator, #E5E5EA); box-shadow:var(--shadow-xs);">
+                <div style="width:56px; height:56px; border-radius:50%; background:var(--bg-base, #F5F5F7); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <ion-icon name="time-outline" style="font-size:32px; color:var(--text-tertiary, #8E8E93);"></ion-icon>
+                </div>
+                <div style="font-size:16px; font-weight:600; color:var(--text-primary, #1C1C1E); margin-bottom:6px;">暂无历史记录</div>
+                <div style="font-size:13px; color:var(--text-secondary, #8E8E93);">暂无任何已通过或已拒绝的管理员申请记录</div>
             </div>`;
         return;
     }
     
     let html = '';
     admins.forEach((a, i) => {
-        let statusBadge = a.status === 'approved' 
+        const isApproved = a.status === 'approved';
+        const statusBadge = isApproved 
             ? `<span class="chip chip-green">已同意</span>`
             : `<span class="chip chip-red">已拒绝</span>`;
         
-        const actionButtons = `
-            <button class="btn btn-outline" onclick="revokeApproval(${a.id})" style="flex:1;"><ion-icon name="arrow-undo-outline"></ion-icon>撤回重审</button>
-        `;
-            
+        const avatarBg = isApproved ? 'var(--green-50, #ECFDF5)' : 'var(--bg-input, #F2F2F7)';
+        const avatarColor = isApproved ? 'var(--green-600, #059669)' : 'var(--text-secondary, #8E8E93)';
+        
         const animDelay = (i % 5) + 1;
         html += `
-        <div class="paper-card fade-up d${animDelay}" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="card fade-up d${animDelay}" style="padding:20px; border:1px solid var(--separator, #E5E5EA); display:flex; flex-direction:column; gap:14px; box-shadow:var(--shadow-xs);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <div style="width:40px; height:40px; border-radius:50%; background:var(--bg-base); color:var(--text-primary); display:flex; align-items:center; justify-content:center; font-size:20px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:44px; height:44px; border-radius:var(--r-md, 10px); background:${avatarBg}; color:${avatarColor}; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">
                         <ion-icon name="person-outline"></ion-icon>
                     </div>
                     <div>
-                        <h3 style="font-size:16px; font-weight:600; margin:0; color:var(--text-primary);">${a.account}</h3>
-                        <div style="font-size:12px; color:var(--text-tertiary); margin-top:2px;">处理时间: ${a.updated_at || a.created_at}</div>
+                        <div style="font-size:15px; font-weight:600; color:var(--text-primary, #1C1C1E);">${a.account}</div>
+                        <div style="font-size:12px; color:var(--text-secondary, #8E8E93); margin-top:2px;">处理时间: ${a.created_at}</div>
                     </div>
                 </div>
                 ${statusBadge}
             </div>
-            ${a.remark ? `<div style="background:var(--bg-base); padding:8px 12px; border-radius:8px; font-size:13px; color:var(--text-secondary); border-left:3px solid var(--blue-500);"><ion-icon name="chatbox-ellipses-outline" style="vertical-align:text-bottom; margin-right:4px;"></ion-icon>${a.remark}</div>` : ''}
-            <div style="display:flex; gap:12px; margin-top:8px;">
-                ${actionButtons}
+            ${a.remark ? `<div style="background:var(--bg-input, #F2F2F7); padding:10px 14px; border-radius:var(--r-md, 8px); font-size:13px; color:var(--text-secondary, #636366); line-height:1.5;"><strong style="color:var(--text-primary, #1C1C1E); font-weight:500;">申请备注：</strong>${a.remark}</div>` : ''}
+            <div style="display:flex; gap:10px; margin-top:auto; padding-top:4px;">
+                <button class="btn btn-muted btn-sm" onclick="revokeApproval(${a.id})" style="width:100%;"><ion-icon name="arrow-undo-outline"></ion-icon>撤回并重新审批</button>
             </div>
         </div>
         `;
