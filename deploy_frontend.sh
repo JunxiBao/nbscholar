@@ -55,7 +55,7 @@ mkdir -p /etc/nginx/conf.d/
 cat > /etc/nginx/conf.d/nbscholar.conf << EOF
 server {
     listen 80;
-    server_name _; # 监听所有 IP 或填入具体域名
+    server_name $SERVER_IP; # 填入具体 IP 避免与 nginx.conf 默认规则冲突
 
     root $DEPLOY_DIR;
     index index.html login.html;
