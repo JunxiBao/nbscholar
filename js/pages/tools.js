@@ -282,7 +282,14 @@ function initEcharts(type = 'line', data = null) {
 
   const option = {
     backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis' },
+    tooltip: { 
+      trigger: 'axis',
+      backgroundColor: isDark ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.95)',
+      borderColor: isDark ? '#334155' : '#e2e8f0',
+      textStyle: { color: isDark ? '#f8fafc' : '#1e293b', fontSize: 13 },
+      padding: [8, 12],
+      extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-radius: 8px;'
+    },
     legend: { data: _visData ? _visData.legend : [] },
     toolbox: {
       show: true,
