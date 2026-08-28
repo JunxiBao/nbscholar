@@ -12,7 +12,7 @@ def _make_admin_token(admin_id: int, role: str) -> str:
     payload = {
         'admin_id': admin_id,
         'role': role,
-        'exp': int(time.time()) + current_app.config['JWT_ACCESS_TOKEN_EXPIRES'],
+        'exp': int(time.time()) + current_app.config.get('JWT_ADMIN_ACCESS_TOKEN_EXPIRES', 7200),
     }
     return jwt.encode(payload, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
 

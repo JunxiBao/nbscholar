@@ -23,8 +23,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # ---- JWT ----
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'CHANGE_ME_IN_PRODUCTION_abc123')
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'dev-secret-key-super-secure'
     JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24 * 7   # 7 天（秒）
+    JWT_ADMIN_ACCESS_TOKEN_EXPIRES = 60 * 60 * 2  # 管理员/超级管理员 2 小时（秒），提升安全性
     
     # ---- Super Admin ----
     SUPER_ADMIN_ACCOUNT  = os.getenv('SUPER_ADMIN_ACCOUNT', 'superadmin')
