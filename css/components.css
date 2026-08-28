@@ -253,8 +253,12 @@
 /* ===== AI 聊天 ===== */
 .chat-wrap {
   margin:0 16px 16px;background:var(--bg-elevated);
-  border-radius:var(--r-lg);box-shadow:var(--shadow-sm);
+  border-radius:20px;box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   border:1px solid var(--separator);overflow:hidden;
+}
+
+[data-theme="dark"] .chat-wrap {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
 
 .chat-header {
@@ -272,27 +276,45 @@
   scrollbar-width:thin;scrollbar-color:var(--separator-opaque) transparent;
 }
 
-.msg-row      { display:flex;gap:8px;align-items:flex-end; }
+@keyframes msgPopIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.msg-row      { display:flex;gap:8px;align-items:flex-end; animation: msgPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .msg-row.user { flex-direction:row-reverse; }
 
 .msg-avatar {
-  width:26px;height:26px;border-radius:50%;
-  background:var(--blue-50);
+  width:28px;height:28px;border-radius:50%;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow: 0 2px 6px rgba(99,102,241,0.2);
+}
+[data-theme="dark"] .msg-avatar {
+  background: linear-gradient(135deg, #3730a3, #4338ca);
 }
 
-.msg-avatar ion-icon { font-size:14px;color:var(--blue-600); }
+.msg-avatar ion-icon { font-size:15px;color:var(--blue-600); }
+[data-theme="dark"] .msg-avatar ion-icon { color: #c7d2fe; }
 
-.msg-bubble   { max-width:78%;padding:9px 13px;border-radius:14px;font-size:14px;line-height:1.55; }
+.msg-bubble   { max-width:78%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.55; font-weight: 400; }
 
 .msg-bubble.ai {
   background:var(--bg-grouped);color:var(--text-primary);
-  border-radius:4px 14px 14px 14px;
+  border-radius:4px 16px 16px 16px;
+  border: 1px solid var(--separator-opaque);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+[data-theme="dark"] .msg-bubble.ai {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
 }
 
 .msg-bubble.user {
-  background:var(--blue-600);color:white;
-  border-radius:14px 4px 14px 14px;
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  color:white;
+  border-radius:16px 4px 16px 16px;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.25);
 }
 
 .typing-dots span {

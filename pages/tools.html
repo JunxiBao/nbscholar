@@ -68,32 +68,45 @@
 </div>
 
 <style>
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
 .chat-session-item {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: var(--r-md);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: background 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--text-secondary);
   font-size: 14px;
+  border: 1px solid transparent;
 }
-.chat-session-item:hover { background: var(--bg-secondary); }
+.chat-session-item:hover { 
+  background: var(--bg-hover);
+  transform: translateX(2px);
+}
 .chat-session-item.active {
-  background: var(--blue-100);
+  background: linear-gradient(90deg, rgba(37,99,235,0.08), transparent);
+  border-left: 3px solid var(--blue-600);
   color: var(--blue-700);
-  font-weight: 500;
+  font-weight: 600;
+  border-radius: 4px var(--r-md) var(--r-md) 4px;
 }
 [data-theme="dark"] .chat-session-item.active {
-  background: rgba(59, 130, 246, 0.2);
-  color: var(--blue-400);
+  background: linear-gradient(90deg, rgba(96,165,250,0.15), transparent);
+  border-left-color: #60A5FA;
+  color: #93C5FD;
 }
-.chat-session-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chat-session-del { padding: 4px; border-radius: 4px; display: none; color: var(--red-500); }
-.chat-session-item:hover .chat-session-del { display: flex; }
-.chat-session-del:hover { background: rgba(239, 68, 68, 0.1); }
+.chat-session-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display:flex; align-items:center; gap:8px;}
+.chat-session-title ion-icon { font-size:16px; color:var(--text-tertiary); transition: color 0.2s; }
+.chat-session-item.active .chat-session-title ion-icon { color:inherit; }
+.chat-session-del { padding: 6px; border-radius: 6px; display: none; color: var(--red-500); transition: all 0.2s; }
+.chat-session-item:hover .chat-session-del { display: flex; animation: fadeUp 0.2s ease forwards; }
+.chat-session-del:hover { background: rgba(239, 68, 68, 0.1); transform:scale(1.1); }
 </style>
 
 <script>

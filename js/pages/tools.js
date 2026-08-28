@@ -214,12 +214,24 @@ function openToolModal(toolId, title) {
   }
 
   modal.classList.add('show');
+  
+  // Hide bottom menu (Use display:none for 100% compatibility in WeChat/mobile browsers)
+  const bottomTabs = document.getElementById('bottom-tabs');
+  if (bottomTabs) {
+    bottomTabs.style.display = 'none';
+  }
 }
 
 function closeToolModal() {
   const modal = document.getElementById('tool-demo-modal');
   if (modal) modal.classList.remove('show');
   if (echartInstance) { echartInstance.dispose(); echartInstance = null; }
+  
+  // Show bottom menu
+  const bottomTabs = document.getElementById('bottom-tabs');
+  if (bottomTabs) {
+    bottomTabs.style.display = ''; // Restore default
+  }
 }
 
 // ===================== 翻译（真实 API）=====================
