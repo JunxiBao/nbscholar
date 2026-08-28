@@ -85,8 +85,8 @@ echo "=> [5/5] 正在进行服务健康诊断..."
 sleep 2
 
 if systemctl is-active --quiet nginx; then
-    HTTP_CODE=\$(curl -s -o /dev/null -w "%{http_code}" http://localhost || echo "failed")
-    if [ "\$HTTP_CODE" = "200" ] || [ "\$HTTP_CODE" = "301" ] || [ "\$HTTP_CODE" = "304" ]; then
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost || echo "failed")
+    if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "304" ]; then
         echo "=========================================="
         echo "✅ 前端服务诊断 [通过]: Nginx 运行正常且能成功响应网页！"
         echo "👉 请在浏览器访问 http://$SERVER_IP 预览前端项目"
