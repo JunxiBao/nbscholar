@@ -37,3 +37,4 @@ env/
 .idea/
 .DS_Store
 backend/uploads/
+.DS_Store
