@@ -5,7 +5,7 @@ from flask import Blueprint, request, current_app
 from extensions import db, bcrypt
 from models import User
 from utils.response import ok, err, conflict, unauthorized
-from utils.file_helper import save_base64_image
+from utils.file_helper import save_base64_image, delete_file_by_url
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -102,7 +102,6 @@ def update_profile():
         except (ValueError, TypeError):
             pass
     if 'avatar_url' in data and data['avatar_url'].startswith('data:image'):
-        from backend.utils.file_helper import save_base64_image, delete_file_by_url
         if user.avatar_url and user.avatar_url.startswith('/api/uploads/'):
             delete_file_by_url(user.avatar_url)
         user.avatar_url = save_base64_image(data['avatar_url'])
