@@ -90,58 +90,15 @@
   <!-- ===== 副列 (宽屏右侧面板) ===== -->
   <div class="col-aside">
     <!-- 近期日程 -->
-    <div class="section-label">
+    <div class="section-label fade-up d4">
       近期日程
       <span class="section-label-action" onclick="switchTab('tab-training')">查看全部</span>
     </div>
 
-    <div class="list-group" style="margin-bottom:0;">
-      <div class="list-row" onclick="showToast('查看日程详情')">
-        <div class="list-icon" style="background:#2563EB;"><ion-icon name="videocam-outline"></ion-icon></div>
-        <div class="list-text">
-          <div class="list-title" style="font-size:14px;">数据分析基础培训</div>
-          <div class="list-subtitle">09/15 14:00 · 线上直播</div>
-        </div>
-        <span class="chip chip-green" style="font-size:11px;">已报名</span>
+    <div class="list-group fade-up d4" id="home-enrolled-events" style="margin-bottom:0; min-height:100px;">
+      <div style="text-align:center; padding:30px; font-size:13px; color:var(--text-tertiary);">
+        加载中...
       </div>
-      <div class="list-row" onclick="showToast('查看日程详情')">
-        <div class="list-icon" style="background:#7C3AED;"><ion-icon name="location-outline"></ion-icon></div>
-        <div class="list-text">
-          <div class="list-title" style="font-size:14px;">高水平论文写作技巧</div>
-          <div class="list-subtitle">10/08 10:00 · 北京</div>
-        </div>
-        <span class="chip chip-amber" style="font-size:11px;">待签到</span>
-      </div>
-    </div>
-
-
-
-    <!-- 近期培训快报 -->
-    <div class="section-label">近期培训</div>
-    <div style="margin:0 16px;background:var(--bg-elevated);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--separator);box-shadow:var(--shadow-xs);">
-      <div style="height:4px;background:#2563EB;"></div>
-      <div style="padding:12px 14px;">
-        <div style="font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:4px;">科学数据分析基础：R 语言</div>
-        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">09/15 · 线上 · 128/200 人</div>
-        <button class="btn btn-primary btn-sm btn-full" onclick="showToast('已成功报名！')">一键报名</button>
-      </div>
-    </div>
-
-    <!-- 快速导航 -->
-    <div class="section-label">快速操作</div>
-    <div style="margin:0 16px;display:flex;flex-direction:column;gap:8px;padding-bottom:24px;">
-      <button class="btn btn-muted btn-full" style="justify-content:flex-start;gap:10px;" onclick="switchTab('tab-data')">
-        <ion-icon name="cloud-upload-outline" style="font-size:18px;color:var(--green-600);"></ion-icon>
-        开始数据存缴向导
-      </button>
-      <button class="btn btn-muted btn-full" style="justify-content:flex-start;gap:10px;" onclick="switchTab('tab-journal')">
-        <ion-icon name="sparkles-outline" style="font-size:18px;color:var(--amber-500);"></ion-icon>
-        AI 智能选刊
-      </button>
-      <button class="btn btn-muted btn-full" style="justify-content:flex-start;gap:10px;" onclick="switchTab('tab-tools')">
-        <ion-icon name="language-outline" style="font-size:18px;color:var(--blue-600);"></ion-icon>
-        打开双语翻译工具
-      </button>
     </div>
   </div><!-- /.col-aside -->
 

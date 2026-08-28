@@ -26,6 +26,8 @@ function initHome() {
   _loadRecentHistory();
   // 加载收藏预览
   _loadFavoritesPreview();
+  // 加载近期日程
+  _loadEnrolledEvents();
 }
 
 // 数字滚动动画
@@ -115,4 +117,52 @@ function _esc(str) {
   return String(str)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function _loadEnrolledEvents() {
+  if (!window.TrainingAPI || !Auth.isLoggedIn()) return;
+  const container = document.getElementById('home-enrolled-events');
+  if (!container) return;
+
+  try {
+    const { data } = await TrainingAPI.myEvents();
+    if (!data.events || data.events.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:30px; font-size:13px; color:var(--text-tertiary);">暂无近期日程安排</div>`;
+      return;
+    }
+
+    // 只展示最近的 3 个
+    const topEvents = data.events.slice(0, 3);
+    let html = '';
+    
+    topEvents.forEach(ev => {
+      const dt = new Date(ev.start_time);
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const d = String(dt.getDate()).padStart(2, '0');
+      const hh = String(dt.getHours()).padStart(2, '0');
+      const mm = String(dt.getMinutes()).padStart(2, '0');
+      const timeStr = `${m}/${d} ${hh}:${mm}`;
+      
+      let iconName = 'videocam-outline';
+      if (ev.event_type && !ev.event_type.includes('线上')) {
+        iconName = 'location-outline';
+      }
+
+      html += `
+        <div class="list-row" onclick="switchTab('tab-training')">
+          <div class="list-icon" style="background:${ev.color || 'var(--blue-600)'};"><ion-icon name="${iconName}"></ion-icon></div>
+          <div class="list-text">
+            <div class="list-title" style="font-size:14px;">${_esc(ev.title)}</div>
+            <div class="list-subtitle">${timeStr} · ${_esc(ev.platform || ev.location || '未知地点')}</div>
+          </div>
+          <span class="chip chip-green" style="font-size:11px;">已报名</span>
+        </div>
+      `;
+    });
+    
+    container.innerHTML = html;
+  } catch (e) {
+    console.warn('Enrolled events load failed:', e.message);
+    container.innerHTML = `<div style="text-align:center; padding:30px; font-size:13px; color:var(--text-tertiary);">加载失败</div>`;
+  }
 }
