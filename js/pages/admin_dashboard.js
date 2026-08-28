@@ -157,7 +157,9 @@ function checkAdminAuth() {
     if(token) {
         document.getElementById('auth-layer').style.display = 'none';
         document.getElementById('app-shell').style.display = 'flex';
+        updateUserInfoUI();
         loadAdminEvents();
+        setTimeout(updateIndicators, 100);
     } else {
         document.getElementById('auth-layer').style.display = 'flex';
         document.getElementById('app-shell').style.display = 'none';
@@ -167,9 +169,24 @@ function checkAdminAuth() {
 // ---------------------------------
 // Dashboard Logic
 // ---------------------------------
+let currentTab = 'tab-admin-events';
+
 function switchTab(tabId) {
+    if (currentTab === tabId && tabId !== 'tab-admin-events') return;
+    currentTab = tabId;
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.tab === tabId);
+    });
+    
+    document.querySelectorAll('.bottom-tabs .tab-btn').forEach(el => {
+        const isActive = el.dataset.tab === tabId;
+        el.classList.toggle('active', isActive);
+        const icon = el.querySelector('ion-icon');
+        if (icon) {
+            icon.name = isActive
+                ? (el.dataset.iconFilled || el.dataset.iconOutline)
+                : (el.dataset.iconOutline || icon.name);
+        }
     });
     
     const topbarTitle = document.getElementById('topbar-title');
@@ -177,11 +194,16 @@ function switchTab(tabId) {
         topbarTitle.textContent = tabId === 'tab-admin-events' ? '已发布活动' : '发布新活动';
     }
     
+    updateIndicators();
+    
     if(tabId === 'tab-admin-events') loadAdminEvents();
     if(tabId === 'tab-admin-create') renderCreateForm();
 }
 
 document.querySelectorAll('.nav-item').forEach(el => {
+    el.addEventListener('click', () => switchTab(el.dataset.tab));
+});
+document.querySelectorAll('.tab-btn[data-tab]').forEach(el => {
     el.addEventListener('click', () => switchTab(el.dataset.tab));
 });
 
@@ -472,6 +494,97 @@ async function viewEnrollments(eventId) {
         showToast('网络错误', 'error');
     }
 }
+
+function _generateTextAvatar(name) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 120;
+  canvas.height = 120;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#059669', '#ea580c'];
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+  ctx.fillStyle = colors[sum % colors.length];
+  ctx.fillRect(0, 0, 120, 120);
+  ctx.font = 'bold 54px sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name.charAt(0).toUpperCase(), 60, 64);
+  return canvas.toDataURL('image/png');
+}
+
+function updateUserInfoUI() {
+    try {
+        const infoStr = localStorage.getItem('adminInfo');
+        if(!infoStr) return;
+        const user = JSON.parse(infoStr);
+        const name = user.account || '管理员';
+        const inst = '系统管理';
+        let avatar = user.avatar_url;
+        if (avatar && avatar.startsWith('/api')) {
+            avatar = API_BASE + avatar;
+        } else if (!avatar || (!avatar.startsWith('data:') && !avatar.startsWith('http'))) {
+            avatar = _generateTextAvatar(name);
+        }
+        const sName = document.getElementById('sidebar-name');
+        if (sName) sName.textContent = name;
+        const sInst = document.getElementById('sidebar-institution');
+        if (sInst) sInst.textContent = inst;
+        const sAvatar = document.getElementById('sidebar-avatar');
+        if (sAvatar) sAvatar.src = avatar;
+    } catch(e) {}
+}
+
+function updateIndicators() {
+  if (!currentTab) return;
+  const indicator = document.getElementById('tab-indicator');
+  if (indicator) {
+    const tabs = Array.from(document.querySelectorAll('.bottom-tabs .tab-btn'));
+    const index = tabs.findIndex(t => t.dataset.tab === currentTab);
+    if (index !== -1) {
+      indicator.style.transform = `translateX(${index * 100}%)`;
+    }
+  }
+  const sidebarIndicator = document.getElementById('sidebar-indicator');
+  if (sidebarIndicator) {
+    const activeNavItem = document.querySelector(`.nav-item[data-tab="${currentTab}"]`);
+    if (activeNavItem) {
+      sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
+      sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
+    }
+  }
+}
+window.addEventListener('load', updateIndicators);
+window.addEventListener('resize', updateIndicators);
+
+function toggleUserPopover(event) {
+  const popover = document.getElementById('user-popover');
+  if (!popover) return;
+  if (event) {
+    event.stopPropagation();
+    if (popover.classList.contains('show')) {
+      popover.classList.remove('show');
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    popover.classList.add('show');
+    const popWidth = popover.offsetWidth || 150;
+    let leftPos = rect.left;
+    if (leftPos + popWidth > window.innerWidth) {
+      leftPos = window.innerWidth - popWidth - 16;
+    }
+    popover.style.top = (rect.bottom + 16) + 'px';
+    popover.style.left = leftPos + 'px';
+  } else {
+    popover.classList.remove('show');
+  }
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.user-popover') && !e.target.closest('.avatar') && !e.target.closest('.sidebar-user') && !e.target.closest('#mobile-avatar-btn')) {
+    const popover = document.getElementById('user-popover');
+    if (popover) popover.classList.remove('show');
+  }
+});
 
 // Init
 checkAdminAuth();

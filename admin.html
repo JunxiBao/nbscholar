@@ -43,7 +43,8 @@
       </div>
     </div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" style="position: relative;">
+      <div class="sidebar-indicator" id="sidebar-indicator"></div>
       <div class="sidebar-section">培训管理</div>
       <div class="nav-item active" data-tab="tab-admin-events">
         <ion-icon name="list-outline"></ion-icon>活动列表
@@ -52,6 +53,16 @@
         <ion-icon name="add-circle-outline"></ion-icon>发布活动
       </div>
     </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="toggleUserPopover(event)" style="cursor:pointer;">
+        <img class="avatar" id="sidebar-avatar" src="statics/images/wang.png" alt="User" style="width:32px;height:32px;object-fit:cover;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);" id="sidebar-name">正在加载...</div>
+          <div style="font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebar-institution"></div>
+        </div>
+      </div>
+    </div>
   </aside>
 
   <!-- ===== 主区域 ===== -->
@@ -75,9 +86,9 @@
 
       <!-- 操作按钮 -->
       <div class="topbar-actions">
-        <button class="topbar-btn" onclick="logoutAdmin()" title="退出登录" style="padding:0; background:transparent; display:flex; align-items:center; gap:6px; color:var(--text-secondary);">
-          <ion-icon name="log-out-outline" style="font-size:24px;"></ion-icon>
-          <span style="font-size:14px; font-weight:600; display:none; @media(min-width: 600px){display:inline;}">退出</span>
+        <!-- 右侧动作 -->
+        <button class="topbar-btn" id="mobile-avatar-btn" onclick="toggleUserPopover(event)" title="账户选项" style="padding:0; background:transparent;">
+          <ion-icon id="mobile-avatar-icon" name="person-circle-outline" style="font-size:28px;"></ion-icon>
         </button>
       </div>
     </header>
@@ -103,7 +114,25 @@
         </div>
       </div>
     </main>
-  </div>
+
+    <!-- ===== 底部标签栏 (移动端) ===== -->
+    <nav class="bottom-tabs" id="bottom-tabs">
+      <div class="tab-indicator tab-admin-events" id="tab-indicator"></div>
+      <button class="tab-btn active" data-tab="tab-admin-events"
+              data-icon-outline="list-outline"
+              data-icon-filled="list">
+        <ion-icon name="list"></ion-icon>
+        <span>活动列表</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-admin-create"
+              data-icon-outline="add-circle-outline"
+              data-icon-filled="add-circle">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        <span>发布活动</span>
+      </button>
+    </nav>
+
+  </div><!-- /.main-area -->
 </div>
 
 <!-- ===== 登录/注册层 ===== -->
@@ -212,6 +241,17 @@
       <button id="custom-confirm-cancel" class="btn" style="padding:8px 16px; background:var(--bg-base); color:var(--text-primary); border:1px solid var(--border-color); border-radius:6px; cursor:pointer;">取消</button>
       <button id="custom-confirm-ok" class="btn btn-primary" style="padding:8px 16px;">确定</button>
     </div>
+  </div>
+</div>
+
+<!-- 用户菜单 Popover -->
+<div id="user-popover" class="user-popover">
+  <div class="popover-item" onclick="window.location.href='index.html'">
+    <ion-icon name="home-outline"></ion-icon>返回主站首页
+  </div>
+  <div style="height:1px; background:var(--separator); margin:4px 0;"></div>
+  <div class="popover-item" style="color:var(--red-600);" onclick="logoutAdmin()">
+    <ion-icon name="log-out-outline"></ion-icon>退出登录
   </div>
 </div>
 
