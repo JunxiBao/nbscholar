@@ -101,9 +101,7 @@ function _renderCalendar(events, animClass = '') {
 
     html += `
       <div style="display:flex;flex-direction:column;align-items:center;padding:2px 0;">
-        <div onclick="_selectDay(${d})" class="cal-day-btn ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEvent ? 'has-event' : 'no-event'}">
-          ${d}
-        </div>
+        <div onclick="_selectDay(${d})" class="cal-day-btn ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasEvent ? 'has-event' : 'no-event'}">${d}</div>
         <div style="width:4px;height:4px;border-radius:50%;background:${hasEvent ? (isToday ? 'var(--blue-600)' : dotColor) : 'transparent'};margin-top:3px;"></div>
       </div>
     `;
@@ -113,8 +111,11 @@ function _renderCalendar(events, animClass = '') {
 
   if (animClass) {
     container.classList.remove('cal-slide-left', 'cal-slide-right');
-    void container.offsetWidth; // 触发回流重启动画
-    container.classList.add(animClass);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        container.classList.add(animClass);
+      });
+    });
   }
 }
 

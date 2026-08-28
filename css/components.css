@@ -573,13 +573,13 @@ ion-segment-button {
 
 /* ===== 日历切月动画与日期按钮 ===== */
 @keyframes calSlideLeft {
-  0%   { opacity: 0; transform: translateX(36px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0%   { opacity: 0; transform: translate3d(36px, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 @keyframes calSlideRight {
-  0%   { opacity: 0; transform: translateX(-36px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0%   { opacity: 0; transform: translate3d(-36px, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 .cal-slide-left {
@@ -604,6 +604,8 @@ ion-segment-button {
   user-select: none;
   transition: all 0.16s ease;
   margin: 0 auto;
+  line-height: 1;
+  box-sizing: border-box;
 }
 
 .cal-day-btn:hover {
