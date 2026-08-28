@@ -143,10 +143,10 @@ function renderPendingList(admins) {
     const container = document.getElementById('pending-list');
     if(admins.length === 0) {
         container.innerHTML = `
-            <div class="empty-state fade-up d4" style="grid-column: 1/-1;">
-                <ion-icon name="folder-open-outline" class="empty-icon"></ion-icon>
-                <div class="empty-title">暂无账号</div>
-                <div class="empty-sub">目前没有待审批或已拒绝的管理员申请</div>
+            <div class="fade-up d4" style="grid-column: 1/-1; padding:60px 20px; text-align:center; background:var(--bg-elevated); border-radius:12px; border:1px dashed var(--border-color);">
+                <ion-icon name="folder-open-outline" style="font-size:48px; color:var(--text-tertiary); margin-bottom:16px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
+                <div style="font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">暂无账号</div>
+                <div style="font-size:13px; color:var(--text-secondary);">目前没有待审批或已拒绝的管理员申请</div>
             </div>`;
         return;
     }

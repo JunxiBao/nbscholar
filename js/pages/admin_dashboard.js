@@ -203,21 +203,22 @@ async function loadAdminEvents() {
 function renderEventsList(events) {
     const main = document.getElementById('main-content');
     let html = `
-      <section class="hero-section fade-up d1" style="margin-bottom: 24px;">
-        <div class="hero-content">
-          <h2 class="hero-title">已发布培训活动</h2>
-          <p class="hero-subtitle">管理、查看报名情况或删除历史活动。</p>
+      <!-- 顶部信息区域 -->
+      <div class="fade-up d1" style="background:var(--bg-elevated); border-bottom:1px solid var(--separator); padding:24px; margin:-24px -24px 24px -24px;">
+        <div style="max-width:1000px; margin:0 auto;">
+          <h2 style="font-size:24px; font-weight:700; color:var(--text-primary); margin:0 0 8px 0; letter-spacing:-0.5px;">已发布培训活动</h2>
+          <p style="font-size:14px; color:var(--text-secondary); margin:0;">管理、查看报名情况或删除历史活动。</p>
         </div>
-      </section>
+      </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;" class="fade-up d2">
     `;
     
     if(events.length === 0) {
         html += `
-            <div class="empty-state" style="grid-column: 1/-1;">
-                <ion-icon name="calendar-clear-outline" class="empty-icon"></ion-icon>
-                <div class="empty-title">暂无活动</div>
-                <div class="empty-sub">您还没有发布任何培训活动</div>
+            <div class="fade-up d4" style="grid-column: 1/-1; padding:60px 20px; text-align:center; background:var(--bg-elevated); border-radius:12px; border:1px dashed var(--border-color);">
+                <ion-icon name="calendar-clear-outline" style="font-size:48px; color:var(--text-tertiary); margin-bottom:16px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
+                <div style="font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">暂无活动</div>
+                <div style="font-size:13px; color:var(--text-secondary);">您还没有发布任何培训活动</div>
             </div>`;
     }
     
@@ -247,12 +248,13 @@ function renderEventsList(events) {
 function renderCreateForm() {
     const main = document.getElementById('main-content');
     main.innerHTML = `
-      <section class="hero-section fade-up d1" style="margin-bottom: 24px;">
-        <div class="hero-content">
-          <h2 class="hero-title">发布新活动</h2>
-          <p class="hero-subtitle">填写活动详情，向用户开放报名通道。</p>
+      <!-- 顶部信息区域 -->
+      <div class="fade-up d1" style="background:var(--bg-elevated); border-bottom:1px solid var(--separator); padding:24px; margin:-24px -24px 24px -24px;">
+        <div style="max-width:1000px; margin:0 auto;">
+          <h2 style="font-size:24px; font-weight:700; color:var(--text-primary); margin:0 0 8px 0; letter-spacing:-0.5px;">发布新活动</h2>
+          <p style="font-size:14px; color:var(--text-secondary); margin:0;">填写活动详情，向用户开放报名通道。</p>
         </div>
-      </section>
+      </div>
         <div class="fade-up d2" style="max-width:800px; margin:0 auto;">
             <div class="paper-card" style="padding:24px;">
                 
@@ -367,15 +369,16 @@ async function viewEnrollments(eventId) {
         if(data.code === 0) {
             const main = document.getElementById('main-content');
             let html = `
-              <section class="hero-section fade-up d1" style="margin-bottom: 24px;">
-                <div class="hero-content">
+              <!-- 顶部信息区域 -->
+              <div class="fade-up d1" style="background:var(--bg-elevated); border-bottom:1px solid var(--separator); padding:24px; margin:-24px -24px 24px -24px;">
+                <div style="max-width:1000px; margin:0 auto;">
                   <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
                       <button onclick="loadAdminEvents()" class="btn btn-outline" style="padding:4px 8px; font-size:18px;"><ion-icon name="arrow-back-outline"></ion-icon></button>
-                      <h2 class="hero-title" style="margin:0;">报名名单</h2>
+                      <h2 style="font-size:24px; font-weight:700; color:var(--text-primary); margin:0; letter-spacing:-0.5px;">报名名单</h2>
                   </div>
-                  <p class="hero-subtitle">${data.data.event.title}</p>
+                  <p style="font-size:14px; color:var(--text-secondary); margin:0;">${data.data.event.title}</p>
                 </div>
-              </section>
+              </div>
                 <div class="fade-up d2" style="max-width:1000px; margin:0 auto;">
                     <div class="paper-card" style="padding:0; overflow:hidden;">
                         <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;">
