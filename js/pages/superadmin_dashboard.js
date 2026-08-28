@@ -59,7 +59,7 @@ async function doAdminLogin() {
             body: JSON.stringify({account: acc, password: pwd})
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             // 检查是否为超级管理员
             if (data.data.admin.role !== 'super_admin') {
                 return showToast('无权访问超级管理控制台', 'error');
@@ -68,7 +68,7 @@ async function doAdminLogin() {
             showToast('登录成功', 'success');
             checkAdminAuth();
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -104,13 +104,13 @@ async function loadPendingAdmins() {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             renderPendingList(data.data.admins);
         } else if (data.code === 401) {
             logoutAdmin();
         } else {
-            showToast(data.message, 'error');
-            container.innerHTML = `<div style="color:#EF4444;">${data.message}</div>`;
+            showToast((data.msg || '操作失败'), 'error');
+            container.innerHTML = `<div style="color:#EF4444;">${(data.msg || '操作失败')}</div>`;
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -173,11 +173,11 @@ async function approveAdmin(id, status) {
             body: JSON.stringify({status: status})
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             showToast(`已${status==='approved'?'同意':'拒绝'}`, 'success');
             loadPendingAdmins();
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');

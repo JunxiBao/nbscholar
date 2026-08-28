@@ -84,13 +84,13 @@ async function doAdminLogin() {
             body: JSON.stringify({account: acc, password: pwd})
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             localStorage.setItem('adminToken', data.data.token);
             localStorage.setItem('adminInfo', JSON.stringify(data.data.admin));
             showToast('登录成功', 'success');
             checkAdminAuth();
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -113,11 +113,11 @@ async function doAdminRegister() {
             body: JSON.stringify({account: acc, password: pwd, remark: remark})
         });
         const data = await res.json();
-        if(data.code === 200) {
-            showToast(data.message, 'success');
+        if(data.code === 0) {
+            showToast((data.msg || '操作失败'), 'success');
             toggleAdminAuthMode('login');
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -166,12 +166,12 @@ async function loadAdminEvents() {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             renderEventsList(data.data.events);
         } else if (data.code === 401) {
             logoutAdmin();
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -288,11 +288,11 @@ async function submitCreateEvent() {
             body: JSON.stringify(payload)
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             showToast('发布成功', 'success');
             switchTab('tab-admin-events');
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -307,11 +307,11 @@ async function deleteEvent(id) {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             showToast('删除成功', 'success');
             loadAdminEvents();
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
@@ -324,7 +324,7 @@ async function viewEnrollments(eventId) {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
         });
         const data = await res.json();
-        if(data.code === 200) {
+        if(data.code === 0) {
             const main = document.getElementById('main-content');
             let html = `
                 <div style="padding:20px; max-width:1000px; margin:0 auto;">
@@ -367,7 +367,7 @@ async function viewEnrollments(eventId) {
             html += `</tbody></table></div></div>`;
             main.innerHTML = html;
         } else {
-            showToast(data.message, 'error');
+            showToast((data.msg || '操作失败'), 'error');
         }
     } catch(e) {
         showToast('网络错误', 'error');
