@@ -181,85 +181,102 @@ async function loadAdminEvents() {
 function renderEventsList(events) {
     const main = document.getElementById('main-content');
     let html = `
-        <div style="padding:20px; max-width:1000px; margin:0 auto;">
-            <h2 style="font-size:24px; font-weight:700; margin-bottom:20px;">已发布的活动</h2>
-            <div style="display:grid; gap:16px;">
+      <section class="hero-section fade-up d1" style="margin-bottom: 24px;">
+        <div class="hero-content">
+          <h2 class="hero-title">已发布培训活动</h2>
+          <p class="hero-subtitle">管理、查看报名情况或删除历史活动。</p>
+        </div>
+      </section>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;" class="fade-up d2">
     `;
     
     if(events.length === 0) {
-        html += `<div style="padding:40px; text-align:center; color:var(--text-sub); background:var(--card-bg); border-radius:12px;">暂无活动</div>`;
+        html += `
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <ion-icon name="calendar-clear-outline" class="empty-icon"></ion-icon>
+                <div class="empty-title">暂无活动</div>
+                <div class="empty-sub">您还没有发布任何培训活动</div>
+            </div>`;
     }
     
-    events.forEach(e => {
+    events.forEach((e, i) => {
+        const animDelay = (i % 5) + 1;
         html += `
-            <div style="background:var(--card-bg); border-radius:12px; padding:20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            <div class="paper-card fade-up d${animDelay}" style="border-left:4px solid var(--blue-500); display:flex; flex-direction:column; gap:12px;">
                 <div>
-                    <h3 style="font-size:18px; font-weight:600; margin-bottom:8px;">${e.title}</h3>
-                    <div style="font-size:14px; color:var(--text-sub); display:flex; gap:16px;">
-                        <span><ion-icon name="time-outline" style="vertical-align:-2px;"></ion-icon> ${e.event_date}</span>
-                        <span><ion-icon name="people-outline" style="vertical-align:-2px;"></ion-icon> 报名: ${e.enrolled_cnt} / ${e.capacity}</span>
+                    <h3 style="font-size:18px; font-weight:600; margin:0 0 8px; color:var(--text-primary);">${e.title}</h3>
+                    <div style="font-size:13px; color:var(--text-secondary); display:flex; flex-direction:column; gap:6px;">
+                        <span style="display:flex; align-items:center; gap:6px;"><ion-icon name="time-outline" style="color:var(--text-tertiary);"></ion-icon> ${e.event_date}</span>
+                        <span style="display:flex; align-items:center; gap:6px;"><ion-icon name="people-outline" style="color:var(--text-tertiary);"></ion-icon> 报名: ${e.enrolled_cnt} / ${e.capacity}</span>
                     </div>
                 </div>
-                <div style="display:flex; gap:8px;">
-                    <button onclick="viewEnrollments(${e.id})" style="padding:8px 16px; border-radius:6px; background:var(--bg-base); border:1px solid var(--border-color); color:var(--text-main); cursor:pointer;">报名名单</button>
-                    <button onclick="deleteEvent(${e.id})" style="padding:8px 16px; border-radius:6px; background:#FEE2E2; border:none; color:#DC2626; cursor:pointer;">删除</button>
+                <div style="display:flex; gap:12px; margin-top:auto; padding-top:8px; border-top:1px solid var(--border-color);">
+                    <button class="btn btn-outline" onclick="viewEnrollments(${e.id})" style="flex:1;"><ion-icon name="list-outline"></ion-icon>名单</button>
+                    <button class="btn" onclick="deleteEvent(${e.id})" style="background:#FEE2E2; color:#DC2626; border:1px solid transparent; flex:1;"><ion-icon name="trash-outline"></ion-icon>删除</button>
                 </div>
             </div>
         `;
     });
     
-    html += `</div></div>`;
+    html += `</div>`;
     main.innerHTML = html;
 }
 
 function renderCreateForm() {
     const main = document.getElementById('main-content');
     main.innerHTML = `
-        <div style="padding:20px; max-width:800px; margin:0 auto;">
-            <h2 style="font-size:24px; font-weight:700; margin-bottom:20px;">发布新活动</h2>
-            <div style="background:var(--card-bg); padding:24px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+      <section class="hero-section fade-up d1" style="margin-bottom: 24px;">
+        <div class="hero-content">
+          <h2 class="hero-title">发布新活动</h2>
+          <p class="hero-subtitle">填写活动详情，向用户开放报名通道。</p>
+        </div>
+      </section>
+        <div class="fade-up d2" style="max-width:800px; margin:0 auto;">
+            <div class="paper-card" style="padding:24px;">
                 
-                <div style="margin-bottom:16px;">
-                    <label style="display:block; margin-bottom:8px; font-weight:500;">活动标题 *</label>
-                    <input type="text" id="ce-title" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);">
+                <div class="form-group">
+                    <label class="form-label">活动标题 *</label>
+                    <input type="text" id="ce-title" class="form-input">
                 </div>
                 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
-                    <div>
-                        <label style="display:block; margin-bottom:8px; font-weight:500;">主讲人</label>
-                        <input type="text" id="ce-speaker" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">主讲人</label>
+                        <input type="text" id="ce-speaker" class="form-input">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:8px; font-weight:500;">机构</label>
-                        <input type="text" id="ce-affil" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);">
+                    <div class="form-group">
+                        <label class="form-label">机构</label>
+                        <input type="text" id="ce-affil" class="form-input">
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
-                    <div>
-                        <label style="display:block; margin-bottom:8px; font-weight:500;">日期时间 * (YYYY-MM-DD HH:MM)</label>
-                        <input type="text" id="ce-date" placeholder="2026-09-01 14:00" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">日期时间 * <span style="font-size:12px; font-weight:normal; color:var(--text-tertiary);">(YYYY-MM-DD HH:MM)</span></label>
+                        <input type="text" id="ce-date" class="form-input" placeholder="2026-09-01 14:00">
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:8px; font-weight:500;">名额限制</label>
-                        <input type="number" id="ce-capacity" value="100" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);">
+                    <div class="form-group">
+                        <label class="form-label">名额限制</label>
+                        <input type="number" id="ce-capacity" value="100" class="form-input">
                     </div>
                 </div>
 
-                <div style="margin-bottom:16px;">
-                    <label style="display:block; margin-bottom:8px; font-weight:500;">活动类型</label>
-                    <select id="ce-type" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);">
+                <div class="form-group">
+                    <label class="form-label">活动类型</label>
+                    <select id="ce-type" class="form-input" style="appearance:auto;">
                         <option value="线上会议">线上会议</option>
                         <option value="线下讲座">线下讲座</option>
                     </select>
                 </div>
 
-                <div style="margin-bottom:24px;">
-                    <label style="display:block; margin-bottom:8px; font-weight:500;">详情描述</label>
-                    <textarea id="ce-desc" rows="4" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-base); color:var(--text-main);"></textarea>
+                <div class="form-group">
+                    <label class="form-label">详情描述</label>
+                    <textarea id="ce-desc" rows="4" class="form-input"></textarea>
                 </div>
 
-                <button onclick="submitCreateEvent()" style="background:var(--brand-color); color:#fff; padding:12px 24px; border:none; border-radius:8px; font-weight:600; cursor:pointer;">发布活动</button>
+                <button class="btn btn-primary" onclick="submitCreateEvent()" style="width:100%; margin-top:8px;">
+                    <ion-icon name="send-outline"></ion-icon> 发布活动
+                </button>
             </div>
         </div>
     `;
@@ -327,39 +344,45 @@ async function viewEnrollments(eventId) {
         if(data.code === 0) {
             const main = document.getElementById('main-content');
             let html = `
-                <div style="padding:20px; max-width:1000px; margin:0 auto;">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-                        <button onclick="loadAdminEvents()" style="background:none; border:none; color:var(--brand-color); cursor:pointer; font-size:24px; padding:0;"><ion-icon name="arrow-back-outline"></ion-icon></button>
-                        <h2 style="font-size:24px; font-weight:700; margin:0;">报名名单 - ${data.data.event.title}</h2>
-                    </div>
-                    <div style="background:var(--card-bg); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); overflow:hidden;">
-                        <table style="width:100%; border-collapse:collapse; text-align:left;">
-                            <thead style="background:var(--bg-base); border-bottom:1px solid var(--border-color);">
+              <section class="hero-section fade-up d1" style="margin-bottom: 24px;">
+                <div class="hero-content">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                      <button onclick="loadAdminEvents()" class="btn btn-outline" style="padding:4px 8px; font-size:18px;"><ion-icon name="arrow-back-outline"></ion-icon></button>
+                      <h2 class="hero-title" style="margin:0;">报名名单</h2>
+                  </div>
+                  <p class="hero-subtitle">${data.data.event.title}</p>
+                </div>
+              </section>
+                <div class="fade-up d2" style="max-width:1000px; margin:0 auto;">
+                    <div class="paper-card" style="padding:0; overflow:hidden;">
+                        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;">
+                            <thead style="background:var(--bg-header); border-bottom:1px solid var(--border-color);">
                                 <tr>
-                                    <th style="padding:16px;">姓名</th>
-                                    <th style="padding:16px;">账号</th>
-                                    <th style="padding:16px;">机构</th>
-                                    <th style="padding:16px;">报名时间</th>
-                                    <th style="padding:16px;">状态</th>
+                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">姓名</th>
+                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">账号</th>
+                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">机构</th>
+                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">报名时间</th>
+                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">状态</th>
                                 </tr>
                             </thead>
                             <tbody>
             `;
             
             if(data.data.enrollments.length === 0) {
-                html += `<tr><td colspan="5" style="padding:24px; text-align:center; color:var(--text-sub);">暂无报名记录</td></tr>`;
+                html += `<tr><td colspan="5" style="padding:40px; text-align:center; color:var(--text-tertiary);">
+                    <ion-icon name="folder-open-outline" style="font-size:32px; display:block; margin:0 auto 8px; color:var(--text-tertiary);"></ion-icon>
+                    暂无报名记录
+                </td></tr>`;
             } else {
                 data.data.enrollments.forEach(en => {
                     html += `
-                        <tr style="border-bottom:1px solid var(--border-color);">
-                            <td style="padding:16px;">${en.user.name || '未填'}</td>
-                            <td style="padding:16px;">${en.user.account}</td>
-                            <td style="padding:16px;">${en.user.institution || '-'}</td>
-                            <td style="padding:16px;">${en.enrolled_at}</td>
-                            <td style="padding:16px;">
-                                <span style="padding:4px 8px; border-radius:4px; font-size:12px; background:#D1FAE5; color:#065F46;">已报名</span>
-                            </td>
-                        </tr>
+                                <tr style="border-bottom:1px solid var(--border-color);">
+                                    <td style="padding:16px; color:var(--text-primary); font-weight:500;">${en.name}</td>
+                                    <td style="padding:16px; color:var(--text-secondary);">${en.account}</td>
+                                    <td style="padding:16px; color:var(--text-secondary);">${en.institution}</td>
+                                    <td style="padding:16px; color:var(--text-secondary);">${en.created_at}</td>
+                                    <td style="padding:16px;"><span class="chip ${en.status === 'enrolled' ? 'chip-green' : 'chip-red'}">${en.status === 'enrolled' ? '已报名' : '已取消'}</span></td>
+                                </tr>
                     `;
                 });
             }

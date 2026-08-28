@@ -120,43 +120,53 @@ async function loadPendingAdmins() {
 function renderPendingList(admins) {
     const container = document.getElementById('pending-list');
     if(admins.length === 0) {
-        container.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-sub); background:var(--card-bg); border-radius:12px;">暂无待审批或已拒绝账号</div>`;
+        container.innerHTML = `
+            <div class="empty-state fade-up d4" style="grid-column: 1/-1;">
+                <ion-icon name="folder-open-outline" class="empty-icon"></ion-icon>
+                <div class="empty-title">暂无账号</div>
+                <div class="empty-sub">目前没有待审批或已拒绝的管理员申请</div>
+            </div>`;
         return;
     }
     
     let html = '';
-    admins.forEach(a => {
+    admins.forEach((a, i) => {
         let statusBadge = '';
         if(a.status === 'pending') {
-            statusBadge = `<span style="padding:4px 8px; border-radius:4px; font-size:12px; background:#FEF3C7; color:#B45309;">待审批</span>`;
+            statusBadge = `<span class="chip chip-blue">待审批</span>`;
         } else if (a.status === 'rejected') {
-            statusBadge = `<span style="padding:4px 8px; border-radius:4px; font-size:12px; background:#FEE2E2; color:#DC2626;">已拒绝</span>`;
+            statusBadge = `<span class="chip chip-red">已拒绝</span>`;
         }
         
         const actionButtons = a.status === 'pending' ? `
-                <button class="btn btn-primary" onclick="approveAdmin(${a.id}, 'approved')" style="flex:1;">同意</button>
-                <button class="btn btn-muted" onclick="approveAdmin(${a.id}, 'rejected')" style="flex:1; background:var(--bg-base); color:var(--text-main);">拒绝</button>
-            ` : `<div style="text-align:center; width:100%; color:var(--text-sub);">${a.status==='approved'?'已同意':'已拒绝'}</div>`;
+                <button class="btn btn-primary" onclick="approveAdmin(${a.id}, 'approved')" style="flex:1;"><ion-icon name="checkmark-circle-outline"></ion-icon>同意</button>
+                <button class="btn btn-outline" onclick="approveAdmin(${a.id}, 'rejected')" style="flex:1;"><ion-icon name="close-circle-outline"></ion-icon>拒绝</button>
+            ` : `<div style="text-align:center; width:100%; color:var(--text-tertiary); font-size:14px;">${a.status==='approved'?'已同意':'已拒绝'}</div>`;
+            
+            // 使用交错动画
+            const animDelay = (i % 5) + 1;
             
             html += `
-            <div style="background:var(--bg-elevated); padding:16px; border-radius:12px; border:1px solid var(--border-color); display:flex; flex-direction:column; gap:12px;">
+            <div class="paper-card fade-up d${animDelay}" style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-                        <h3 style="font-size:18px; font-weight:600; margin:0;">${a.account}</h3>
-                        ${statusBadge}
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:40px; height:40px; border-radius:50%; background:var(--blue-50); color:var(--blue-600); display:flex; align-items:center; justify-content:center; font-size:20px;">
+                            <ion-icon name="person-outline"></ion-icon>
+                        </div>
+                        <div>
+                            <h3 style="font-size:16px; font-weight:600; margin:0; color:var(--text-primary);">${a.account}</h3>
+                            <div style="font-size:12px; color:var(--text-tertiary); margin-top:2px;">${a.created_at}</div>
+                        </div>
                     </div>
-                    <div style="font-size:14px; color:var(--text-sub); display:flex; flex-direction:column; gap:4px;">
-                        <span>申请时间: ${a.created_at}</span>
-                        ${a.remark ? `<span style="background:var(--bg-base); padding:8px; border-radius:6px; margin-top:4px; font-style:italic;">备注: ${a.remark}</span>` : ''}
-                    </div>
+                    ${statusBadge}
                 </div>
-                <div style="display:flex; gap:8px;">
+                ${a.remark ? `<div style="background:var(--bg-base); padding:8px 12px; border-radius:8px; font-size:13px; color:var(--text-secondary); border-left:3px solid var(--blue-500);"><ion-icon name="chatbox-ellipses-outline" style="vertical-align:text-bottom; margin-right:4px;"></ion-icon>${a.remark}</div>` : ''}
+                <div style="display:flex; gap:12px; margin-top:8px;">
                     ${actionButtons}
                 </div>
             </div>
-        `;
+            `;
     });
-    
     container.innerHTML = html;
 }
 
