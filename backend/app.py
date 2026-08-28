@@ -40,6 +40,12 @@ def create_app():
     def ping():
         return {'status': 'ok', 'message': '甬学阁后端服务运行正常'}
 
+    # ---- 静态文件服务（如头像） ----
+    from flask import send_from_directory
+    @app.route('/api/uploads/<path:filename>')
+    def serve_upload(filename):
+        return send_from_directory(app.config.get('UPLOAD_FOLDER', 'uploads'), filename)
+
     # ---- 建表（开发模式自动建表） ----
     with app.app_context():
         db.create_all()

@@ -5,6 +5,7 @@ from extensions import db, bcrypt
 from models import User, SearchHistory, Favorite, Enrollment
 from utils.response import ok, err, not_found
 from utils.auth_helper import login_required
+from utils.file_helper import save_base64_image
 
 user_bp = Blueprint('user', __name__, url_prefix='/api/user')
 
@@ -28,7 +29,10 @@ def update_me():
     data = request.get_json(silent=True) or {}
     for field in ('name', 'institution', 'age', 'gender', 'avatar_url'):
         if field in data:
-            setattr(user, field, data[field])
+            val = data[field]
+            if field == 'avatar_url':
+                val = save_base64_image(val)
+            setattr(user, field, val)
 
     # 修改密码（可选）
     new_pw = data.get('new_password')

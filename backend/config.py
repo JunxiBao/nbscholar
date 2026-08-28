@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
+    # ---- 基础配置 ----
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'uploads')
+    
     # ---- 数据库 ----
     # 格式：mysql+pymysql://user:password@host:port/dbname
     # 请根据你的云端数据库信息修改以下变量

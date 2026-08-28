@@ -23,26 +23,65 @@ echo "=========================================="
 echo " 开始配置后端服务守护进程 (支持开机自启)"
 echo "=========================================="
 
-echo "=> [1/3] 正在配置 Python 环境与依赖..."
-# 阿里云/CentOS 默认自带 Python 3.6 太老，我们需要安装并使用 Python 3.9
-if command -v yum &> /dev/null; then
-    yum install -y python39
-    PYTHON_CMD="python3.9"
-elif command -v apt-get &> /dev/null; then
-    apt-get update
-    apt-get install -y python3.9 python3-pip
-    PYTHON_CMD="python3.9"
-else
-    PYTHON_CMD="python3"
+echo "=> [1/4] 正在检测并配置 Python 运行环境..."
+
+# 1. 尝试在系统中寻找满足版本要求的 Python (>= 3.8)
+PYTHON_CMD=""
+for cmd in python3.11 python3.10 python3.9 python3.8; do
+    if command -v $cmd &> /dev/null; then
+        PYTHON_CMD=$cmd
+        break
+    fi
+done
+
+# 如果没有高版本 Python，则尝试利用所有已知的包管理器自动安装
+if [ -z "$PYTHON_CMD" ]; then
+    echo "未检测到 Python 3.8+，正在尝试通过包管理器自动安装..."
+    if command -v dnf &> /dev/null; then
+        dnf install -y python39 || dnf install -y python3.9 || dnf install -y python3
+    elif command -v yum &> /dev/null; then
+        yum install -y python39 || yum install -y python3.9 || yum install -y python38
+    elif command -v apt-get &> /dev/null; then
+        apt-get update
+        apt-get install -y python3.9 python3.9-venv python3-pip || apt-get install -y python3.10 python3.10-venv || apt-get install -y python3.8 python3.8-venv
+    elif command -v pacman &> /dev/null; then
+        pacman -Sy --noconfirm python python-pip
+    else
+        echo "❌ 无法识别包管理器或安装失败，请手动安装 Python 3.8 或以上版本。"
+        exit 1
+    fi
+    
+    # 安装完成后再次检测
+    for cmd in python3.11 python3.10 python3.9 python3.8 python3; do
+        if command -v $cmd &> /dev/null; then
+            PYTHON_CMD=$cmd
+            break
+        fi
+    done
 fi
 
-# 获取系统中 Python 的路径
-PYTHON_PATH=$(which $PYTHON_CMD || which python3)
+PYTHON_PATH=$(which $PYTHON_CMD)
+if [ -z "$PYTHON_PATH" ]; then
+    echo "❌ 致命错误：Python 环境配置失败！"
+    exit 1
+fi
+echo "=> 使用的 Python 解析器路径: $PYTHON_PATH ($($PYTHON_PATH --version))"
 
-echo "=> 正在安装项目依赖 (requirements.txt) 与 Gunicorn..."
-$PYTHON_PATH -m pip install -r $BACKEND_DIR/requirements.txt
-$PYTHON_PATH -m pip install gunicorn
+echo "=> [2/4] 配置隔离的 Python 虚拟环境 (Virtualenv)..."
+# 使用虚拟环境 (venv) 是最强大的适配方案，彻底避免系统级依赖冲突和 sudo 权限警告
+VENV_DIR="$BACKEND_DIR/venv"
+$PYTHON_PATH -m venv $VENV_DIR || { echo "❌ 虚拟环境创建失败，你可能需要安装 python3-venv 包！"; exit 1; }
 
+# 指定使用虚拟环境中的 pip 和 python
+VENV_PIP="$VENV_DIR/bin/pip"
+VENV_PYTHON="$VENV_DIR/bin/python"
+
+echo "=> 正在虚拟环境中安装依赖 (requirements.txt) 与 Gunicorn..."
+$VENV_PIP install --upgrade pip
+$VENV_PIP install -r $BACKEND_DIR/requirements.txt || { echo "❌ 依赖安装失败，请检查上面 pip 的报错！"; exit 1; }
+$VENV_PIP install gunicorn || { echo "❌ Gunicorn 安装失败！"; exit 1; }
+
+echo "=> [3/4] 正在生成 Systemd 服务配置..."
 SERVICE_FILE="/etc/systemd/system/nbscholar-backend.service"
 
 cat > $SERVICE_FILE << EOF
@@ -54,8 +93,8 @@ After=network.target
 # 以 root 权限运行，或者你可以改成你服务器的具体用户名
 User=root
 WorkingDirectory=$BACKEND_DIR
-# 使用 4 个 worker 进程，监听 5000 端口
-ExecStart=$PYTHON_PATH -m gunicorn -w 4 -b 0.0.0.0:5000 app:app
+# 使用虚拟环境中的 Gunicorn 运行应用
+ExecStart=$VENV_DIR/bin/gunicorn -w 4 -b 0.0.0.0:5000 app:app
 # 如果崩溃则自动重启
 Restart=always
 
@@ -63,7 +102,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-echo "=> [3/3] 激活并启动后台服务..."
+echo "=> [4/4] 激活并启动后台服务..."
 # 重新加载 systemd 配置
 systemctl daemon-reload
 # 设置开机自启

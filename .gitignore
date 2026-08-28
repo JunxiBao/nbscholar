@@ -36,3 +36,4 @@ env/
 .vscode/
 .idea/
 .DS_Store
+backend/uploads/

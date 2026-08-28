@@ -5,6 +5,7 @@ from flask import Blueprint, request, current_app
 from extensions import db, bcrypt
 from models import User
 from utils.response import ok, err, conflict, unauthorized
+from utils.file_helper import save_base64_image
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -39,7 +40,7 @@ def register():
         institution = data.get('institution', ''),
         age         = data.get('age'),
         gender      = data.get('gender', ''),
-        avatar_url  = data.get('avatar_url', ''),
+        avatar_url  = save_base64_image(data.get('avatar_url', '')),
     )
     db.session.add(user)
     db.session.commit()
