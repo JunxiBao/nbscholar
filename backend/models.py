@@ -266,6 +266,6 @@ class AdminUser(db.Model):
             'status':     self.status,
             'name':       self.name,
             'remark':     self.remark,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M') if self.created_at else '',
         }
 
