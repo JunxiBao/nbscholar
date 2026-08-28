@@ -588,3 +588,21 @@ document.addEventListener('click', (e) => {
 
 // Init
 checkAdminAuth();
+
+// ===== 移动端侧边栏 =====
+window.toggleSidebar = function() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebar-overlay');
+    if(sb && ov) {
+        sb.classList.toggle('open');
+        ov.classList.toggle('show');
+    }
+}
+window.closeSidebar = function() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebar-overlay');
+    if(sb && ov) {
+        sb.classList.remove('open');
+        ov.classList.remove('show');
+    }
+}

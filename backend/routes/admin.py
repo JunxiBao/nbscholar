@@ -39,6 +39,19 @@ def approve_admin(admin_id):
     return ok(msg=f'账号已更新为 {status}')
 
 
+@admin_bp.route('/<int:admin_id>', methods=['DELETE'])
+@super_admin_required
+def delete_admin(admin_id):
+    """注销(删除)管理员账号"""
+    admin_user = AdminUser.query.filter_by(id=admin_id, role='admin').first()
+    if not admin_user:
+        return not_found('管理员账号不存在')
+        
+    db.session.delete(admin_user)
+    db.session.commit()
+    return ok(msg='账号已注销')
+
+
 @admin_bp.route('/all_admins', methods=['GET'])
 @super_admin_required
 def list_all_admins():

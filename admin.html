@@ -29,9 +29,11 @@
 </head>
 <body>
 
+<!-- 侧边栏遮罩 (移动端) -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div class="app-shell" id="app-shell" style="display:none;">
   <!-- ===== 左侧边栏 (宽屏可见) ===== -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <img class="app-logo logo-light" src="statics/images/lighticon.png" alt="Logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: contain; flex-shrink: 0;">
@@ -116,7 +118,7 @@
     </main>
 
     <!-- ===== 底部标签栏 (移动端) ===== -->
-    <nav class="bottom-tabs" id="bottom-tabs">
+    <nav class="bottom-tabs" id="bottom-tabs" style="--tab-count: 2;">
       <div class="tab-indicator tab-admin-events" id="tab-indicator"></div>
       <button class="tab-btn active" data-tab="tab-admin-events"
               data-icon-outline="list-outline"

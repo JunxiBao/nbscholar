@@ -316,12 +316,36 @@ function renderHistoryList(admins) {
             </div>
             ${a.remark ? `<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-input);padding:8px 12px;border-radius:var(--r-md);margin:10px 0;line-height:1.5;">申请备注：${a.remark}</div>` : ''}
             <div class="paper-actions" style="margin-top:12px;">
-                <button class="btn btn-muted btn-sm btn-full" onclick="revokeApproval(${a.id})"><ion-icon name="arrow-undo-outline"></ion-icon> 撤回并重审</button>
+                <button class="btn btn-muted btn-sm" style="flex:1;" onclick="revokeApproval(${a.id})"><ion-icon name="arrow-undo-outline"></ion-icon> 撤回重审</button>
+                <button class="btn btn-muted btn-sm" style="flex:1; color:var(--red-500);" onclick="deleteAdminAccount(${a.id})"><ion-icon name="trash-outline"></ion-icon> 注销账号</button>
             </div>
         </div>
         `;
     });
     container.innerHTML = html;
+}
+
+async function deleteAdminAccount(id) {
+    const isOk = await showConfirm('确认注销', '注销后该账号将从数据库彻底删除，无法再登录。确定注销吗？');
+    if(!isOk) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')
+            }
+        });
+        const data = await res.json();
+        if(data.code === 0) {
+            showToast('账号已彻底注销', 'success');
+            loadDashboardData();
+        } else {
+            showToast((data.msg || '操作失败'), 'error');
+        }
+    } catch(e) {
+        showToast('网络错误', 'error');
+    }
 }
 
 async function revokeApproval(id) {
@@ -467,3 +491,21 @@ document.addEventListener('click', (e) => {
 
 // Init
 checkAdminAuth();
+
+// ===== 移动端侧边栏 =====
+window.toggleSidebar = function() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebar-overlay');
+    if(sb && ov) {
+        sb.classList.toggle('open');
+        ov.classList.toggle('show');
+    }
+}
+window.closeSidebar = function() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebar-overlay');
+    if(sb && ov) {
+        sb.classList.remove('open');
+        ov.classList.remove('show');
+    }
+}
