@@ -14,9 +14,13 @@
   <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
 
-  <!-- Ionicons -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons/dist/ionicons/ionicons.js"></script>
+  <!-- 图标库 -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- Cropper.js 图片裁剪 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
   <link rel="stylesheet" href="css/theme.css" />
@@ -117,9 +121,9 @@
       <div class="topbar-actions">
 
 
-        <!-- 移动端/顶部用户图标 -->
+        <!-- 右侧动作 -->
         <button class="topbar-btn" id="mobile-avatar-btn" onclick="toggleUserPopover(event)" title="账户选项" style="padding:0; border-radius:50%; overflow:hidden;">
-          <img id="mobile-avatar" src="" style="width:32px; height:32px; object-fit:cover; display:none;" />
+          <img id="mobile-avatar" src="" style="width:32px; height:32px; object-fit:cover; display:none; border-radius:50%;" />
           <ion-icon id="mobile-avatar-icon" name="person-circle-outline"></ion-icon>
         </button>
       </div>
@@ -192,11 +196,28 @@
   </div>
   <div style="height:1px; background:var(--separator); margin:4px 0;"></div>
   <div class="popover-item" style="color:var(--red-600);" onclick="Auth.logout()">
-    <ion-icon name="log-out-outline"></ion-icon>退出登录
+    <div id="toast" class="toast-message">操作成功</div>
   </div>
-</div>
 
-<script src="js/api.js"></script>
+  <!-- 头像裁剪弹窗 -->
+  <div id="settings-crop-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:var(--bg-elevated); width:360px; border-radius:var(--r-lg); overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-xl); transform:scale(0.95); animation:modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <div style="padding:16px; border-bottom:1px solid var(--separator); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:16px; font-weight:600;">裁剪头像</h3>
+        <ion-icon name="close-outline" style="font-size:20px; cursor:pointer; color:var(--text-tertiary);" onclick="window.closeSettingsCropModal && window.closeSettingsCropModal()"></ion-icon>
+      </div>
+      <div style="width:100%; height:300px; background:#000;">
+        <img id="settings-crop-img" src="" style="max-width:100%; display:block;">
+      </div>
+      <div style="padding:16px; display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn btn-muted" onclick="window.closeSettingsCropModal && window.closeSettingsCropModal()">取消</button>
+        <button class="btn btn-primary" onclick="window.confirmSettingsCrop && window.confirmSettingsCrop()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 挂载全局 API -->
+  <script src="js/api.js"></script>
 <script src="js/pages/home.js"></script>
 <script src="js/pages/search.js"></script>
 <script src="js/pages/tools.js"></script>

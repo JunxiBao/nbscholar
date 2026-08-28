@@ -150,14 +150,18 @@ function initSettings() {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = async (event) => {
-        const base64Str = event.target.result;
-        try {
-          await Auth.updateProfile({ avatar_url: base64Str });
-          showToast('头像已更新');
-          if (window.updateUserInfoUI) window.updateUserInfoUI();
-        } catch (err) {
-          showToast('头像更新失败：' + err.message);
+      reader.onload = (event) => {
+        const img = document.getElementById('settings-crop-img');
+        if (img) {
+          img.src = event.target.result;
+          document.getElementById('settings-crop-modal').style.display = 'flex';
+          if (window.settingsCropper) window.settingsCropper.destroy();
+          window.settingsCropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 0.85, guides: true, center: true,
+            highlight: false, cropBoxMovable: true, cropBoxResizable: true,
+          });
         }
       };
       reader.readAsDataURL(file);
@@ -213,6 +217,30 @@ function initSettings() {
   // 确保动态加载 settings.html 后渲染数据
   if (window.updateUserInfoUI) window.updateUserInfoUI();
 }
+
+window.settingsCropper = null;
+
+window.closeSettingsCropModal = () => {
+  document.getElementById('settings-crop-modal').style.display = 'none';
+  if (window.settingsCropper) { window.settingsCropper.destroy(); window.settingsCropper = null; }
+  const avInput = document.getElementById('settings-avatar-input');
+  if (avInput) avInput.value = ''; // clear
+};
+
+window.confirmSettingsCrop = async () => {
+  if (!window.settingsCropper) return;
+  const canvas = window.settingsCropper.getCroppedCanvas({ width: 256, height: 256, fillColor: '#fff' });
+  const base64Str = canvas.toDataURL('image/jpeg', 0.85);
+  window.closeSettingsCropModal();
+  
+  try {
+    await Auth.updateProfile({ avatar_url: base64Str });
+    showToast('头像已更新');
+    if (window.updateUserInfoUI) window.updateUserInfoUI();
+  } catch (err) {
+    showToast('头像更新失败：' + err.message);
+  }
+};
 
 // ===== 个人资料修改弹窗逻辑 =====
 let currentEditField = null;
@@ -369,13 +397,12 @@ window.updateUserInfoUI = function() {
   const sAvatar = document.getElementById('sidebar-avatar');
   if (sAvatar) sAvatar.src = avatar;
 
-  // Mobile Topbar
+  // Mobile Topbar (强制只显示图标)
   const mAvatar = document.getElementById('mobile-avatar');
   const mIcon = document.getElementById('mobile-avatar-icon');
   if (mAvatar && mIcon) {
-    mAvatar.src = avatar;
-    mAvatar.style.display = 'block';
-    mIcon.style.display = 'none';
+    mAvatar.style.display = 'none';
+    mIcon.style.display = 'block';
   }
 
   // Home Page
