@@ -168,8 +168,12 @@ function checkAdminAuth() {
 // Dashboard Logic
 // ---------------------------------
 function switchTab(tabId) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tabId);
+    });
+    
+    const seg = document.getElementById('admin-segment');
+    if (seg && seg.value !== tabId) seg.value = tabId;
     
     if(tabId === 'tab-admin-events') loadAdminEvents();
     if(tabId === 'tab-admin-create') renderCreateForm();
@@ -180,8 +184,9 @@ document.querySelectorAll('.nav-item').forEach(el => {
 });
 
 async function loadAdminEvents() {
-    const main = document.getElementById('main-content');
-    main.innerHTML = '<div style="padding:20px;">加载中...</div>';
+    const container = document.getElementById('admin-tab-content');
+    if (!container) return;
+    container.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-tertiary);">加载活动列表中...</div>';
     
     try {
         const res = await fetch(`${API_BASE}/api/admin/training`, {
@@ -194,46 +199,83 @@ async function loadAdminEvents() {
             logoutAdmin();
         } else {
             showToast((data.msg || '操作失败'), 'error');
+            container.innerHTML = `<div style="color:#EF4444; padding:20px; text-align:center;">${(data.msg || '操作失败')}</div>`;
         }
     } catch(e) {
         showToast('网络错误', 'error');
+        container.innerHTML = '<div style="color:#EF4444; padding:20px; text-align:center;">网络连接错误</div>';
     }
 }
 
 function renderEventsList(events) {
-    const main = document.getElementById('main-content');
+    const container = document.getElementById('admin-tab-content');
+    if (!container) return;
+
+    const totalEnrollments = events.reduce((sum, e) => sum + (e.enrolled_cnt || 0), 0);
+
     let html = `
-      <div class="page-1col" style="max-width:760px; margin:0 auto; padding-bottom:32px;">
-        <div class="section-label fade-up">已发布培训活动 <span style="font-weight:400;color:var(--text-secondary);">共 ${events.length} 场</span></div>
-        <div class="list-group fade-up d1">
+      <!-- 统计面板 -->
+      <div class="stat-row fade-up d1" style="padding-top:16px;">
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--blue-600);">${events.length}</div>
+          <div class="stat-lbl">已发布活动</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--green-600);">${totalEnrollments}</div>
+          <div class="stat-lbl">累计报名人次</div>
+        </div>
+      </div>
+
+      <div class="section-label fade-up d2">已发布活动列表 <span style="font-weight:400;color:var(--text-secondary);">共 ${events.length} 场</span></div>
+      <div id="events-list-container">
     `;
     
     if(events.length === 0) {
         html += `
-            <div style="padding:48px 16px; text-align:center; color:var(--text-tertiary);">
-                <ion-icon name="calendar-outline" style="font-size:40px; color:var(--text-tertiary); margin-bottom:8px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
-                <div style="font-size:14px; font-weight:500; color:var(--text-secondary);">暂无已发布的培训活动</div>
+            <div class="paper-card fade-up d3" style="text-align:center; padding:48px 16px; color:var(--text-tertiary);">
+                <ion-icon name="calendar-outline" style="font-size:44px; color:var(--text-tertiary); margin-bottom:8px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
+                <div style="font-size:15px; font-weight:600; color:var(--text-primary);">暂无已发布的培训活动</div>
+                <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">点击上方“发布新活动”即可创建</div>
                 <button class="btn btn-primary btn-sm" onclick="switchTab('tab-admin-create')" style="margin-top:16px;">
                     <ion-icon name="add-outline"></ion-icon> 立即发布活动
                 </button>
             </div>`;
     }
     
-    events.forEach((e) => {
+    events.forEach((e, i) => {
+        let day = '15', month = '9';
+        if (e.event_date) {
+            const parts = e.event_date.split(' ')[0].split('-');
+            if (parts.length === 3) {
+                month = parseInt(parts[1], 10);
+                day = parseInt(parts[2], 10);
+            }
+        }
+        const animDelay = (i % 4) + 1;
         html += `
-            <div class="list-row" style="flex-wrap:wrap; padding:14px 16px; gap:12px;">
-                <div class="list-icon" style="background:var(--blue-500);">
-                    <ion-icon name="school-outline"></ion-icon>
-                </div>
-                <div class="list-text">
-                    <div class="list-title" style="font-weight:600;">${e.title}</div>
-                    <div class="list-subtitle">${e.speaker || '暂未指定主讲人'} ${e.affiliation ? `(${e.affiliation})` : ''} · ${e.event_date}</div>
-                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">报名人数：${e.enrolled_cnt} / ${e.capacity} 人 · 形式：${e.event_type || '线上直播'}</div>
-                </div>
-                <span class="chip chip-blue" style="margin-left:auto;">${e.event_type || '培训'}</span>
-                <div style="width:100%; display:flex; gap:8px; margin-top:4px;">
-                    <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="viewEnrollments(${e.id})"><ion-icon name="list-outline"></ion-icon> 报名名单</button>
-                    <button class="btn btn-secondary btn-sm" style="flex:1; color:var(--red-500);" onclick="deleteEvent(${e.id})"><ion-icon name="trash-outline"></ion-icon> 删除活动</button>
+            <div class="event-card fade-up d${animDelay}">
+                <div class="event-stripe" style="background:${e.color || 'var(--blue-600)'};"></div>
+                <div class="event-body">
+                    <div class="event-date-row">
+                        <div class="event-date-box" style="background:${e.color || 'var(--blue-600)'};">
+                            <div class="event-day">${day}</div>
+                            <div class="event-month">${month}月</div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:14px;font-weight:600;color:var(--text-primary);">${e.event_date}</div>
+                            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">形式：${e.event_type || '线上直播'}</div>
+                        </div>
+                        <span class="chip chip-blue">${e.event_type || '培训'}</span>
+                    </div>
+                    <div class="event-title" style="font-size:16px;font-weight:600;margin-bottom:8px;">${e.title}</div>
+                    <div class="event-info">
+                        <span><ion-icon name="person-outline"></ion-icon> ${e.speaker || '暂未指定主讲人'} ${e.affiliation ? `(${e.affiliation})` : ''}</span>
+                        <span><ion-icon name="people-outline"></ion-icon> ${e.enrolled_cnt} / ${e.capacity} 人已报名</span>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:14px;">
+                        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="viewEnrollments(${e.id})"><ion-icon name="list-outline"></ion-icon> 报名名单 (${e.enrolled_cnt})</button>
+                        <button class="btn btn-muted btn-sm" style="color:var(--red-500);" onclick="deleteEvent(${e.id})"><ion-icon name="trash-outline"></ion-icon> 删除活动</button>
+                    </div>
                 </div>
             </div>
         `;
@@ -241,17 +283,16 @@ function renderEventsList(events) {
     
     html += `
         </div>
-      </div>
     `;
-    main.innerHTML = html;
+    container.innerHTML = html;
 }
 
 function renderCreateForm() {
-    const main = document.getElementById('main-content');
-    main.innerHTML = `
-      <div class="page-1col" style="max-width:760px; margin:0 auto; padding-bottom:32px;">
-        <div class="section-label fade-up">发布新培训活动</div>
-        <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--separator);" class="fade-up d1">
+    const container = document.getElementById('admin-tab-content');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="section-label fade-up d1">发布新培训活动</div>
+        <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--separator);" class="fade-up d2">
           <div style="margin-bottom:14px;">
             <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动标题 *</label>
             <input type="text" id="ce-title" placeholder="输入活动标题..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
@@ -305,7 +346,6 @@ function renderCreateForm() {
             发布培训活动
           </button>
         </div>
-      </div>
     `;
 }
 
