@@ -23,7 +23,76 @@ echo "=========================================="
 echo " 开始配置后端服务守护进程 (支持开机自启)"
 echo "=========================================="
 
-echo "=> [1/4] 正在检测并配置 Python 运行环境..."
+echo "=> [1/5] 初始化环境与数据库配置..."
+ENV_FILE="$BACKEND_DIR/.env"
+if [ ! -f "$ENV_FILE" ]; then
+    echo "=========================================="
+    echo "未检测到 .env 配置文件，现在开始交互式初始化向导..."
+    echo "=========================================="
+    
+    # 交互式收集配置 (仅在无 .env 文件时)
+    read -p "请输入你要为 MySQL 数据库设置的专属密码 [直接回车则自动生成强密码]: " DB_PASS
+    if [ -z "$DB_PASS" ]; then
+        # 生成随机强密码，去掉容易混淆的字符
+        DB_PASS=$(head -c 12 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 16)
+        echo ">> 已自动生成数据库密码: $DB_PASS"
+    fi
+    
+    read -p "请输入系统安全的 JWT 签名密钥 [直接回车则自动生成随机密钥]: " JWT_KEY
+    if [ -z "$JWT_KEY" ]; then
+        JWT_KEY=$(head -c 24 /dev/urandom | base64 | tr -d '\n')
+    fi
+    
+    read -p "请输入大模型 DeepSeek API Key [可选, 直接回车先跳过]: " DEEPSEEK_KEY
+    if [ -z "$DEEPSEEK_KEY" ]; then
+        DEEPSEEK_KEY="your_deepseek_key_here"
+    fi
+
+    # 写入 .env 文件
+    cat > "$ENV_FILE" << EOF
+DB_USER=nbscholar
+DB_PASSWORD=$DB_PASS
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=nbscholar
+
+JWT_SECRET_KEY=$JWT_KEY
+DEEPSEEK_API_KEY=$DEEPSEEK_KEY
+EOF
+    echo "✅ 配置文件 $ENV_FILE 已自动生成！"
+    
+    echo "=> 正在自动安装并启动本地数据库 (MySQL/MariaDB)..."
+    if command -v dnf &> /dev/null; then
+        dnf install -y mariadb-server || dnf install -y mysql-server
+    elif command -v yum &> /dev/null; then
+        yum install -y mariadb-server || yum install -y mysql-server
+    elif command -v apt-get &> /dev/null; then
+        apt-get update
+        apt-get install -y mariadb-server || apt-get install -y mysql-server
+    fi
+    
+    # 尝试启动数据库
+    if systemctl list-unit-files | grep -q mariadb.service; then
+        systemctl start mariadb && systemctl enable mariadb
+    elif systemctl list-unit-files | grep -q mysqld.service; then
+        systemctl start mysqld && systemctl enable mysqld
+    fi
+    
+    echo "=> 正在静默初始化数据库和专属账号权限..."
+    # 自动执行建库和建用户 SQL (如果已存在则忽略)
+    mysql -u root <<EOF
+CREATE DATABASE IF NOT EXISTS nbscholar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'nbscholar'@'localhost' IDENTIFIED BY '$DB_PASS';
+ALTER USER 'nbscholar'@'localhost' IDENTIFIED BY '$DB_PASS';
+GRANT ALL PRIVILEGES ON nbscholar.* TO 'nbscholar'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+    echo "✅ 数据库 nbscholar 及其专属账号配置完成！"
+else
+    echo "✅ 检测到已存在 .env 配置文件，跳过基础配置与数据库重置。"
+fi
+
+echo "=> [2/5] 正在检测并配置 Python 运行环境..."
 
 # 1. 尝试在系统中寻找满足版本要求的 Python (>= 3.8)
 PYTHON_CMD=""
@@ -67,7 +136,7 @@ if [ -z "$PYTHON_PATH" ]; then
 fi
 echo "=> 使用的 Python 解析器路径: $PYTHON_PATH ($($PYTHON_PATH --version))"
 
-echo "=> [2/4] 配置隔离的 Python 虚拟环境 (Virtualenv)..."
+echo "=> [3/5] 配置隔离的 Python 虚拟环境 (Virtualenv)..."
 # 使用虚拟环境 (venv) 是最强大的适配方案，彻底避免系统级依赖冲突和 sudo 权限警告
 VENV_DIR="$BACKEND_DIR/venv"
 $PYTHON_PATH -m venv $VENV_DIR || { echo "❌ 虚拟环境创建失败，你可能需要安装 python3-venv 包！"; exit 1; }
@@ -81,7 +150,7 @@ $VENV_PIP install --upgrade pip
 $VENV_PIP install -r $BACKEND_DIR/requirements.txt || { echo "❌ 依赖安装失败，请检查上面 pip 的报错！"; exit 1; }
 $VENV_PIP install gunicorn || { echo "❌ Gunicorn 安装失败！"; exit 1; }
 
-echo "=> [3/4] 正在生成 Systemd 服务配置..."
+echo "=> [4/5] 正在生成 Systemd 服务配置..."
 SERVICE_FILE="/etc/systemd/system/nbscholar-backend.service"
 
 cat > $SERVICE_FILE << EOF
@@ -102,7 +171,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-echo "=> [4/4] 激活并启动后台服务..."
+echo "=> [5/5] 激活并启动后台服务..."
 # 重新加载 systemd 配置
 systemctl daemon-reload
 # 设置开机自启
@@ -110,7 +179,7 @@ systemctl enable nbscholar-backend
 # 立即启动服务
 systemctl restart nbscholar-backend
 
-echo "=> [4/4] 正在进行服务健康诊断..."
+echo "=> [5/5] 正在进行服务健康诊断..."
 # 等待 3 秒钟让服务充分启动并暴露出可能的崩溃问题
 sleep 3
 
