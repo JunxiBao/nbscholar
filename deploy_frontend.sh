@@ -34,12 +34,25 @@ sed -i "s|http://localhost:5000|$PROD_API_URL|g" $DEPLOY_DIR/js/login.js 2>/dev/
 
 echo "=> [3/4] 检查并安装 Nginx..."
 if ! command -v nginx &> /dev/null; then
-    apt-get update
-    apt-get install -y nginx
+    if command -v yum &> /dev/null; then
+        echo "=> 检测到 Yum 包管理器，正在通过 yum 安装 Nginx..."
+        yum install -y epel-release
+        yum install -y nginx
+    elif command -v apt-get &> /dev/null; then
+        echo "=> 检测到 APT 包管理器，正在通过 apt-get 安装 Nginx..."
+        apt-get update
+        apt-get install -y nginx
+    else
+        echo "❌ 无法找到包管理器 (yum 或 apt-get)，请手动安装 Nginx。"
+        exit 1
+    fi
 fi
 
 echo "=> [4/4] 写入并激活 Nginx 配置..."
-cat > /etc/nginx/sites-available/nbscholar << EOF
+# 创建通用配置目录
+mkdir -p /etc/nginx/conf.d/
+
+cat > /etc/nginx/conf.d/nbscholar.conf << EOF
 server {
     listen 80;
     server_name _; # 监听所有 IP 或填入具体域名
@@ -54,9 +67,14 @@ server {
 }
 EOF
 
-# 启用该配置并禁用默认配置
-ln -sf /etc/nginx/sites-available/nbscholar /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
+# 如果系统中存在 default 配置文件，则将其重命名使其失效，避免冲突
+if [ -f /etc/nginx/conf.d/default.conf ]; then
+    mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak 2>/dev/null || true
+fi
+# 处理 Debian/Ubuntu 系列的 default 文件
+if [ -f /etc/nginx/sites-enabled/default ]; then
+    rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+fi
 
 # 测试并重启 Nginx，同时设置为开机自启
 echo "=> 测试 Nginx 配置文件并设置开机自启..."

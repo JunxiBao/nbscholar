@@ -22,6 +22,10 @@ async function apiRequest(method, path, body = null, opts = {}) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok || data.code === -1) {
+    if (res.status === 401) {
+      Auth.logout();
+      throw new Error('未登录或登录已过期');
+    }
     const msg = data.msg || `请求失败 (${res.status})`;
     throw new Error(msg);
   }

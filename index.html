@@ -189,6 +189,10 @@
   <div class="popover-item" onclick="switchTab('tab-settings'); toggleUserPopover()">
     <ion-icon name="settings-outline"></ion-icon>偏好设置
   </div>
+  <div style="height:1px; background:var(--separator); margin:4px 0;"></div>
+  <div class="popover-item" style="color:var(--red-600);" onclick="Auth.logout()">
+    <ion-icon name="log-out-outline"></ion-icon>退出登录
+  </div>
 </div>
 
 <script src="js/api.js"></script>

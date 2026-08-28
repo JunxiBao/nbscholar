@@ -30,11 +30,8 @@ pip3 install gunicorn
 echo "=> [2/3] 正在生成 Systemd 服务配置..."
 SERVICE_FILE="/etc/systemd/system/nbscholar-backend.service"
 
-# 找到 Gunicorn 的确切路径
-GUNICORN_PATH=$(which gunicorn)
-if [ -z "$GUNICORN_PATH" ]; then
-    GUNICORN_PATH="/usr/local/bin/gunicorn"
-fi
+# 获取系统中 Python3 的路径，并通过 -m gunicorn 模块方式启动，彻底避免 root 环境下找不到路径的问题
+PYTHON_PATH=$(which python3)
 
 cat > $SERVICE_FILE << EOF
 [Unit]
@@ -46,7 +43,7 @@ After=network.target
 User=root
 WorkingDirectory=$BACKEND_DIR
 # 使用 4 个 worker 进程，监听 5000 端口
-ExecStart=$GUNICORN_PATH -w 4 -b 0.0.0.0:5000 app:app
+ExecStart=$PYTHON_PATH -m gunicorn -w 4 -b 0.0.0.0:5000 app:app
 # 如果崩溃则自动重启
 Restart=always
 
