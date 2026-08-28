@@ -58,11 +58,16 @@
   </div>
 
   <!-- 退出登录 -->
-  <div style="margin:24px 16px 0;">
+  <div style="margin:24px 16px 0; display: flex; flex-direction: column; gap: 12px;">
     <button class="btn btn-full" id="logout-btn"
       style="background:#EF4444;color:#FFFFFF;border:none;padding:12px 0;border-radius:var(--r-md);">
       <ion-icon name="log-out-outline" style="font-size:18px;margin-right:6px;"></ion-icon>
       退出登录
+    </button>
+    <button class="btn btn-full" id="delete-account-btn"
+      style="background:transparent;color:#EF4444;border:1px solid #EF4444;padding:12px 0;border-radius:var(--r-md);">
+      <ion-icon name="warning-outline" style="font-size:18px;margin-right:6px;"></ion-icon>
+      注销账号
     </button>
   </div>
   <div style="height:32px;"></div>

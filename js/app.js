@@ -102,14 +102,31 @@ function initPage(tabId) {
     el.addEventListener('click', () => switchTab(el.dataset.navigate), { once: true });
   });
 
-  switch (tabId) {
-    case 'tab-home':     initHome(); break;
-    case 'tab-search':   initSearch(); break;
-    case 'tab-tools':    initTools(); break;
-    case 'tab-data':     initDeposit(); break;
-    case 'tab-journal':  initJournal(); break;
-    case 'tab-training': initTraining(); break;
-    case 'tab-settings': initSettings(); break;
+  if (tabId === 'tab-home'    && window.initHome)    initHome();
+  if (tabId === 'tab-search'  && window.initSearch)  initSearch();
+  if (tabId === 'tab-tools'    && window.initTools)    initTools();
+  if (tabId === 'tab-data'     && window.initDeposit)  initDeposit();
+  if (tabId === 'tab-journal'  && window.initJournal)  initJournal();
+  if (tabId === 'tab-training' && window.initTraining) initTraining();
+  if (tabId === 'tab-settings' && window.initSettings) initSettings();
+  
+  // 初始化历史页面事件
+  if (tabId === 'tab-history') {
+    const clearBtn = document.getElementById('hist-clear-btn');
+    if (clearBtn) {
+      clearBtn.onclick = async () => {
+        if (!confirm('确定要清空所有检索历史吗？')) return;
+        try {
+          await HistoryAPI.clear();
+          showToast('历史已清空');
+          document.getElementById('hist-list').innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 16px;gap:12px;color:var(--text-tertiary);">
+              <ion-icon name="time-outline" style="font-size:48px;"></ion-icon>
+              <p style="font-size:14px;margin:0;">暂无检索记录</p>
+            </div>`;
+        } catch (e) { showToast('清空失败: ' + e.message); }
+      };
+    }
   }
 }
 
@@ -122,6 +139,27 @@ function initSettings() {
         window.setTheme(e.target.value);
       }
     });
+  }
+
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.onclick = () => Auth.logout();
+  }
+
+  const delBtn = document.getElementById('delete-account-btn');
+  if (delBtn) {
+    delBtn.onclick = async () => {
+      if (!confirm('警告：此操作不可逆！\n您确定要注销账号并删除所有相关数据吗？')) return;
+      if (!confirm('再次确认：注销后将无法找回任何数据，是否继续？')) return;
+      
+      try {
+        const res = await Auth.deleteAccount();
+        alert(res.msg || '账号已成功注销');
+        Auth.logout();
+      } catch (err) {
+        alert('注销失败：' + err.message);
+      }
+    };
   }
 }
 

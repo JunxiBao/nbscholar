@@ -41,11 +41,6 @@ function _animateStat(el, target) {
 }
 
 async function _loadHomeStats() {
-  // 先用 data-to 属性做动画占位
-  document.querySelectorAll('.stat-val[data-to]').forEach(el => {
-    _animateStat(el, +el.dataset.to);
-  });
-
   if (!window.UserAPI || !Auth.isLoggedIn()) return;
 
   try {

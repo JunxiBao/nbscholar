@@ -30,7 +30,7 @@ def register():
         return err('密码长度不能少于 6 位')
 
     if User.query.filter_by(account=account).first():
-        return conflict('该账号已注册，请直接登录')
+        return conflict('该用户名已被占用，请换一个重试')
 
     pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
     user = User(
@@ -70,3 +70,16 @@ def login():
 def logout():
     # JWT 无状态，客户端清除 token 即可
     return ok(msg='已退出登录')
+
+from utils.auth_helper import login_required
+
+@auth_bp.route('/account', methods=['DELETE'])
+@login_required
+def delete_account(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return err('用户不存在')
+    
+    db.session.delete(user)
+    db.session.commit()
+    return ok(msg='账号及所有关联数据已成功注销')

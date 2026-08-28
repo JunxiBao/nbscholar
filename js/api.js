@@ -62,6 +62,10 @@ const Auth = {
     window.location.href = 'login.html';
   },
 
+  async deleteAccount() {
+    return await apiDelete('/api/auth/account');
+  },
+
   getUser() {
     try { return JSON.parse(localStorage.getItem('nbscholar_user')); }
     catch { return null; }
