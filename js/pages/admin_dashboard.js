@@ -263,7 +263,7 @@ function renderCreateForm() {
                     <input type="text" id="ce-title" class="form-input">
                 </div>
                 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div class="form-group">
                         <label class="form-label">主讲人</label>
                         <input type="text" id="ce-speaker" class="form-input">
@@ -274,10 +274,10 @@ function renderCreateForm() {
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div class="form-group">
-                        <label class="form-label">日期时间 * <span style="font-size:12px; font-weight:normal; color:var(--text-tertiary);">(YYYY-MM-DD HH:MM)</span></label>
-                        <input type="text" id="ce-date" class="form-input" placeholder="2026-09-01 14:00">
+                        <label class="form-label">日期时间 *</label>
+                        <input type="datetime-local" id="ce-date" class="form-input">
                     </div>
                     <div class="form-group">
                         <label class="form-label">名额限制</label>
@@ -311,7 +311,7 @@ async function submitCreateEvent() {
         title: document.getElementById('ce-title').value.trim(),
         speaker: document.getElementById('ce-speaker').value.trim(),
         affiliation: document.getElementById('ce-affil').value.trim(),
-        event_date: document.getElementById('ce-date').value.trim(),
+        event_date: document.getElementById('ce-date').value.replace('T', ' '),
         capacity: document.getElementById('ce-capacity').value,
         event_type: document.getElementById('ce-type').value,
         description: document.getElementById('ce-desc').value.trim()

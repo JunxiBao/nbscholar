@@ -458,8 +458,14 @@ function updateIndicators() {
     const tabs = Array.from(document.querySelectorAll('.bottom-tabs .tab-btn'));
     const index = tabs.findIndex(t => t.dataset.tab === currentTab);
     if (index !== -1) {
+      const isFirst = !indicator.style.transform;
+      if (isFirst) indicator.style.transition = 'none';
       indicator.style.transform = `translateX(${index * 100}%)`;
       indicator.className = `tab-indicator ${currentTab}`;
+      if (isFirst) {
+        indicator.offsetHeight; // force reflow
+        indicator.style.transition = '';
+      }
     }
   }
 
@@ -468,9 +474,15 @@ function updateIndicators() {
   if (sidebarIndicator) {
     const activeNavItem = document.querySelector(`.nav-item[data-tab="${currentTab}"]`);
     if (activeNavItem) {
+      const isFirst = !sidebarIndicator.style.transform;
+      if (isFirst) sidebarIndicator.style.transition = 'none';
       sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
       sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
       sidebarIndicator.className = `sidebar-indicator ${currentTab}`;
+      if (isFirst) {
+        sidebarIndicator.offsetHeight; // force reflow
+        sidebarIndicator.style.transition = '';
+      }
     }
   }
 }
