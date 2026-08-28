@@ -25,12 +25,14 @@ mkdir -p $DEPLOY_DIR
 
 # 将当前目录下的前端资源复制到部署目录
 # 确保你是在代码根目录下运行此脚本
-cp -r css js statics pages index.html login.html $DEPLOY_DIR/ 2>/dev/null || true
+cp -r css js statics pages index.html login.html admin.html superadmin.html $DEPLOY_DIR/ 2>/dev/null || true
 
 echo "=> [2/4] 更新 API 地址为 $PROD_API_URL..."
 # 注意: Linux 服务器通常是 GNU sed，不需要 macOS 的 '' 参数
 sed -i "s|http://localhost:5000|$PROD_API_URL|g" $DEPLOY_DIR/js/api.js 2>/dev/null || true
 sed -i "s|http://localhost:5000|$PROD_API_URL|g" $DEPLOY_DIR/js/login.js 2>/dev/null || true
+sed -i "s|http://localhost:5000|$PROD_API_URL|g" $DEPLOY_DIR/js/pages/admin_dashboard.js 2>/dev/null || true
+sed -i "s|http://localhost:5000|$PROD_API_URL|g" $DEPLOY_DIR/js/pages/superadmin_dashboard.js 2>/dev/null || true
 
 echo "=> [3/4] 检查并安装 Nginx..."
 if ! command -v nginx &> /dev/null; then

@@ -1,5 +1,7 @@
 // js/pages/superadmin_dashboard.js
 
+const API_BASE = 'http://localhost:5000';
+
 function showToast(msg, type='info') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -51,7 +53,7 @@ async function doAdminLogin() {
     if(!acc || !pwd) return showToast('请输入账号和密码', 'error');
     
     try {
-        const res = await fetch('/api/admin_auth/login', {
+        const res = await fetch(`${API_BASE}/api/admin_auth/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({account: acc, password: pwd})
@@ -98,7 +100,7 @@ async function loadPendingAdmins() {
     container.innerHTML = '<div style="padding:20px; color:var(--text-sub);">加载中...</div>';
     
     try {
-        const res = await fetch('/api/admin/pending', {
+        const res = await fetch(`${API_BASE}/api/admin/pending`, {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
         });
         const data = await res.json();
@@ -162,7 +164,7 @@ async function approveAdmin(id, status) {
     if(!confirm(`确定要${status==='approved'?'同意':'拒绝'}该管理员的申请吗？`)) return;
     
     try {
-        const res = await fetch(`/api/admin/approve/${id}`, {
+        const res = await fetch(`${API_BASE}/api/admin/approve/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

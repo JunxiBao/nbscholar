@@ -1,5 +1,9 @@
 // js/pages/admin_dashboard.js
 
+let _editId = null;
+
+const API_BASE = 'http://localhost:5000';
+
 function showToast(msg, type='info') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -74,7 +78,7 @@ async function doAdminLogin() {
     if(!acc || !pwd) return showToast('请输入账号和密码', 'error');
     
     try {
-        const res = await fetch('/api/admin_auth/login', {
+        const res = await fetch(`${API_BASE}/api/admin_auth/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({account: acc, password: pwd})
@@ -103,7 +107,7 @@ async function doAdminRegister() {
     if(pwd !== pwd2) return showToast('两次输入的密码不一致', 'error');
     
     try {
-        const res = await fetch('/api/admin_auth/register', {
+        const res = await fetch(`${API_BASE}/api/admin_auth/register`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({account: acc, password: pwd, remark: remark})
@@ -158,7 +162,7 @@ async function loadAdminEvents() {
     main.innerHTML = '<div style="padding:20px;">加载中...</div>';
     
     try {
-        const res = await fetch('/api/admin/training', {
+        const res = await fetch(`${API_BASE}/api/admin/training`, {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
         });
         const data = await res.json();
@@ -275,7 +279,7 @@ async function submitCreateEvent() {
     if(!payload.title || !payload.event_date) return showToast('请填写必填项', 'error');
 
     try {
-        const res = await fetch('/api/admin/training', {
+        const res = await fetch(`${API_BASE}/api/admin/training`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -298,7 +302,7 @@ async function submitCreateEvent() {
 async function deleteEvent(id) {
     if(!confirm('确定要删除该活动吗？此操作不可恢复。')) return;
     try {
-        const res = await fetch(`/api/admin/training/${id}`, {
+        const res = await fetch(`${API_BASE}/api/admin/training/${id}`, {
             method: 'DELETE',
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
         });
@@ -316,7 +320,7 @@ async function deleteEvent(id) {
 
 async function viewEnrollments(eventId) {
     try {
-        const res = await fetch(`/api/admin/training/${eventId}/enrollments`, {
+        const res = await fetch(`${API_BASE}/api/admin/training/${eventId}/enrollments`, {
             headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
         });
         const data = await res.json();
