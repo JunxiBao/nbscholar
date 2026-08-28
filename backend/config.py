@@ -25,6 +25,10 @@ class Config:
     # ---- JWT ----
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'CHANGE_ME_IN_PRODUCTION_abc123')
     JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24 * 7   # 7 天（秒）
+    
+    # ---- Super Admin ----
+    SUPER_ADMIN_ACCOUNT  = os.getenv('SUPER_ADMIN_ACCOUNT', 'superadmin')
+    SUPER_ADMIN_PASSWORD = os.getenv('SUPER_ADMIN_PASSWORD', '123456')
 
     # ---- DeepSeek ----
     DEEPSEEK_API_KEY  = os.getenv('DEEPSEEK_API_KEY', 'your_deepseek_key_here')

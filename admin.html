@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="甬学阁 — 培训管理员控制台" />
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1C1C1E" media="(prefers-color-scheme: dark)" />
+  <link id="favicon" rel="icon" type="image/png" href="statics/images/lighticon.png?v=3" />
+  <title>甬学阁 — 培训管理员控制台</title>
+
+  <!-- Ionic -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <!-- 图标库 -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/login.css" />
+
+  <style>
+    html { background: var(--bg-base, #F5F5F7); }
+    html[data-theme="dark"] { background: #000000; color-scheme: dark; }
+    html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell" id="app-shell" style="display:none;">
+  <!-- ===== 左侧边栏 (宽屏可见) ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img class="app-logo logo-light" src="statics/images/lighticon.png" alt="Logo">
+      <img class="app-logo logo-dark" src="statics/images/darkicon.png" alt="Logo">
+      <h1 class="app-title" style="margin-left:8px;">甬学阁后台</h1>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">培训管理</div>
+      <div class="nav-item active" data-tab="tab-admin-events">
+        <ion-icon name="list-outline"></ion-icon>活动列表
+      </div>
+      <div class="nav-item" data-tab="tab-admin-create">
+        <ion-icon name="add-circle-outline"></ion-icon>发布活动
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ===== 主区域 ===== -->
+  <div class="main-area">
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <div class="topbar-logo" style="display:flex;">
+        <span class="topbar-brand">培训管理员控制台</span>
+      </div>
+      <div class="topbar-page-title" id="topbar-title">管理员控制台</div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="logoutAdmin()" title="退出登录" style="background:var(--card-bg); border-radius:8px; padding:0 12px; font-size:14px; font-weight:600; color:var(--text-main);">
+          退出登录
+        </button>
+      </div>
+    </header>
+
+    <!-- 页面内容 -->
+    <main class="page-content" id="main-content">
+      <!-- 动态注入 -->
+    </main>
+  </div>
+</div>
+
+<!-- ===== 登录/注册层 ===== -->
+<div id="auth-layer" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:var(--bg-base); display:flex; justify-content:center; align-items:center; overflow-y:auto;">
+  <div class="login-page-wrap" style="width:100%; max-width:420px; padding:20px;">
+    
+    <div class="card-flip-container" id="cardFlipContainer">
+      <div class="card-flipper">
+      
+        <!-- 正面：登录模块 -->
+        <div class="card-face card-front" id="admin-login-form">
+      <div class="login-header">
+        <img class="login-logo" src="statics/images/lighticon.png" alt="Logo">
+        <div class="login-title">管理员登录</div>
+        <div class="login-subtitle">仅限获得授权的培训管理员访问</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">账号</label>
+        <input type="text" id="admin-login-account" class="form-input" placeholder="请输入账号">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <div class="password-input-wrapper">
+          <input type="password" id="admin-login-pwd" class="form-input" placeholder="请输入密码">
+          <span class="password-toggle-icon" onclick="togglePasswordVisibility('admin-login-pwd', this)" title="显示/隐藏密码">
+            <ion-icon name="eye-off-outline"></ion-icon>
+          </span>
+        </div>
+      </div>
+      <button onclick="doAdminLogin()" class="btn-submit" style="margin-top:10px;">
+        <ion-icon name="log-in-outline"></ion-icon>
+        <span>登录控制台</span>
+      </button>
+      
+      <div class="switch-link">
+        没有账号？ <a onclick="toggleAdminAuthMode('register')">申请注册管理员</a>
+      </div>
+      <div class="login-footer">
+        <a href="index.html" style="color:var(--text-secondary); text-decoration:none;">&larr; 返回普通用户端首页</a>
+      </div>
+    </div>
+    
+    <!-- 背面：注册模块 -->
+    <div class="card-face card-back" id="admin-register-form">
+      <div class="login-header">
+        <img class="login-logo" src="statics/images/lighticon.png" alt="Logo">
+        <div class="login-title">申请管理员账号</div>
+        <div class="login-subtitle">提交申请后需超级管理员审核</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">申请账号</label>
+        <input type="text" id="admin-reg-account" class="form-input" placeholder="请输入申请的账号">
+      </div>
+      <div class="row-group">
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="admin-reg-pwd" class="form-input" placeholder="不少于6位">
+            <span class="password-toggle-icon" onclick="togglePasswordVisibility('admin-reg-pwd', this)" title="显示/隐藏密码">
+              <ion-icon name="eye-off-outline"></ion-icon>
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">确认密码</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="admin-reg-pwd2" class="form-input" placeholder="请再次输入">
+            <span class="password-toggle-icon" onclick="togglePasswordVisibility('admin-reg-pwd2', this)" title="显示/隐藏密码">
+              <ion-icon name="eye-off-outline"></ion-icon>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">申请备注</label>
+        <textarea id="admin-reg-remark" class="form-input" rows="2" placeholder="如：我是xx部门的xx，申请培训管理权限" style="resize:vertical;"></textarea>
+      </div>
+      
+      <button onclick="doAdminRegister()" class="btn-submit" style="margin-top:10px;">
+        <ion-icon name="paper-plane-outline"></ion-icon>
+        <span>提交申请</span>
+      </button>
+      
+      <div class="switch-link">
+        已有账号？ <a onclick="toggleAdminAuthMode('login')">返回登录</a>
+      </div>
+    </div>
+
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Notification Component (Global) -->
+<div id="toast-container" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:99999; display:flex; flex-direction:column; gap:8px;"></div>
+
+<script src="js/pages/admin_dashboard.js"></script>
+<script>
+  // Logo Theme Toggle
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+  const logoImgs = document.querySelectorAll('.login-logo');
+  function updateLogo(e) {
+    const src = e.matches ? 'statics/images/darkicon.png' : 'statics/images/lighticon.png';
+    const scale = e.matches ? 'scale(1.2)' : 'scale(1)';
+    logoImgs.forEach(img => {
+      img.src = src;
+      img.style.transform = scale;
+    });
+    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+  }
+  prefersDark.addEventListener('change', updateLogo);
+  updateLogo(prefersDark);
+</script>
+</body>
+</html>

@@ -18,6 +18,8 @@ from routes.history  import history_bp
 from routes.training import training_bp
 from routes.journal  import journal_bp
 from routes.tools    import tools_bp
+from routes.admin_auth import admin_auth_bp
+from routes.admin    import admin_bp
 
 
 def create_app():
@@ -32,7 +34,8 @@ def create_app():
 
     # ---- 注册蓝图 ----
     for bp in (auth_bp, user_bp, search_bp, favorites_bp,
-               history_bp, training_bp, journal_bp, tools_bp):
+               history_bp, training_bp, journal_bp, tools_bp,
+               admin_auth_bp, admin_bp):
         app.register_blueprint(bp)
 
     # ---- 健康检查 ----
@@ -49,6 +52,23 @@ def create_app():
     # ---- 建表（开发模式自动建表） ----
     with app.app_context():
         db.create_all()
+        # 初始化默认超级管理员
+        from models import AdminUser
+        sa_account = app.config.get('SUPER_ADMIN_ACCOUNT', 'superadmin')
+        sa_password = app.config.get('SUPER_ADMIN_PASSWORD', '123456')
+        
+        if not AdminUser.query.filter_by(account=sa_account).first():
+            pw_hash = bcrypt.generate_password_hash(sa_password).decode('utf-8')
+            super_admin = AdminUser(
+                account=sa_account,
+                password=pw_hash,
+                name='默认超级管理员',
+                role='super_admin',
+                status='approved'
+            )
+            db.session.add(super_admin)
+            db.session.commit()
+            print(f"【系统提示】默认超级管理员账号已创建：{sa_account} / {sa_password}")
 
     return app
 

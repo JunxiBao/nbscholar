@@ -48,6 +48,16 @@ if [ ! -f "$ENV_FILE" ]; then
         DEEPSEEK_KEY="your_deepseek_key_here"
     fi
 
+    read -p "请输入超级管理员账号 [直接回车默认为 superadmin]: " SA_ACCOUNT
+    if [ -z "$SA_ACCOUNT" ]; then
+        SA_ACCOUNT="superadmin"
+    fi
+
+    read -p "请输入超级管理员密码 [直接回车默认为 123456]: " SA_PASSWORD
+    if [ -z "$SA_PASSWORD" ]; then
+        SA_PASSWORD="123456"
+    fi
+
     # 写入 .env 文件
     cat > "$ENV_FILE" << EOF
 DB_USER=nbscholar
@@ -58,6 +68,8 @@ DB_NAME=nbscholar
 
 JWT_SECRET_KEY=$JWT_KEY
 DEEPSEEK_API_KEY=$DEEPSEEK_KEY
+SUPER_ADMIN_ACCOUNT=$SA_ACCOUNT
+SUPER_ADMIN_PASSWORD=$SA_PASSWORD
 EOF
     echo "✅ 配置文件 $ENV_FILE 已自动生成！"
     
@@ -90,6 +102,25 @@ EOF
     echo "✅ 数据库 nbscholar 及其专属账号配置完成！"
 else
     echo "✅ 检测到已存在 .env 配置文件，跳过基础配置与数据库重置。"
+    
+    # 兼容升级：如果存在的 .env 中没有超级管理员配置，则追加
+    if ! grep -q "SUPER_ADMIN_ACCOUNT" "$ENV_FILE"; then
+        echo "发现旧版本 .env 缺少超级管理员配置，开始补充..."
+        read -p "请输入超级管理员账号 [直接回车默认为 superadmin]: " SA_ACCOUNT
+        if [ -z "$SA_ACCOUNT" ]; then
+            SA_ACCOUNT="superadmin"
+        fi
+
+        read -p "请输入超级管理员密码 [直接回车默认为 123456]: " SA_PASSWORD
+        if [ -z "$SA_PASSWORD" ]; then
+            SA_PASSWORD="123456"
+        fi
+        
+        echo "" >> "$ENV_FILE"
+        echo "SUPER_ADMIN_ACCOUNT=$SA_ACCOUNT" >> "$ENV_FILE"
+        echo "SUPER_ADMIN_PASSWORD=$SA_PASSWORD" >> "$ENV_FILE"
+        echo "✅ 超级管理员配置已追加到 $ENV_FILE"
+    fi
 fi
 
 echo "=> [2/5] 正在检测并配置 Python 运行环境..."

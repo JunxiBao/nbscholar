@@ -244,3 +244,28 @@ class ChatMessage(db.Model):
             'content':    self.content,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
         }
+
+
+class AdminUser(db.Model):
+    __tablename__ = 'admin_users'
+
+    id          = db.Column(db.Integer, primary_key=True)
+    account     = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    password    = db.Column(db.String(255), nullable=False)
+    role        = db.Column(db.String(20), default='admin') # super_admin or admin
+    status      = db.Column(db.String(20), default='pending') # pending, approved, rejected
+    name        = db.Column(db.String(60), default='')
+    remark      = db.Column(db.String(500), default='')
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id':         self.id,
+            'account':    self.account,
+            'role':       self.role,
+            'status':     self.status,
+            'name':       self.name,
+            'remark':     self.remark,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
+        }
+

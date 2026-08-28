@@ -37,6 +37,8 @@ def login_required(f):
         payload = decode_token(token)
         if payload is None:
             return unauthorized('token 无效或已过期')
+        if 'user_id' not in payload:
+            return unauthorized('此操作需要普通用户账号，您当前可能是管理员账号。')
         g.user_id = payload['user_id']
         return f(*args, **kwargs)
     return decorated
@@ -48,6 +50,48 @@ def optional_login(f):
     def decorated(*args, **kwargs):
         token = get_token()
         payload = decode_token(token) if token else None
-        g.user_id = payload['user_id'] if payload else None
+        g.user_id = payload.get('user_id') if payload else None
+        return f(*args, **kwargs)
+    return decorated
+
+
+def admin_required(f):
+    """路由装饰器：要求管理员权限"""
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        token = get_token()
+        if not token:
+            return unauthorized('未提供认证 token')
+        payload = decode_token(token)
+        if payload is None:
+            return unauthorized('token 无效或已过期')
+        if 'admin_id' not in payload:
+            return unauthorized('无管理员权限')
+        if payload.get('role') not in ['admin', 'super_admin']:
+            return unauthorized('角色不匹配')
+        
+        g.admin_id = payload['admin_id']
+        g.role = payload['role']
+        return f(*args, **kwargs)
+    return decorated
+
+
+def super_admin_required(f):
+    """路由装饰器：要求超级管理员权限"""
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        token = get_token()
+        if not token:
+            return unauthorized('未提供认证 token')
+        payload = decode_token(token)
+        if payload is None:
+            return unauthorized('token 无效或已过期')
+        if 'admin_id' not in payload:
+            return unauthorized('无管理员权限')
+        if payload.get('role') != 'super_admin':
+            return unauthorized('需要超级管理员权限')
+        
+        g.admin_id = payload['admin_id']
+        g.role = payload['role']
         return f(*args, **kwargs)
     return decorated
