@@ -66,6 +66,18 @@ const Auth = {
     return await apiDelete('/api/auth/account');
   },
 
+  async updateProfile(data) {
+    const res = await apiPut('/api/auth/profile', data);
+    if (res.data && res.data.user) {
+      localStorage.setItem('nbscholar_user', JSON.stringify(res.data.user));
+    }
+    return res;
+  },
+
+  async updatePassword(new_password) {
+    return await apiPut('/api/auth/password', { new_password });
+  },
+
   getUser() {
     try { return JSON.parse(localStorage.getItem('nbscholar_user')); }
     catch { return null; }

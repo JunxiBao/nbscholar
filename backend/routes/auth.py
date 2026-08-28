@@ -84,3 +84,37 @@ def delete_account():
     db.session.delete(user)
     db.session.commit()
     return ok(msg='账号及所有关联数据已成功注销')
+
+@auth_bp.route('/profile', methods=['PUT'])
+@login_required
+def update_profile():
+    from flask import g
+    user = User.query.get(g.user_id)
+    if not user:
+        return err('用户不存在')
+    
+    data = request.get_json(silent=True) or {}
+    if 'institution' in data:
+        user.institution = data['institution'].strip()
+    
+    db.session.commit()
+    return ok({'user': user.to_dict()}, msg='资料已更新')
+
+@auth_bp.route('/password', methods=['PUT'])
+@login_required
+def update_password():
+    from flask import g
+    user = User.query.get(g.user_id)
+    if not user:
+        return err('用户不存在')
+    
+    data = request.get_json(silent=True) or {}
+    new_password = data.get('new_password')
+    
+    if not new_password or len(new_password) < 6:
+        return err('新密码长度不能少于 6 位')
+        
+    pw_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    user.password = pw_hash
+    db.session.commit()
+    return ok(msg='密码已成功修改')

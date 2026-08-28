@@ -176,6 +176,17 @@ function initEcharts(type = 'line', data = null) {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'axis' },
     legend: { data: _visData ? _visData.legend : [] },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: { yAxisIndex: 'none' },
+        saveAsImage: { show: true, title: '导出图片' }
+      }
+    },
+    dataZoom: [
+      { type: 'inside' },
+      { type: 'slider', bottom: 10 }
+    ],
     xAxis: { type: 'category', data: _visData ? _visData.xAxis : [] },
     yAxis: { type: 'value' },
     series: _visData ? _visData.series.map(s => ({ ...s, type, smooth: true })) : [],

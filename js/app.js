@@ -141,6 +141,25 @@ function initSettings() {
     });
   }
 
+  // 修改密码逻辑
+  const updatePwdBtn = document.getElementById('settings-update-pwd-btn');
+  if (updatePwdBtn) {
+    updatePwdBtn.onclick = async () => {
+      const p1 = document.getElementById('settings-new-pwd').value;
+      const p2 = document.getElementById('settings-confirm-pwd').value;
+      if (!p1 || p1.length < 6) return showToast('新密码长度不能少于 6 位');
+      if (p1 !== p2) return showToast('两次输入的密码不一致');
+      
+      try {
+        const res = await Auth.updatePassword(p1);
+        showToast(res.msg || '密码修改成功，请重新登录');
+        setTimeout(() => Auth.logout(), 1500);
+      } catch (err) {
+        showToast('修改失败：' + err.message);
+      }
+    };
+  }
+
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.onclick = () => Auth.logout();
@@ -186,7 +205,25 @@ function initSettings() {
       }
     };
   }
+
+  // 确保动态加载 settings.html 后渲染数据
+  if (window.updateUserInfoUI) window.updateUserInfoUI();
 }
+
+window.editInstitution = async () => {
+  const user = Auth.getUser();
+  if (!user) return;
+  const newInst = prompt('请输入您的新所属机构：', user.institution || '');
+  if (newInst === null || newInst.trim() === user.institution) return;
+  
+  try {
+    await Auth.updateProfile({ institution: newInst.trim() });
+    showToast('所属机构已更新');
+    if (window.updateUserInfoUI) window.updateUserInfoUI();
+  } catch (e) {
+    showToast('更新失败：' + e.message);
+  }
+};
 
 // ===== 侧边栏收藏数更新 =====
 window.updateNavFavCount = async function() {

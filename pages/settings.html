@@ -5,21 +5,38 @@
   <div class="section-label fade-up">账户信息</div>
   <div class="list-group fade-up" id="settings-user-info">
     <div class="list-row">
-      <div class="list-icon" id="settings-avatar-wrapper" style="background:var(--blue-600);overflow:hidden;">
+      <div class="list-icon" id="settings-avatar-wrapper" style="background:var(--blue-600);overflow:hidden;border-radius:50%;">
         <ion-icon name="person-outline" id="settings-avatar-icon"></ion-icon>
-        <img id="settings-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;" />
+        <img id="settings-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;" />
       </div>
       <div class="list-text">
         <div class="list-title" id="settings-name">加载中...</div>
         <div class="list-subtitle" id="settings-account"></div>
       </div>
     </div>
-    <div class="list-row">
+    <div class="list-row" onclick="window.editInstitution && window.editInstitution()">
       <ion-icon name="business-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
       <div class="list-text">
         <div class="list-title" id="settings-institution">-</div>
         <div class="list-subtitle">所属机构</div>
       </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+    </div>
+  </div>
+
+  <!-- 安全设置 -->
+  <div class="section-label fade-up">安全设置</div>
+  <div class="list-group fade-up" style="padding:16px;">
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <input type="password" id="settings-new-pwd" placeholder="请输入新密码（至少6位）"
+        style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" 
+        onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
+      <input type="password" id="settings-confirm-pwd" placeholder="请再次确认新密码"
+        style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" 
+        onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
+      <button class="btn btn-primary" id="settings-update-pwd-btn" style="border-radius:var(--r-md); width:100%;">
+        更新密码
+      </button>
     </div>
   </div>
 
@@ -59,13 +76,13 @@
 
   <!-- 退出登录 -->
   <div style="margin:24px 16px 0; display: flex; flex-wrap: wrap; gap: 12px;">
-    <button class="btn btn-full" id="logout-btn"
-      style="flex: 1; min-width: 120px; background:#EF4444;color:#FFFFFF;border:none;padding:12px 0;border-radius:var(--r-md);">
+    <button class="btn btn-secondary" id="logout-btn"
+      style="flex: 1; min-width: 120px; border-radius:var(--r-md);">
       <ion-icon name="log-out-outline" style="font-size:18px;margin-right:6px;"></ion-icon>
       退出登录
     </button>
-    <button class="btn btn-full" id="delete-account-btn"
-      style="flex: 1; min-width: 120px; background:transparent;color:#EF4444;border:1px solid #EF4444;padding:12px 0;border-radius:var(--r-md);">
+    <button class="btn btn-secondary" id="delete-account-btn"
+      style="flex: 1; min-width: 120px; border-radius:var(--r-md); color:var(--red-500);">
       <ion-icon name="warning-outline" style="font-size:18px;margin-right:6px;"></ion-icon>
       注销账号
     </button>
@@ -73,15 +90,22 @@
   <div style="height:32px;"></div>
 
   <!-- 账号注销二次确认弹窗 -->
-  <div id="delete-confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
-    <div style="background:var(--bg-primary); width:320px; border-radius:var(--r-lg); padding:24px; box-shadow:var(--shadow-lg); text-align:center;" class="fade-up">
-      <ion-icon name="alert-circle-outline" style="font-size:48px; color:var(--red-500); margin-bottom:16px;"></ion-icon>
-      <h3 style="margin:0 0 12px 0; font-size:18px; color:var(--text-primary); font-weight:600;" id="delete-modal-title">危险操作确认</h3>
+  <div id="delete-confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:var(--bg-elevated); width:320px; border-radius:var(--r-lg); padding:24px; box-shadow:var(--shadow-xl); border:1px solid var(--separator); text-align:center; transform:scale(0.95); animation:modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <div style="width:48px; height:48px; border-radius:50%; background:rgba(239,68,68,0.1); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+        <ion-icon name="alert-outline" style="font-size:24px; color:var(--red-500);"></ion-icon>
+      </div>
+      <h3 style="margin:0 0 8px 0; font-size:17px; color:var(--text-primary); font-weight:600;" id="delete-modal-title">危险操作确认</h3>
       <p style="margin:0 0 24px 0; font-size:14px; color:var(--text-secondary); line-height:1.5;" id="delete-modal-desc">您确定要注销账号并删除所有相关数据吗？此操作不可逆！</p>
       <div style="display:flex; gap:12px;">
         <button class="btn btn-secondary" style="flex:1; border-radius:var(--r-md);" onclick="window.closeDeleteModal && window.closeDeleteModal()">取消</button>
-        <button class="btn" style="flex:1; background:var(--red-500); color:white; border:none; border-radius:var(--r-md);" id="delete-modal-confirm-btn">确定</button>
+        <button class="btn" style="flex:1; background:var(--red-500); color:white; border:none; border-radius:var(--r-md); box-shadow:0 2px 4px rgba(239,68,68,0.2);" id="delete-modal-confirm-btn">确定</button>
       </div>
     </div>
   </div>
 </div>
+<style>
+@keyframes modalPopIn {
+  to { transform: scale(1); }
+}
+</style>
