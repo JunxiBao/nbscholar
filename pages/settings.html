@@ -1,15 +1,41 @@
+<!-- 偏好设置 -->
 <div class="page-1col">
-  <div class="section-label fade-up d1">偏好设置</div>
-  
+
+  <!-- 用户信息 -->
+  <div class="section-label fade-up">账户信息</div>
+  <div class="list-group fade-up" id="settings-user-info">
+    <div class="list-row">
+      <div class="list-icon" style="background:var(--blue-600);">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div class="list-text">
+        <div class="list-title" id="settings-name">加载中...</div>
+        <div class="list-subtitle" id="settings-account"></div>
+      </div>
+    </div>
+    <div class="list-row">
+      <ion-icon name="business-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
+      <div class="list-text">
+        <div class="list-title" id="settings-institution">-</div>
+        <div class="list-subtitle">所属机构</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 外观 -->
+  <div class="section-label fade-up d1">外观</div>
   <div class="list-group fade-up d1">
     <div class="list-row">
       <ion-icon name="color-palette-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
       <div class="list-text">
-        <div class="list-title">主题设置</div>
+        <div class="list-title">主题模式</div>
         <div class="list-subtitle">选择界面的深浅色模式</div>
       </div>
       <div>
-        <select id="theme-select" style="background:transparent;border:1px solid var(--separator);border-radius:var(--r-sm);color:var(--text-primary);font-size:13px;padding:4px 8px;outline:none;" onchange="window.setTheme && window.setTheme(this.value)">
+        <select id="theme-select"
+          style="background:transparent;border:1px solid var(--separator);border-radius:var(--r-sm);
+                 color:var(--text-primary);font-size:13px;padding:4px 8px;outline:none;"
+          onchange="window.setTheme && window.setTheme(this.value)">
           <option value="system">跟随系统</option>
           <option value="dark">深色</option>
           <option value="light">浅色</option>
@@ -18,7 +44,25 @@
     </div>
   </div>
 
-  <div style="margin: 16px 16px 0;">
-    <button class="btn btn-full" style="background:#EF4444;color:#FFFFFF;border:none;" onclick="showToast('已退出登录')">退出登录</button>
+  <!-- 关于 -->
+  <div class="section-label fade-up d2">关于</div>
+  <div class="list-group fade-up d2">
+    <div class="list-row">
+      <ion-icon name="information-circle-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
+      <div class="list-text">
+        <div class="list-title">甬学阁</div>
+        <div class="list-subtitle">一站式科研信息服务门户 v1.0</div>
+      </div>
+    </div>
   </div>
+
+  <!-- 退出登录 -->
+  <div style="margin:24px 16px 0;">
+    <button class="btn btn-full" id="logout-btn"
+      style="background:#EF4444;color:#FFFFFF;border:none;padding:12px 0;border-radius:var(--r-md);">
+      <ion-icon name="log-out-outline" style="font-size:18px;margin-right:6px;"></ion-icon>
+      退出登录
+    </button>
+  </div>
+  <div style="height:32px;"></div>
 </div>

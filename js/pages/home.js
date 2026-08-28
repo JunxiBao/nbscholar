@@ -1,31 +1,120 @@
 // ===== 首页 =====
 function initHome() {
+  // 问候语
   const hour = new Date().getHours();
   let greeting = '晚上好';
-  if (hour >= 5 && hour < 12) greeting = '早上好';
+  if (hour >= 5 && hour < 12)      greeting = '早上好';
   else if (hour >= 12 && hour < 14) greeting = '中午好';
   else if (hour >= 14 && hour < 18) greeting = '下午好';
   const greetingEl = document.getElementById('greeting-text');
   if (greetingEl) greetingEl.textContent = greeting;
 
-  // 数字滚动动画
-  document.querySelectorAll('.stat-val[data-to]').forEach(el => {
-    const target = +el.dataset.to;
-    const start = performance.now();
-    const dur = 900;
-    function tick(now) {
-      const p = Math.min((now - start) / dur, 1);
-      el.textContent = Math.floor(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  });
-
+  // 搜索跳转
   const inp = document.getElementById('hero-search');
   const btn = document.getElementById('hero-search-btn');
   if (btn) btn.addEventListener('click', () => switchTab('tab-search'));
   if (inp) inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') switchTab('tab-search');
   });
+
+  // 从 API 加载统计数据
+  _loadHomeStats();
+  // 加载最近检索
+  _loadRecentHistory();
+  // 加载收藏预览
+  _loadFavoritesPreview();
 }
 
+// 数字滚动动画
+function _animateStat(el, target) {
+  const dur   = 900;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = Math.floor(target * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+async function _loadHomeStats() {
+  // 先用 data-to 属性做动画占位
+  document.querySelectorAll('.stat-val[data-to]').forEach(el => {
+    _animateStat(el, +el.dataset.to);
+  });
+
+  if (!window.UserAPI || !Auth.isLoggedIn()) return;
+
+  try {
+    const { data } = await UserAPI.getStats();
+    const map = {
+      history_count:    0,
+      favorites_count:  1,
+      enrollment_count: 2,
+    };
+    const cards = document.querySelectorAll('.stat-val');
+    Object.entries(map).forEach(([key, idx]) => {
+      if (cards[idx] && data[key] !== undefined) {
+        _animateStat(cards[idx], data[key]);
+      }
+    });
+  } catch (e) {
+    // 保持占位动画，不影响界面
+    console.warn('Stats load failed:', e.message);
+  }
+}
+
+async function _loadRecentHistory() {
+  if (!window.HistoryAPI || !Auth.isLoggedIn()) return;
+
+  try {
+    const { data } = await HistoryAPI.list({ limit: 3 });
+    const container = document.querySelector('.list-group.fade-up.d3');
+    if (!container || !data.history.length) return;
+
+    container.innerHTML = data.history.map(h => `
+      <div class="list-row" onclick="switchTab('tab-search')">
+        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
+        <div class="list-text"><div class="list-title">${_esc(h.keyword)}</div></div>
+        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.warn('History load failed:', e.message);
+  }
+}
+
+async function _loadFavoritesPreview() {
+  if (!window.FavoritesAPI || !Auth.isLoggedIn()) return;
+
+  try {
+    const { data } = await FavoritesAPI.list({ limit: 1 });
+    const sec = document.querySelector('.section-label.fade-up.d4 .section-label-action');
+    if (sec && data.total) sec.textContent = `全部 ${data.total} 篇`;
+
+    const card = document.querySelector('.paper-card.fade-up.d4');
+    if (!card || !data.favorites.length) return;
+
+    const fav = data.favorites[0];
+    card.innerHTML = `
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <span class="chip chip-blue">${_esc(fav.source || '文献')}</span>
+        ${fav.impact_factor ? `<span class="chip chip-green">IF ${fav.impact_factor}</span>` : ''}
+      </div>
+      <div class="paper-title">${_esc(fav.title)}</div>
+      <div class="paper-meta">${_esc(fav.authors || '')} · ${_esc(fav.journal || '')} · ${fav.year || ''}</div>
+      <div class="paper-abstract">${_esc((fav.abstract || '').slice(0, 100))}…</div>
+      <div class="paper-actions">
+        <button class="btn btn-muted btn-sm" onclick="switchTab('tab-favorites')">查看收藏夹</button>
+      </div>
+    `;
+  } catch (e) {
+    console.warn('Favorites preview load failed:', e.message);
+  }
+}
+
+function _esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}

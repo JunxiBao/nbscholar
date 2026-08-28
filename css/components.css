@@ -550,18 +550,28 @@ ion-segment-button {
 .d4 { animation-delay:.20s; }
 
 /* ===== Toast ===== */
-#toast {
-  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-  background:rgba(28,28,30,0.92);color:white;
-  padding:10px 20px;border-radius:var(--r-full);
-  font-size:14px;font-family:var(--font);z-index:9999;
-  white-space:nowrap;box-shadow:var(--shadow-lg);
-  pointer-events:none;animation:fadeUp 0.2s ease;
+@keyframes toastFadeUp {
+  from { opacity:0; transform: translate(-50%, 10px); }
+  to   { opacity:1; transform: translate(-50%, 0); }
 }
 
-[data-theme="dark"] #toast { background:rgba(44,44,46,0.96); }
+#toast {
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:#FFFFFF;color:#111827;
+  padding:14px 28px;border-radius:var(--r-full);
+  font-size:14px;font-family:var(--font);font-weight:600;
+  z-index:9999;white-space:nowrap;
+  box-shadow:0 12px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.08);
+  pointer-events:none;animation:toastFadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display:flex;align-items:center;gap:8px;
+}
 
-@media(min-width:900px){ #toast { bottom:24px; } }
+[data-theme="dark"] #toast { 
+  background:#1F2937;color:#F9FAFB;
+  box-shadow:0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+@media(min-width:900px){ #toast { bottom:32px; } }
 
 /* ===== 暗色 input/textarea 修正 ===== */
 input, textarea {

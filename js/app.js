@@ -125,6 +125,27 @@ function initSettings() {
   }
 }
 
+// ===== 侧边栏收藏数更新 =====
+window.updateNavFavCount = async function() {
+  const countEl = document.getElementById('nav-fav-count');
+  if (!countEl) return;
+  if (!window.Auth || !Auth.isLoggedIn()) {
+    countEl.style.display = 'none';
+    return;
+  }
+  try {
+    const { data } = await FavoritesAPI.list({ limit: 1 });
+    if (data.total > 0) {
+      countEl.textContent = data.total;
+      countEl.style.display = 'inline-flex';
+    } else {
+      countEl.style.display = 'none';
+    }
+  } catch (e) {
+    countEl.style.display = 'none';
+  }
+};
+
 // ===== Toast =====
 function showToast(msg, duration = 2500) {
   const el = document.getElementById('toast');
@@ -133,7 +154,7 @@ function showToast(msg, duration = 2500) {
   el.style.display = 'block';
   el.style.animation = 'none';
   el.offsetHeight;
-  el.style.animation = 'fadeUp 0.2s ease';
+  el.style.animation = 'toastFadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
   clearTimeout(el._t);
   el._t = setTimeout(() => { el.style.display = 'none'; }, duration);
 }
@@ -151,6 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 加载首页并触发高亮动画
   currentTab = null;
   switchTab('tab-home');
+  
+  if (window.updateNavFavCount) window.updateNavFavCount();
 });
 
 function updateIndicators() {

@@ -1,30 +1,15 @@
-<div class="page-1col">
-  <div class="section-label fade-up d1">检索历史</div>
-  
-  <div class="list-group fade-up d1">
-    <div class="list-row" onclick="document.getElementById('hero-search').value='Transformer 注意力机制'; switchTab('tab-search')">
-      <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-      <div class="list-text"><div class="list-title">Transformer 注意力机制综述</div><div class="list-subtitle">2026-08-27 10:30</div></div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-    <div class="list-row" onclick="document.getElementById('hero-search').value='CRISPR 基因编辑'; switchTab('tab-search')">
-      <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-      <div class="list-text"><div class="list-title">CRISPR 基因编辑安全性评估</div><div class="list-subtitle">2026-08-26 14:15</div></div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-    <div class="list-row" onclick="document.getElementById('hero-search').value='碳捕获与封存'; switchTab('tab-search')">
-      <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-      <div class="list-text"><div class="list-title">碳捕获与封存技术进展 2024</div><div class="list-subtitle">2026-08-25 09:20</div></div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-    <div class="list-row" onclick="document.getElementById('hero-search').value='深度强化学习'; switchTab('tab-search')">
-      <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-      <div class="list-text"><div class="list-title">深度强化学习在机器人控制中的应用</div><div class="list-subtitle">2026-08-24 16:45</div></div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-  </div>
-  
-  <div style="text-align: center; margin-top: 16px;">
-    <button class="btn btn-muted btn-sm" onclick="showToast('已清空检索历史')">清空历史记录</button>
+<!-- 检索历史 -->
+<div class="section-label" style="margin-top:8px;">
+  检索历史
+  <span class="section-label-action" id="hist-clear-btn" style="color:var(--red-500);">清空历史</span>
+</div>
+
+<div id="hist-list">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:60px 16px;gap:12px;color:var(--text-tertiary);">
+    <ion-icon name="time-outline" style="font-size:48px;"></ion-icon>
+    <p style="font-size:14px;margin:0;">暂无检索记录</p>
   </div>
 </div>
+
+<div style="height:24px;"></div>

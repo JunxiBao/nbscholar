@@ -1,32 +1,15 @@
-<div class="page-1col">
-  <div class="section-label fade-up d1">我的收藏 (58)</div>
-  <div class="list-group fade-up d1" style="background:var(--bg-elevated); padding: 16px; border-radius: var(--r-lg);">
-    
-    <div class="paper-card" style="margin-bottom: 16px;">
-      <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <span class="chip chip-red">arXiv</span>
-        <span class="chip chip-green">IF 15.2</span>
-      </div>
-      <div class="paper-title">Attention Is All You Need: Transformer 架构在自然语言处理中的突破</div>
-      <div class="paper-meta">Vaswani A. 等 · Nature Machine Intelligence · 2024 · 引用 89,234</div>
-      <div class="paper-abstract">本文提出了一种完全基于注意力机制的序列转换模型，摒弃了循环神经网络和卷积网络的结构…</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('取消收藏')"><ion-icon name="bookmark" style="color:var(--text-tertiary);"></ion-icon>取消</button>
-      </div>
-    </div>
+<!-- 收藏夹 -->
+<div class="section-label" style="margin-top:8px;">
+  我的收藏
+  <span class="section-label-action" id="fav-clear-btn" style="color:var(--red-500);">清空收藏夹</span>
+</div>
 
-    <div class="paper-card">
-      <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <span class="chip chip-blue">Nature</span>
-      </div>
-      <div class="paper-title">量子计算的未来发展趋势与挑战</div>
-      <div class="paper-meta">John D. 等 · Nature · 2023 · 引用 1,234</div>
-      <div class="paper-abstract">探讨了量子计算在当前技术条件下的实现路径以及未来的潜在应用...</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('取消收藏')"><ion-icon name="bookmark" style="color:var(--text-tertiary);"></ion-icon>取消</button>
-      </div>
-    </div>
+<div id="fav-list">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:60px 16px;gap:12px;color:var(--text-tertiary);">
+    <ion-icon name="bookmark-outline" style="font-size:48px;"></ion-icon>
+    <p style="font-size:14px;margin:0;">暂无收藏文献</p>
   </div>
 </div>
+
+<div id="fav-pagination" style="padding:16px;text-align:center;"></div>
