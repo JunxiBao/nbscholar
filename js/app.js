@@ -149,22 +149,24 @@ function initSettings() {
     avInput.onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = document.getElementById('settings-crop-img');
-        if (img) {
-          img.src = event.target.result;
-          document.getElementById('settings-crop-modal').style.display = 'flex';
-          if (window.settingsCropper) window.settingsCropper.destroy();
-          window.settingsCropper = new Cropper(img, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 0.85, guides: true, center: true,
-            highlight: false, cropBoxMovable: true, cropBoxResizable: true,
-          });
-        }
-      };
-      reader.readAsDataURL(file);
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('图片大小不能超过 5MB');
+        e.target.value = '';
+        return;
+      }
+      const img = document.getElementById('settings-crop-img');
+      if (img) {
+        if (img.src.startsWith('blob:')) URL.revokeObjectURL(img.src);
+        img.src = URL.createObjectURL(file);
+        document.getElementById('settings-crop-modal').style.display = 'flex';
+        if (window.settingsCropper) window.settingsCropper.destroy();
+        window.settingsCropper = new Cropper(img, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 0.85, guides: true, center: true,
+          highlight: false, cropBoxMovable: true, cropBoxResizable: true,
+        });
+      }
     };
   }
 
@@ -230,7 +232,7 @@ window.closeSettingsCropModal = () => {
 window.confirmSettingsCrop = async () => {
   if (!window.settingsCropper) return;
   const canvas = window.settingsCropper.getCroppedCanvas({ width: 256, height: 256, fillColor: '#fff' });
-  const base64Str = canvas.toDataURL('image/jpeg', 0.85);
+  const base64Str = canvas.toDataURL('image/webp', 0.8);
   window.closeSettingsCropModal();
   
   try {

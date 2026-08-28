@@ -148,19 +148,21 @@ updateLogo(prefersDark);
 function previewAvatar(event) {
   const file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById('imageToCrop');
-    img.src = e.target.result;
-    document.getElementById('cropModal').style.display = 'flex';
-    if (cropper) { cropper.destroy(); cropper = null; }
-    cropper = new Cropper(img, {
-      aspectRatio: 1, viewMode: 1, dragMode: 'move',
-      autoCropArea: 0.85, guides: true, center: true,
-      highlight: false, cropBoxMovable: true, cropBoxResizable: true,
-    });
-  };
-  reader.readAsDataURL(file);
+  if (file.size > 5 * 1024 * 1024) {
+    alert('图片大小不能超过 5MB');
+    event.target.value = '';
+    return;
+  }
+  const img = document.getElementById('imageToCrop');
+  if (img.src && img.src.startsWith('blob:')) URL.revokeObjectURL(img.src);
+  img.src = URL.createObjectURL(file);
+  document.getElementById('cropModal').style.display = 'flex';
+  if (cropper) { cropper.destroy(); cropper = null; }
+  cropper = new Cropper(img, {
+    aspectRatio: 1, viewMode: 1, dragMode: 'move',
+    autoCropArea: 0.85, guides: true, center: true,
+    highlight: false, cropBoxMovable: true, cropBoxResizable: true,
+  });
 }
 
 function closeCropModal() {
@@ -172,8 +174,8 @@ function closeCropModal() {
 function confirmCrop() {
   if (!cropper) return;
   const canvas = cropper.getCroppedCanvas({ width: 256, height: 256,
-    imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
-  _croppedDataUrl = canvas.toDataURL('image/webp', 0.85);
+    imageSmoothingEnabled: true, imageSmoothingQuality: 'high', fillColor: '#fff' });
+  _croppedDataUrl = canvas.toDataURL('image/webp', 0.8);
   const img  = document.getElementById('avatarImg');
   const icon = document.querySelector('.avatar-preview ion-icon');
   img.src    = _croppedDataUrl;
