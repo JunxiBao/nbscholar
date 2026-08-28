@@ -270,23 +270,29 @@ function renderCreateForm() {
 
           <div style="display:flex; gap:12px; margin-bottom:14px;">
             <div style="flex:1;">
-              <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">日期时间 *</label>
-              <input type="datetime-local" id="ce-date" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+              <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动日期 *</label>
+              <input type="date" id="ce-date" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">开始时间 *</label>
+              <input type="time" id="ce-time" value="14:00" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-bottom:14px;">
+            <div style="flex:1;">
+              <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动形式</label>
+              <select id="ce-type" style="width:100%;padding:10px 12px;">
+                <option value="线上直播">线上直播</option>
+                <option value="线下讲座">线下讲座</option>
+                <option value="录播课程">录播课程</option>
+                <option value="工作坊">工作坊</option>
+              </select>
             </div>
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">人数上限</label>
               <input type="number" id="ce-capacity" value="100" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
             </div>
-          </div>
-
-          <div style="margin-bottom:14px;">
-            <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动形式</label>
-            <select id="ce-type" style="width:100%;padding:10px 12px;">
-              <option value="线上直播">线上直播</option>
-              <option value="线下讲座">线下讲座</option>
-              <option value="录播课程">录播课程</option>
-              <option value="工作坊">工作坊</option>
-            </select>
           </div>
 
           <div style="margin-bottom:20px;">
@@ -304,17 +310,22 @@ function renderCreateForm() {
 }
 
 async function submitCreateEvent() {
+    const dateVal = document.getElementById('ce-date').value.trim();
+    const timeVal = document.getElementById('ce-time').value.trim() || '00:00';
+    
+    if(!dateVal) return showToast('请选择活动日期', 'error');
+
     const payload = {
         title: document.getElementById('ce-title').value.trim(),
         speaker: document.getElementById('ce-speaker').value.trim(),
         affiliation: document.getElementById('ce-affil').value.trim(),
-        event_date: document.getElementById('ce-date').value.replace('T', ' '),
+        event_date: `${dateVal} ${timeVal}`,
         capacity: document.getElementById('ce-capacity').value,
         event_type: document.getElementById('ce-type').value,
         description: document.getElementById('ce-desc').value.trim()
     };
     
-    if(!payload.title || !payload.event_date) return showToast('请填写必填项', 'error');
+    if(!payload.title) return showToast('请填写活动标题', 'error');
 
     try {
         const res = await fetch(`${API_BASE}/api/admin/training`, {
