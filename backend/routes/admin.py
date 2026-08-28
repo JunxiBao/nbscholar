@@ -25,9 +25,9 @@ def list_pending_admins():
 def approve_admin(admin_id):
     """审批管理员账号"""
     data = request.get_json(silent=True) or {}
-    status = data.get('status') # 'approved' 或 'rejected'
+    status = data.get('status') # 'approved', 'rejected', 或 'pending'
     
-    if status not in ['approved', 'rejected']:
+    if status not in ['approved', 'rejected', 'pending']:
         return err('无效的状态值')
         
     admin_user = AdminUser.query.get(admin_id)
@@ -44,6 +44,13 @@ def approve_admin(admin_id):
 def list_all_admins():
     """列出所有已批准的管理员（可选功能）"""
     admins = AdminUser.query.filter_by(role='admin', status='approved').order_by(AdminUser.created_at.desc()).all()
+    return ok({'admins': [a.to_dict() for a in admins]})
+
+@admin_bp.route('/history', methods=['GET'])
+@super_admin_required
+def get_approval_history():
+    """获取审批记录"""
+    admins = AdminUser.query.filter(AdminUser.status != 'pending').order_by(AdminUser.updated_at.desc()).all()
     return ok({'admins': [a.to_dict() for a in admins]})
 
 

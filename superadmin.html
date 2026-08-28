@@ -21,6 +21,11 @@
     html { background: var(--bg-base, #F5F5F7); }
     html[data-theme="dark"] { background: #000000; color-scheme: dark; }
     html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
+    
+    .tab-nav { display:flex; gap:24px; border-bottom:1px solid var(--separator, #E5E5EA); margin-bottom:16px; padding:0 8px; }
+    .tab-btn { padding:12px 0; cursor:pointer; font-size:15px; font-weight:500; color:var(--text-secondary, #8E8E93); border-bottom:2px solid transparent; transition:all 0.2s; }
+    .tab-btn:hover { color:var(--text-primary, #1C1C1E); }
+    .tab-btn.active { color:var(--blue-600, #0055FF); border-bottom-color:var(--blue-600, #0055FF); }
   </style>
 </head>
 <body>
@@ -76,22 +81,28 @@
 
     <main class="page-content" id="main-content" style="padding:24px;">
       <!-- 顶部信息区域 -->
-      <div class="fade-up d1" style="background:var(--bg-elevated); border-bottom:1px solid var(--separator); padding:24px; margin:-24px -24px 24px -24px;">
+      <div class="fade-up d1" style="background:var(--bg-elevated, #FFFFFF); border-bottom:1px solid var(--separator, #E5E5EA); padding:32px 24px 0 24px; margin:-24px -24px 24px -24px;">
         <div style="max-width:1000px; margin:0 auto;">
-          <h2 style="font-size:24px; font-weight:700; color:var(--text-primary); margin:0 0 8px 0; letter-spacing:-0.5px;">系统核心控制台</h2>
-          <p style="font-size:14px; color:var(--text-secondary); margin:0;">在这里管理所有申请成为培训管理员的账号，控制系统最高权限。</p>
+          <h2 style="font-size:26px; font-weight:700; color:var(--text-primary, #1C1C1E); margin:0 0 8px 0; letter-spacing:-0.5px;">系统核心控制台</h2>
+          <p style="font-size:14px; color:var(--text-secondary, #8E8E93); margin:0 0 24px 0;">在这里管理所有申请成为培训管理员的账号，控制系统最高权限。</p>
+          
+          <div class="tab-nav">
+             <div class="tab-btn active" id="tab-btn-pending" onclick="switchSuperTab('pending')">待审批申请</div>
+             <div class="tab-btn" id="tab-btn-history" onclick="switchSuperTab('history')">审批记录</div>
+          </div>
         </div>
       </div>
 
-      <div class="section-label fade-up d2" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <div>待审批管理员申请</div>
-        <button onclick="loadPendingAdmins()" class="chip chip-blue" style="cursor:pointer; border:none;">
-          <ion-icon name="refresh-outline" style="margin-right:4px;"></ion-icon> 刷新
-        </button>
+      <div id="section-pending" style="max-width:1000px; margin:0 auto;">
+          <div id="pending-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
+            <!-- 动态加载审批列表 -->
+          </div>
       </div>
       
-      <div id="pending-list" class="fade-up d3" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
-        <!-- 动态加载审批列表 -->
+      <div id="section-history" style="display:none; max-width:1000px; margin:0 auto;">
+          <div id="history-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
+            <!-- 动态加载历史列表 -->
+          </div>
       </div>
     </main>
   </div>
