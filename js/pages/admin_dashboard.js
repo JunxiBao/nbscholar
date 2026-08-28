@@ -442,12 +442,16 @@ async function viewEnrollments(eventId) {
             const container = document.getElementById('admin-tab-content');
             let html = `
               <!-- 顶部信息区域 -->
-              <div class="fade-up d1" style="background:var(--bg-elevated); border-radius:var(--r-md); border:1px solid var(--separator); padding:20px; margin-bottom:24px;">
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-                    <button onclick="loadAdminEvents()" class="btn btn-outline" style="padding:4px 8px; font-size:18px;"><ion-icon name="arrow-back-outline"></ion-icon></button>
-                    <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin:0; letter-spacing:-0.5px;">报名名单</h2>
+              <div class="fade-up d1" style="margin-bottom:24px;">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+                    <button onclick="loadAdminEvents()" style="width:36px; height:36px; border-radius:50%; background:var(--bg-elevated); border:1px solid var(--separator); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-primary); box-shadow:var(--shadow-sm); padding:0; flex-shrink:0;">
+                        <ion-icon name="arrow-back" style="font-size:18px;"></ion-icon>
+                    </button>
+                    <div>
+                        <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin:0; letter-spacing:-0.5px;">报名名单</h2>
+                        <p style="font-size:13px; color:var(--text-secondary); margin:2px 0 0 0;">${data.data.event.title}</p>
+                    </div>
                 </div>
-                <p style="font-size:14px; color:var(--text-secondary); margin:0;">${data.data.event.title}</p>
               </div>
               <div class="fade-up d2">
                   <div class="paper-card" style="padding:0; overflow:hidden;">

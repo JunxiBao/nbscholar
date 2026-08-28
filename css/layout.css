@@ -110,6 +110,12 @@
 .nav-item.active[data-tab="tab-training"] { color: #8B5CF6; }
 .nav-item.active[data-tab="tab-favorites"], .nav-item.active[data-tab="tab-history"], .nav-item.active[data-tab="tab-settings"] { color: var(--blue-600); }
 
+/* 宽屏侧边栏激活态 - 管理员 & 超管 */
+.nav-item.active[data-tab="tab-admin-events"] { color: #3B82F6; } /* Blue */
+.nav-item.active[data-tab="tab-admin-create"] { color: #8B5CF6; } /* Purple */
+.nav-item.active[data-tab="pending"] { color: #F97316; } /* Orange */
+.nav-item.active[data-tab="history"] { color: #10B981; } /* Green */
+
 [data-theme="dark"] .nav-item.active[data-tab="tab-home"] { color: #F87171; }
 [data-theme="dark"] .nav-item.active[data-tab="tab-search"] { color: #FB923C; }
 [data-theme="dark"] .nav-item.active[data-tab="tab-tools"] { color: #FACC15; }
@@ -117,6 +123,12 @@
 [data-theme="dark"] .nav-item.active[data-tab="tab-journal"] { color: #60A5FA; }
 [data-theme="dark"] .nav-item.active[data-tab="tab-training"] { color: #A78BFA; }
 [data-theme="dark"] .nav-item.active[data-tab="tab-favorites"], [data-theme="dark"] .nav-item.active[data-tab="tab-history"], [data-theme="dark"] .nav-item.active[data-tab="tab-settings"] { color: #60A5FA; }
+
+/* 宽屏侧边栏激活态 (Dark Mode) - 管理员 & 超管 */
+[data-theme="dark"] .nav-item.active[data-tab="tab-admin-events"] { color: #60A5FA; } /* Blue */
+[data-theme="dark"] .nav-item.active[data-tab="tab-admin-create"] { color: #A78BFA; } /* Purple */
+[data-theme="dark"] .nav-item.active[data-tab="pending"] { color: #FB923C; } /* Orange */
+[data-theme="dark"] .nav-item.active[data-tab="history"] { color: #34D399; } /* Green */
 
 /* 侧边栏滑块 Indicator */
 .sidebar-indicator {
@@ -137,6 +149,12 @@
 .sidebar-indicator.tab-training { background: rgba(139,92,246,0.1); }
 .sidebar-indicator.tab-favorites, .sidebar-indicator.tab-history, .sidebar-indicator.tab-settings { background: rgba(37,99,235,0.1); }
 
+/* 侧边栏滑块 Indicator - 管理员 & 超管 */
+.sidebar-indicator.tab-admin-events { background: rgba(59,130,246,0.1); } /* Blue */
+.sidebar-indicator.tab-admin-create { background: rgba(139,92,246,0.1); } /* Purple */
+.sidebar-indicator.pending { background: rgba(249,115,22,0.1); } /* Orange */
+.sidebar-indicator.history { background: rgba(16,185,129,0.1); } /* Green */
+
 [data-theme="dark"] .sidebar-indicator.tab-home { background: rgba(248,113,113,0.15); }
 [data-theme="dark"] .sidebar-indicator.tab-search { background: rgba(251,146,60,0.15); }
 [data-theme="dark"] .sidebar-indicator.tab-tools { background: rgba(250,204,21,0.15); }
@@ -144,6 +162,12 @@
 [data-theme="dark"] .sidebar-indicator.tab-journal { background: rgba(96,165,250,0.15); }
 [data-theme="dark"] .sidebar-indicator.tab-training { background: rgba(167,139,250,0.15); }
 [data-theme="dark"] .sidebar-indicator.tab-favorites, [data-theme="dark"] .sidebar-indicator.tab-history, [data-theme="dark"] .sidebar-indicator.tab-settings { background: rgba(96,165,250,0.15); }
+
+/* 侧边栏滑块 Indicator (Dark Mode) - 管理员 & 超管 */
+[data-theme="dark"] .sidebar-indicator.tab-admin-events { background: rgba(96,165,250,0.15); }
+[data-theme="dark"] .sidebar-indicator.tab-admin-create { background: rgba(167,139,250,0.15); }
+[data-theme="dark"] .sidebar-indicator.pending { background: rgba(251,146,60,0.15); }
+[data-theme="dark"] .sidebar-indicator.history { background: rgba(52,211,153,0.15); }
 
 .nav-item.active ion-icon { color:inherit; }
 
