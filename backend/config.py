@@ -31,5 +31,4 @@ class Config:
     DEEPSEEK_BASE_URL = 'https://api.deepseek.com'
 
     # ---- CORS ----
-    CORS_ORIGINS = ['http://localhost:5500', 'http://127.0.0.1:5500',
-                    'http://localhost:3000', 'null']   # null 用于本地文件打开
+    CORS_ORIGINS = "*"
