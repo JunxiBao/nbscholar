@@ -7,6 +7,12 @@
   overflow: hidden;
 }
 
+/* 优化 Cropper.js 选框圆角与样式 */
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50%;
+}
+
 /* ===== 侧边栏 ===== */
 .sidebar {
   width: var(--sidebar-width);
