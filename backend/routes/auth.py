@@ -75,8 +75,9 @@ from utils.auth_helper import login_required
 
 @auth_bp.route('/account', methods=['DELETE'])
 @login_required
-def delete_account(user_id):
-    user = User.query.get(user_id)
+def delete_account():
+    from flask import g
+    user = User.query.get(g.user_id)
     if not user:
         return err('用户不存在')
     

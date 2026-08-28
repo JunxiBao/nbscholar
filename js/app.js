@@ -146,18 +146,43 @@ function initSettings() {
     logoutBtn.onclick = () => Auth.logout();
   }
 
+  let deleteStep = 0;
   const delBtn = document.getElementById('delete-account-btn');
-  if (delBtn) {
-    delBtn.onclick = async () => {
-      if (!confirm('警告：此操作不可逆！\n您确定要注销账号并删除所有相关数据吗？')) return;
-      if (!confirm('再次确认：注销后将无法找回任何数据，是否继续？')) return;
-      
-      try {
-        const res = await Auth.deleteAccount();
-        alert(res.msg || '账号已成功注销');
-        Auth.logout();
-      } catch (err) {
-        alert('注销失败：' + err.message);
+  const confirmModal = document.getElementById('delete-confirm-modal');
+  const titleEl = document.getElementById('delete-modal-title');
+  const descEl = document.getElementById('delete-modal-desc');
+  const confirmBtn = document.getElementById('delete-modal-confirm-btn');
+
+  window.closeDeleteModal = () => {
+    if (confirmModal) confirmModal.style.display = 'none';
+  };
+
+  if (delBtn && confirmModal) {
+    delBtn.onclick = () => {
+      deleteStep = 1;
+      titleEl.textContent = '危险操作确认';
+      descEl.textContent = '您确定要注销账号并删除所有相关数据吗？此操作不可逆！';
+      confirmBtn.textContent = '确定注销';
+      confirmModal.style.display = 'flex';
+    };
+  }
+
+  if (confirmBtn) {
+    confirmBtn.onclick = async () => {
+      if (deleteStep === 1) {
+        deleteStep = 2;
+        titleEl.textContent = '最后一次确认';
+        descEl.textContent = '注销后将无法找回任何数据，是否继续？';
+        confirmBtn.textContent = '狠心注销';
+      } else if (deleteStep === 2) {
+        window.closeDeleteModal();
+        try {
+          const res = await Auth.deleteAccount();
+          showToast(res.msg || '账号已成功注销');
+          setTimeout(() => Auth.logout(), 1500);
+        } catch (err) {
+          showToast('注销失败：' + err.message);
+        }
       }
     };
   }
