@@ -107,10 +107,36 @@ function checkAdminAuth() {
     if(token) {
         document.getElementById('auth-layer').style.display = 'none';
         document.getElementById('app-shell').style.display = 'flex';
-        loadPendingAdmins();
+        loadDashboardData();
     } else {
         document.getElementById('auth-layer').style.display = 'flex';
         document.getElementById('app-shell').style.display = 'none';
+    }
+}
+
+async function loadDashboardData() {
+    // 优先并行拉取待审批和历史统计，确保所有数据统计即时显示
+    await Promise.all([
+        loadPendingAdmins(),
+        fetchHistoryStats()
+    ]);
+}
+
+async function fetchHistoryStats() {
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/history`, {
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
+        });
+        const data = await res.json();
+        if(data.code === 0) {
+            const statHistory = document.getElementById('stat-history-cnt');
+            if (statHistory) statHistory.textContent = data.data.admins.length;
+            if (currentSuperTab === 'history') {
+                renderHistoryList(data.data.admins);
+            }
+        }
+    } catch(e) {
+        console.error('Fetch history stats error:', e);
     }
 }
 
@@ -290,14 +316,14 @@ async function revokeApproval(id) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
             },
             body: JSON.stringify({status: 'pending'})
         });
         const data = await res.json();
         if(data.code === 0) {
             showToast('已撤回至待审批', 'success');
-            loadHistoryAdmins();
+            loadDashboardData();
         } else {
             showToast((data.msg || '操作失败'), 'error');
         }
@@ -315,14 +341,14 @@ async function approveAdmin(id, status) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
             },
             body: JSON.stringify({status: status})
         });
         const data = await res.json();
         if(data.code === 0) {
             showToast(`已${status==='approved'?'同意':'拒绝'}`, 'success');
-            loadPendingAdmins();
+            loadDashboardData();
         } else {
             showToast((data.msg || '操作失败'), 'error');
         }
