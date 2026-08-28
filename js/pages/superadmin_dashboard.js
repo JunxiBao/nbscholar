@@ -34,6 +34,28 @@ function showToast(msg, type='info') {
     }, 3000);
 }
 
+window.showConfirm = function(title, msg) {
+    return new Promise(resolve => {
+        const overlay = document.getElementById('custom-confirm-overlay');
+        document.getElementById('custom-confirm-title').textContent = title;
+        document.getElementById('custom-confirm-msg').textContent = msg;
+        
+        const btnOk = document.getElementById('custom-confirm-ok');
+        const btnCancel = document.getElementById('custom-confirm-cancel');
+        
+        const cleanup = () => {
+            overlay.style.display = 'none';
+            btnOk.onclick = null;
+            btnCancel.onclick = null;
+        };
+        
+        btnOk.onclick = () => { cleanup(); resolve(true); };
+        btnCancel.onclick = () => { cleanup(); resolve(false); };
+        
+        overlay.style.display = 'flex';
+    });
+};
+
 // ---------------------------------
 // Auth Logic
 // ---------------------------------
@@ -171,7 +193,8 @@ function renderPendingList(admins) {
 }
 
 async function approveAdmin(id, status) {
-    if(!confirm(`确定要${status==='approved'?'同意':'拒绝'}该管理员的申请吗？`)) return;
+    const isOk = await showConfirm('确认审批', `确定要${status==='approved'?'同意':'拒绝'}该管理员的申请吗？`);
+    if(!isOk) return;
     
     try {
         const res = await fetch(`${API_BASE}/api/admin/approve/${id}`, {

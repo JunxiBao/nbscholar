@@ -36,6 +36,28 @@ function showToast(msg, type='info') {
     }, 3000);
 }
 
+window.showConfirm = function(title, msg) {
+    return new Promise(resolve => {
+        const overlay = document.getElementById('custom-confirm-overlay');
+        document.getElementById('custom-confirm-title').textContent = title;
+        document.getElementById('custom-confirm-msg').textContent = msg;
+        
+        const btnOk = document.getElementById('custom-confirm-ok');
+        const btnCancel = document.getElementById('custom-confirm-cancel');
+        
+        const cleanup = () => {
+            overlay.style.display = 'none';
+            btnOk.onclick = null;
+            btnCancel.onclick = null;
+        };
+        
+        btnOk.onclick = () => { cleanup(); resolve(true); };
+        btnCancel.onclick = () => { cleanup(); resolve(false); };
+        
+        overlay.style.display = 'flex';
+    });
+};
+
 // ---------------------------------
 // Auth Logic
 // ---------------------------------
@@ -317,7 +339,8 @@ async function submitCreateEvent() {
 }
 
 async function deleteEvent(id) {
-    if(!confirm('确定要删除该活动吗？此操作不可恢复。')) return;
+    const isOk = await showConfirm('确认删除', '确定要删除该活动吗？此操作不可恢复。');
+    if(!isOk) return;
     try {
         const res = await fetch(`${API_BASE}/api/admin/training/${id}`, {
             method: 'DELETE',
