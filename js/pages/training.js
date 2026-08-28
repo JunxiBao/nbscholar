@@ -230,7 +230,7 @@ function _renderEventCard(ev, delay = 0) {
         <span style="display:flex; align-items:center; gap:4px;"><ion-icon name="people-outline"></ion-icon> ${ev.enrolled_cnt} / ${ev.capacity} 人</span>
       </div>
       <div style="display:flex; margin-top:auto;">
-        <button class="btn enroll-btn" style="flex:1; background:${ev.enrolled ? 'var(--bg-hover)' : ev.color}; color:${ev.enrolled ? 'var(--text-secondary)' : 'white'}; padding:12px; font-weight:600; font-size:15px; border-radius:var(--r-md); transition:all 0.2s;"
+        <button class="btn enroll-btn" style="flex:1; background:${ev.enrolled ? 'var(--green-600)' : 'var(--blue-600)'}; color:white; padding:12px; font-weight:600; font-size:15px; border-radius:var(--r-md); transition:all 0.2s;"
           data-event-id="${ev.id}" data-enrolled="${ev.enrolled ? 1 : 0}">
           ${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
         </button>

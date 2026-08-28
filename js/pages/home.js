@@ -126,13 +126,13 @@ async function _loadEnrolledEvents() {
 
   try {
     const { data } = await TrainingAPI.myEvents();
-    if (!data.events || data.events.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding:30px; font-size:13px; color:var(--text-tertiary);">暂无近期日程安排</div>`;
+    if (!data.enrollments || data.enrollments.length === 0) {
+      container.innerHTML = `<div style="text-align:center; display:flex; align-items:center; justify-content:center; min-height:100px; font-size:13px; color:var(--text-tertiary);">暂无近期日程安排</div>`;
       return;
     }
 
     // 只展示最近的 3 个
-    const topEvents = data.events.slice(0, 3);
+    const topEvents = data.enrollments.slice(0, 3);
     let html = '';
     
     topEvents.forEach(ev => {
