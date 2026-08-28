@@ -158,31 +158,82 @@ async function demoCite() {
   }
 }
 
-// ===================== 数据可视化（保留本地演示）=====================
+// ===================== 数据可视化 =====================
 let echartInstance = null;
-function initEcharts(type = 'line') {
+let _visData = null;
+
+function initEcharts(type = 'line', data = null) {
   const container = document.getElementById('echarts-container');
   if (!container || !window.echarts) return;
   if (echartInstance) echartInstance.dispose();
 
+  if (data) _visData = data;
+
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   echartInstance = echarts.init(container, isDark ? 'dark' : null);
 
-  echartInstance.setOption({
+  const option = {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'axis' },
-    legend: { data: ['Model A', 'Model B'] },
-    xAxis: { type: 'category', data: ['E1','E2','E3','E4','E5','E6','E7'] },
+    legend: { data: _visData ? _visData.legend : [] },
+    xAxis: { type: 'category', data: _visData ? _visData.xAxis : [] },
     yAxis: { type: 'value' },
-    series: [
-      { name: 'Model A', type, data: [0.72,0.78,0.81,0.84,0.87,0.89,0.91], smooth: true },
-      { name: 'Model B', type, data: [0.70,0.74,0.76,0.79,0.81,0.82,0.82], smooth: true },
-    ],
-  });
+    series: _visData ? _visData.series.map(s => ({ ...s, type, smooth: true })) : [],
+  };
+  
+  if (!_visData) {
+    option.title = { text: '请上传 CSV 数据以生成图表', left: 'center', top: 'center', textStyle: { color: 'var(--text-tertiary)', fontSize: 14, fontWeight: 'normal' } };
+  }
+
+  echartInstance.setOption(option);
 }
 
 function demoChartType(type) { initEcharts(type); }
-function demoLoadCSV() { showToast('已加载内置示例数据集'); initEcharts('line'); }
+
+function handleCSVUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    if (lines.length < 2) {
+      showToast('CSV 文件格式错误或数据为空');
+      return;
+    }
+    const headers = lines[0].split(',');
+    const legend = headers.slice(1);
+    const xAxis = [];
+    const series = legend.map(name => ({ name, data: [] }));
+
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',');
+      xAxis.push(parts[0]);
+      for (let j = 1; j < parts.length; j++) {
+        if (series[j-1]) {
+          series[j-1].data.push(parseFloat(parts[j]) || 0);
+        }
+      }
+    }
+    initEcharts('line', { legend, xAxis, series });
+    showToast('CSV 数据加载成功');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function handleCiteUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const input = document.getElementById('cite-src');
+    if (input) input.value = e.target.result;
+    showToast('引用文件加载成功');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
 
 window.addEventListener('resize', () => { if (echartInstance) echartInstance.resize(); });
 

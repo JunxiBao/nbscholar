@@ -206,6 +206,30 @@ window.updateUserInfoUI = function() {
   if (hInst) hInst.textContent = inst;
   const hAvatar = document.getElementById('home-avatar');
   if (hAvatar) hAvatar.src = avatar;
+
+  // Settings Page
+  const sName = document.getElementById('settings-name');
+  if (sName) sName.textContent = name;
+  const sAcc = document.getElementById('settings-account');
+  if (sAcc) sAcc.textContent = `账号: ${user.account || '未设置'}`;
+  const sInst2 = document.getElementById('settings-institution');
+  if (sInst2) sInst2.textContent = inst;
+  
+  const sAvImg = document.getElementById('settings-avatar-img');
+  const sAvIcon = document.getElementById('settings-avatar-icon');
+  const sAvWrapper = document.getElementById('settings-avatar-wrapper');
+  if (sAvImg && sAvIcon && sAvWrapper) {
+    if (user.avatar_url) {
+      sAvImg.src = avatar;
+      sAvImg.style.display = 'block';
+      sAvIcon.style.display = 'none';
+      sAvWrapper.style.background = 'transparent';
+    } else {
+      sAvImg.style.display = 'none';
+      sAvIcon.style.display = 'block';
+      sAvWrapper.style.background = 'var(--blue-600)';
+    }
+  }
 };
 
 // ===== 初始化 =====

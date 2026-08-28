@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pwd !== confirm) { _showLoginToast('两次密码不一致'); return; }
       if (pwd.length < 6)  { _showLoginToast('密码至少 6 位'); return; }
 
-      const institution = regForm.querySelectorAll('input[type="text"]')[1]?.value?.trim() || '';
+      const institution = document.getElementById('regInstitution')?.value?.trim() || '';
       const age         = regForm.querySelector('input[type="number"]')?.value || null;
       const gender      = regForm.querySelector('select')?.value || '';
 

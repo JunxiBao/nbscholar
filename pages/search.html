@@ -8,7 +8,7 @@
     <div class="sticky-top" style="padding:12px 16px;">
       <div class="search-field" style="height:44px;">
         <ion-icon name="search-outline"></ion-icon>
-        <input id="main-searchbar" type="text" placeholder="关键词、标题、作者或 DOI..." value="Transformer 注意力机制" />
+        <input id="main-searchbar" type="text" placeholder="关键词、标题、作者或 DOI..." value="" />
         <button class="btn btn-primary btn-sm" style="flex-shrink:0;" onclick="showToast('搜索中...')">搜索</button>
       </div>
     </div>
@@ -27,95 +27,11 @@
     <!-- 结果统计 -->
     <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
       <span style="font-size:13px;color:var(--text-secondary);">
-        找到 <strong style="color:var(--text-primary);">12,847</strong> 条结果
+        找到 <strong style="color:var(--text-primary);">0</strong> 条结果
       </span>
     </div>
 
-    <!-- 文献 1 -->
-    <div class="paper-card fade-up">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="chip chip-red">arXiv</span>
-          <span class="chip chip-purple">综述</span>
-          <span class="chip chip-green">IF 15.2</span>
-        </div>
-        <button onclick="this.querySelector('ion-icon').name='bookmark';showToast('已收藏');" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text-tertiary);">
-          <ion-icon name="bookmark-outline" style="font-size:20px;"></ion-icon>
-        </button>
-      </div>
-      <div class="paper-title">Attention Is All You Need: Transformer 架构在自然语言处理中的突破性应用</div>
-      <div class="paper-meta">Vaswani A., Shazeer N., Parmar N. 等 · <strong>Nature Machine Intelligence</strong> · 2024<br>引用量 89,234 · DOI: 10.1038/s41587-024-02142-1</div>
-      <div class="paper-abstract">本文提出了一种完全基于注意力机制的序列转换模型，摒弃了循环神经网络和卷积网络。该架构在机器翻译任务上取得了当前最佳结果，同时训练效率显著提升...</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-secondary btn-sm" onclick="showToast('引用已复制')"><ion-icon name="copy-outline" style="font-size:14px;"></ion-icon>引用导出</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('打开阅读器...')">阅读全文</button>
-      </div>
-    </div>
 
-    <!-- 文献 2 -->
-    <div class="paper-card fade-up d1">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="chip chip-blue">知网</span>
-          <span class="chip chip-gray">研究论文</span>
-          <span class="chip chip-green">核心期刊</span>
-        </div>
-        <button onclick="this.querySelector('ion-icon').name='bookmark';showToast('已收藏');" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text-tertiary);">
-          <ion-icon name="bookmark-outline" style="font-size:20px;"></ion-icon>
-        </button>
-      </div>
-      <div class="paper-title">基于多头自注意力机制的中文医学文本信息抽取研究</div>
-      <div class="paper-meta">张明远, 李华, 王晓东 · <strong>中国计算机学报</strong> · 2024年第3期<br>引用量 156 · CSSCI 来源期刊</div>
-      <div class="paper-abstract">针对中文医学文本信息抽取的特殊挑战，本文提出了一种融合领域知识的多头自注意力模型。实验表明，在三个标准医学文本数据集上的F1值分别达到92.3%、89.7%和91.1%...</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-secondary btn-sm" onclick="showToast('Markdown 引用已复制')"><ion-icon name="copy-outline" style="font-size:14px;"></ion-icon>引用导出</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('打开阅读器...')">阅读全文</button>
-      </div>
-    </div>
-
-    <!-- 文献 3 -->
-    <div class="paper-card fade-up d2">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="chip chip-amber">PubMed</span>
-          <span class="chip chip-gray">研究论文</span>
-          <span class="chip chip-green">IF 8.9</span>
-        </div>
-        <button onclick="this.querySelector('ion-icon').name='bookmark';showToast('已收藏');" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text-tertiary);">
-          <ion-icon name="bookmark-outline" style="font-size:20px;"></ion-icon>
-        </button>
-      </div>
-      <div class="paper-title">Transformer-based models for biomedical named entity recognition: A systematic review</div>
-      <div class="paper-meta">Chen L., Kim J., Patel R. · <strong>Journal of Biomedical Informatics</strong> · 2023<br>引用量 892 · PMID: 38142034</div>
-      <div class="paper-abstract">This systematic review evaluates Transformer-based approaches for biomedical NER across 78 published studies from 2018–2023, covering datasets, model architectures, and evaluation benchmarks...</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成并翻译 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-secondary btn-sm" onclick="showToast('LaTeX 引用已复制')"><ion-icon name="copy-outline" style="font-size:14px;"></ion-icon>引用导出</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('跳转 PubMed...')">阅读全文</button>
-      </div>
-    </div>
-
-    <!-- 文献 4 -->
-    <div class="paper-card fade-up d3">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="chip chip-purple">万方</span>
-          <span class="chip chip-gray">学位论文</span>
-        </div>
-        <button onclick="this.querySelector('ion-icon').name='bookmark';showToast('已收藏');" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text-tertiary);">
-          <ion-icon name="bookmark-outline" style="font-size:20px;"></ion-icon>
-        </button>
-      </div>
-      <div class="paper-title">基于预训练语言模型的科技文献知识图谱构建方法研究</div>
-      <div class="paper-meta">刘志远 · 清华大学博士学位论文 · 2023<br>导师：张明 教授 · 计算机科学与技术系</div>
-      <div class="paper-abstract">本文针对科技文献中知识图谱自动构建问题，提出了一种基于 BERT 预训练语言模型的端到端信息抽取框架，实现了实体识别、关系抽取和事件检测的统一处理...</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('跳转万方数据...')">阅读全文</button>
-      </div>
-    </div>
 
     <!-- 加载更多 -->
     <div style="padding:16px 16px 32px;text-align:center;">

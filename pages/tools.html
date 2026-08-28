@@ -132,7 +132,7 @@ function fillChat(text) {
       <div class="trans-split">
         <div class="trans-col">
           <label class="trans-label">原文</label>
-          <textarea id="trans-src" class="trans-textarea" placeholder="输入或粘贴需要翻译/润色的文本...">本文提出了一种融合领域知识的多头自注意力模型，用于中文医学文本中实体、关系的精确抽取。</textarea>
+          <textarea id="trans-src" class="trans-textarea" placeholder="输入或粘贴需要翻译/润色的文本..."></textarea>
         </div>
         <div class="trans-col">
           <label class="trans-label">结果 <ion-spinner name="dots" id="trans-spinner" style="display:none;width:16px;height:16px;margin-left:8px;"></ion-spinner></label>
@@ -146,9 +146,10 @@ function fillChat(text) {
     <!-- 2. 数据可视化 -->
     <div id="demo-vis" class="demo-panel" style="display:none; flex-direction:column; height:100%;">
       <div class="demo-controls">
-        <button class="btn btn-secondary" onclick="demoLoadCSV()">
-          <ion-icon name="document-text-outline"></ion-icon>
-          加载示例数据 (CSV)
+        <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+        <button class="btn btn-secondary" onclick="document.getElementById('csv-upload').click()">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          上传 CSV 数据
         </button>
         <div style="display:flex;gap:8px;margin-left:auto;">
           <button class="btn btn-muted btn-sm" onclick="demoChartType('line')">折线图</button>
@@ -163,15 +164,14 @@ function fillChat(text) {
     <div id="demo-cite" class="demo-panel" style="display:none;">
       <div class="trans-col" style="height:150px; margin-bottom:16px;">
         <label class="trans-label">输入 BibTeX 或 RIS</label>
-        <textarea id="cite-src" class="trans-textarea" placeholder="粘贴引用代码...">@article{vaswani2017attention,
-  title={Attention is all you need},
-  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
-  journal={Advances in neural information processing systems},
-  volume={30},
-  year={2017}
-}</textarea>
+        <textarea id="cite-src" class="trans-textarea" placeholder="粘贴引用代码，或通过下方按钮上传文件..."></textarea>
       </div>
       <div class="demo-controls" style="margin-bottom:16px;">
+        <input type="file" id="cite-upload" accept=".bib,.ris" style="display:none;" onchange="handleCiteUpload(event)">
+        <button class="btn btn-secondary" onclick="document.getElementById('cite-upload').click()" style="margin-right:auto;">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          上传 .bib / .ris
+        </button>
         <select id="cite-format" class="demo-select">
           <option value="gbt">GB/T 7714-2015</option>
           <option value="apa">APA 7th</option>

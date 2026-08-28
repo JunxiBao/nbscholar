@@ -66,42 +66,18 @@
 
     <!-- 最近检索 -->
     <div class="section-label fade-up d3">最近检索</div>
-    <div class="list-group fade-up d3" style="margin-bottom:0;">
-      <div class="list-row" onclick="switchTab('tab-search')">
-        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-        <div class="list-text"><div class="list-title">Transformer 注意力机制综述</div></div>
-        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-      </div>
-      <div class="list-row" onclick="switchTab('tab-search')">
-        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-        <div class="list-text"><div class="list-title">CRISPR 基因编辑安全性评估</div></div>
-        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-      </div>
-      <div class="list-row" onclick="switchTab('tab-search')">
-        <ion-icon name="time-outline" style="color:var(--text-tertiary);font-size:18px;flex-shrink:0;"></ion-icon>
-        <div class="list-text"><div class="list-title">碳捕获与封存技术进展 2024</div></div>
-        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-      </div>
+    <div class="list-group fade-up d3" style="margin-bottom:0; min-height: 50px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-tertiary);">
+      暂无近期检索记录
     </div>
 
     <!-- 收藏的文献预览 (宽屏主列补充内容) -->
     <div class="section-label fade-up d4">
       收藏文献
-      <span class="section-label-action" onclick="switchTab('tab-search')">全部 58 篇</span>
+      <span class="section-label-action" onclick="switchTab('tab-search')"></span>
     </div>
 
-    <div class="paper-card fade-up d4">
-      <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <span class="chip chip-red">arXiv</span>
-        <span class="chip chip-green">IF 15.2</span>
-      </div>
-      <div class="paper-title">Attention Is All You Need: Transformer 架构在自然语言处理中的突破</div>
-      <div class="paper-meta">Vaswani A. 等 · Nature Machine Intelligence · 2024 · 引用 89,234</div>
-      <div class="paper-abstract">本文提出了一种完全基于注意力机制的序列转换模型，摒弃了循环神经网络和卷积网络的结构…</div>
-      <div class="paper-actions">
-        <button class="btn btn-secondary btn-sm" onclick="showToast('生成 AI 摘要...')"><ion-icon name="sparkles-outline" style="font-size:14px;"></ion-icon>AI 摘要</button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('打开阅读器...')">阅读全文</button>
-      </div>
+    <div class="paper-card fade-up d4" style="text-align: center; color: var(--text-tertiary); font-size: 13px; padding: 24px;">
+      暂无收藏文献
     </div>
 
     <div style="height:24px;"></div>

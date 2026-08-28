@@ -5,6 +5,7 @@ from models import Paper, SearchHistory
 from extensions import db
 from utils.response import ok, err
 from utils.auth_helper import optional_login
+from datetime import datetime
 
 search_bp = Blueprint('search', __name__, url_prefix='/api/search')
 
@@ -86,13 +87,19 @@ def search():
     papers = query.offset((page - 1) * per_page).limit(per_page).all()
 
     # 记录检索历史
-    if getattr(g, 'user_id', None):
-        hist = SearchHistory()
-        hist.user_id = g.user_id
-        hist.keyword = q
-        hist.source = source
-        hist.result_cnt = total
-        db.session.add(hist)
+    if getattr(g, 'user_id', None) and total > 0:
+        hist = SearchHistory.query.filter_by(user_id=g.user_id, keyword=q).first()
+        if hist:
+            hist.created_at = datetime.utcnow()
+            hist.result_cnt = total
+            hist.source = source
+        else:
+            hist = SearchHistory()
+            hist.user_id = g.user_id
+            hist.keyword = q
+            hist.source = source
+            hist.result_cnt = total
+            db.session.add(hist)
         db.session.commit()
 
     return ok({

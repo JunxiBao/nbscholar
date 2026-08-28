@@ -5,8 +5,9 @@
   <div class="section-label fade-up">账户信息</div>
   <div class="list-group fade-up" id="settings-user-info">
     <div class="list-row">
-      <div class="list-icon" style="background:var(--blue-600);">
-        <ion-icon name="person-outline"></ion-icon>
+      <div class="list-icon" id="settings-avatar-wrapper" style="background:var(--blue-600);overflow:hidden;">
+        <ion-icon name="person-outline" id="settings-avatar-icon"></ion-icon>
+        <img id="settings-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;" />
       </div>
       <div class="list-text">
         <div class="list-title" id="settings-name">加载中...</div>

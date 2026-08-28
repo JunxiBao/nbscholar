@@ -16,12 +16,12 @@
 
     <div style="margin-bottom:12px;">
       <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">论文标题</label>
-      <input type="text" value="基于多头自注意力机制的中文医学文本信息抽取" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'"/>
+      <input type="text" value="" placeholder="输入论文标题..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'"/>
     </div>
 
     <div style="margin-bottom:14px;">
       <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">研究摘要</label>
-      <textarea style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;resize:none;height:90px;line-height:1.6;transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'">本研究提出融合领域知识的多头自注意力模型，用于中文医学文本中实体、关系的精确抽取，在三个标准数据集上F1值达到92.3%...</textarea>
+      <textarea placeholder="输入论文摘要..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;resize:none;height:90px;line-height:1.6;transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'"></textarea>
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:14px;">
@@ -56,36 +56,6 @@
     <div class="section-label">推荐期刊 <span style="font-weight:400;color:var(--text-secondary);">共 5 个匹配</span></div>
 
     <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--separator);">
-      <!-- 期刊 1 -->
-      <div class="list-row" onclick="showToast('查看投稿指南...')">
-        <div style="width:40px;height:40px;border-radius:var(--r-md);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">📊</div>
-        <div class="list-text">
-          <div class="list-title">Journal of Biomedical Informatics</div>
-          <div class="list-subtitle">Elsevier · IF: 8.9 · Q1 · 审稿 6–8 周 · 版面费 $3,200</div>
-        </div>
-        <span class="chip chip-green" style="flex-shrink:0;">98%</span>
-        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-      </div>
-      <!-- 期刊 2 -->
-      <div class="list-row" onclick="showToast('查看投稿指南...')">
-        <div style="width:40px;height:40px;border-radius:var(--r-md);background:var(--purple-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">🤖</div>
-        <div class="list-text">
-          <div class="list-title">Artificial Intelligence in Medicine</div>
-          <div class="list-subtitle">Elsevier · IF: 7.5 · Q1 · 审稿 4–6 周 · 免版面费</div>
-        </div>
-        <span class="chip chip-green" style="flex-shrink:0;">91%</span>
-        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-      </div>
-      <!-- 期刊 3 -->
-      <div class="list-row" onclick="showToast('查看投稿指南...')">
-        <div style="width:40px;height:40px;border-radius:var(--r-md);background:var(--red-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">🔬</div>
-        <div class="list-text">
-          <div class="list-title">计算机学报</div>
-          <div class="list-subtitle">中国计算机学会 · 中文核心 CSCD · 审稿 3–5 月</div>
-        </div>
-        <span class="chip chip-amber" style="flex-shrink:0;">85%</span>
-        <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-      </div>
     </div>
     <div style="height:24px;"></div>
   </div>
@@ -110,38 +80,6 @@
   </div>
 
   <div style="margin-top:8px;background:var(--bg-primary);border-radius:var(--r-lg);overflow:hidden;margin:8px 16px 24px;box-shadow:var(--shadow-xs);border:1px solid var(--separator);">
-    <div class="list-row" onclick="showToast('查看 Nature 投稿指南')">
-      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:700;">N</div>
-      <div class="list-text">
-        <div class="list-title">Nature</div>
-        <div class="list-subtitle">IF: 50.5 · 综合科学 · 审稿 ~4 月</div>
-      </div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-    <div class="list-row" onclick="showToast('查看 Science 投稿指南')">
-      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#DC2626;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:700;">S</div>
-      <div class="list-text">
-        <div class="list-title">Science</div>
-        <div class="list-subtitle">IF: 44.7 · 综合科学 · 审稿 ~3 月</div>
-      </div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-    <div class="list-row" onclick="showToast('查看 Cell 投稿指南')">
-      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#D97706;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:700;">C</div>
-      <div class="list-text">
-        <div class="list-title">Cell</div>
-        <div class="list-subtitle">IF: 41.6 · 生命科学 · 审稿 ~6 周</div>
-      </div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
-    <div class="list-row" onclick="showToast('查看计算机学报投稿指南')">
-      <div style="width:40px;height:40px;border-radius:var(--r-md);background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:white;font-weight:700;">学报</div>
-      <div class="list-text">
-        <div class="list-title">计算机学报</div>
-        <div class="list-subtitle">CCF 推荐 · 中文核心 · 免费投稿</div>
-      </div>
-      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
-    </div>
   </div>
 </div>
 
