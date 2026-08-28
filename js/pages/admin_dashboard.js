@@ -294,38 +294,38 @@ function renderCreateForm() {
     if (!container) return;
     container.innerHTML = `
         <div class="section-label fade-up d1">发布新培训活动</div>
-        <div style="margin:0 16px;background:var(--bg-primary);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--separator);" class="fade-up d2">
+        <div style="margin:0 16px;background:var(--bg-elevated);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--separator);" class="fade-up d2">
           <div style="margin-bottom:14px;">
             <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动标题 *</label>
-            <input type="text" id="ce-title" placeholder="输入活动标题..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+            <input type="text" id="ce-title" placeholder="输入活动标题..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
           </div>
 
           <div style="display:flex; gap:12px; margin-bottom:14px;">
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">主讲人</label>
-              <input type="text" id="ce-speaker" placeholder="主讲人姓名" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+              <input type="text" id="ce-speaker" placeholder="主讲人姓名" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
             </div>
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">机构</label>
-              <input type="text" id="ce-affil" placeholder="所属机构" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+              <input type="text" id="ce-affil" placeholder="所属机构" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
             </div>
           </div>
 
           <div style="display:flex; gap:12px; margin-bottom:14px;">
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动日期 *</label>
-              <input type="date" id="ce-date" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+              <input type="date" id="ce-date" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
             </div>
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">开始时间 *</label>
-              <input type="time" id="ce-time" value="14:00" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+              <input type="time" id="ce-time" value="14:00" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
             </div>
           </div>
 
           <div style="display:flex; gap:12px; margin-bottom:14px;">
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动形式</label>
-              <select id="ce-type" style="width:100%;padding:10px 12px;">
+              <select id="ce-type" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;">
                 <option value="线上直播">线上直播</option>
                 <option value="线下讲座">线下讲座</option>
                 <option value="录播课程">录播课程</option>
@@ -334,13 +334,13 @@ function renderCreateForm() {
             </div>
             <div style="flex:1;">
               <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">人数上限</label>
-              <input type="number" id="ce-capacity" value="100" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;" />
+              <input type="number" id="ce-capacity" value="100" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
             </div>
           </div>
 
           <div style="margin-bottom:20px;">
             <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动描述</label>
-            <textarea id="ce-desc" placeholder="输入活动详细描述..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;resize:none;height:90px;line-height:1.6;"></textarea>
+            <textarea id="ce-desc" placeholder="输入活动详细描述..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;resize:none;height:90px;line-height:1.6;"></textarea>
           </div>
 
           <button onclick="submitCreateEvent()" class="btn btn-primary btn-full">

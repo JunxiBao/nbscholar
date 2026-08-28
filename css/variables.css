@@ -30,6 +30,8 @@ html[data-theme="light"] {
   /* 语义色 — 亮色 */
   --bg-base:       #F5F5F7;
   --bg-elevated:   #FFFFFF;
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #F0F0F5;
   --bg-grouped:    #F5F5F7;
   --bg-header:     rgba(255,255,255,0.88);
   --bg-tabbar:     rgba(249,249,249,0.94);
@@ -73,6 +75,8 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   --bg-base:       #000000;
   --bg-elevated:   #1C1C1E;
+  --bg-primary:    #1C1C1E;
+  --bg-secondary:  #2C2C2E;
   --bg-grouped:    #000000;
   --bg-header:     rgba(28,28,30,0.90);
   --bg-tabbar:     rgba(28,28,30,0.92);
