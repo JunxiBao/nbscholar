@@ -208,26 +208,26 @@ window.updateUserInfoUI = function() {
   if (hAvatar) hAvatar.src = avatar;
 
   // Settings Page
-  const sName = document.getElementById('settings-name');
-  if (sName) sName.textContent = name;
-  const sAcc = document.getElementById('settings-account');
-  if (sAcc) sAcc.textContent = `账号: ${user.account || '未设置'}`;
-  const sInst2 = document.getElementById('settings-institution');
-  if (sInst2) sInst2.textContent = inst;
+  const set_Name = document.getElementById('settings-name');
+  if (set_Name) set_Name.textContent = name;
+  const set_Acc = document.getElementById('settings-account');
+  if (set_Acc) set_Acc.textContent = `账号: ${user.account || '未设置'}`;
+  const set_Inst = document.getElementById('settings-institution');
+  if (set_Inst) set_Inst.textContent = inst;
   
-  const sAvImg = document.getElementById('settings-avatar-img');
-  const sAvIcon = document.getElementById('settings-avatar-icon');
-  const sAvWrapper = document.getElementById('settings-avatar-wrapper');
-  if (sAvImg && sAvIcon && sAvWrapper) {
+  const set_AvImg = document.getElementById('settings-avatar-img');
+  const set_AvIcon = document.getElementById('settings-avatar-icon');
+  const set_AvWrapper = document.getElementById('settings-avatar-wrapper');
+  if (set_AvImg && set_AvIcon && set_AvWrapper) {
     if (user.avatar_url) {
-      sAvImg.src = avatar;
-      sAvImg.style.display = 'block';
-      sAvIcon.style.display = 'none';
-      sAvWrapper.style.background = 'transparent';
+      set_AvImg.src = avatar;
+      set_AvImg.style.display = 'block';
+      set_AvIcon.style.display = 'none';
+      set_AvWrapper.style.background = 'transparent';
     } else {
-      sAvImg.style.display = 'none';
-      sAvIcon.style.display = 'block';
-      sAvWrapper.style.background = 'var(--blue-600)';
+      set_AvImg.style.display = 'none';
+      set_AvIcon.style.display = 'block';
+      set_AvWrapper.style.background = 'var(--blue-600)';
     }
   }
 };
