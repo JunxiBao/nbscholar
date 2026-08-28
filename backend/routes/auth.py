@@ -96,6 +96,13 @@ def update_profile():
     data = request.get_json(silent=True) or {}
     if 'institution' in data:
         user.institution = data['institution'].strip()
+    if 'age' in data:
+        try:
+            user.age = int(data['age'])
+        except (ValueError, TypeError):
+            pass
+    if 'avatar_url' in data and data['avatar_url'].startswith('data:image'):
+        user.avatar_url = save_base64_image(data['avatar_url'])
     
     db.session.commit()
     return ok({'user': user.to_dict()}, msg='资料已更新')

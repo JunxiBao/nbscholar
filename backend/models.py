@@ -23,6 +23,8 @@ class User(db.Model):
                                   cascade='all, delete-orphan')
     enrollments = db.relationship('Enrollment', backref='user', lazy='dynamic',
                                   cascade='all, delete-orphan')
+    chat_sessions = db.relationship('ChatSession', backref='user', lazy='dynamic',
+                                    cascade='all, delete-orphan')
 
     def to_dict(self):
         return {
@@ -202,5 +204,43 @@ class Enrollment(db.Model):
             'id':         self.id,
             'event_id':   self.event_id,
             'status':     self.status,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
+        }
+
+
+class ChatSession(db.Model):
+    __tablename__ = 'chat_sessions'
+
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    title      = db.Column(db.String(100), default='新对话')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    messages   = db.relationship('ChatMessage', backref='session', lazy='dynamic',
+                                 cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id':         self.id,
+            'title':      self.title,
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M'),
+        }
+
+
+class ChatMessage(db.Model):
+    __tablename__ = 'chat_messages'
+
+    id         = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('chat_sessions.id'), nullable=False, index=True)
+    role       = db.Column(db.String(20), nullable=False)  # user 或 assistant
+    content    = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id':         self.id,
+            'role':       self.role,
+            'content':    self.content,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
         }

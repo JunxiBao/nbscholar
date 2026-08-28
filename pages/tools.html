@@ -7,17 +7,26 @@
   AI 文献助手
 </div>
 
-<div class="chat-wrap fade-up">
-  <div class="chat-header">
+<div class="chat-wrap fade-up" style="margin-bottom:24px;">
+  <div class="chat-header" style="display:flex; justify-content:space-between; align-items:center;">
     <div class="chat-status">
       <div class="chat-dot"></div>
       <div style="position:relative; display:flex; align-items:center; background:var(--bg-secondary); padding:4px 28px 4px 10px; border-radius:var(--r-full); border:1px solid var(--separator); cursor:pointer;">
-        <select style="background:transparent; border:none; color:var(--text-primary); font-size:13px; font-weight:500; padding:0; margin:0; appearance:none; cursor:pointer; outline:none; font-family:var(--font); z-index:1; width:100%;">
-          <option>DeepSeek Chat</option>
-          <option>DeepSeek Reasoner</option>
+        <select id="chat-model-select" style="background:transparent; border:none; color:var(--text-primary); font-size:13px; font-weight:500; padding:0; margin:0; appearance:none; cursor:pointer; outline:none; font-family:var(--font); z-index:1; width:100%;">
+          <option value="deepseek-chat">DeepSeek Chat</option>
+          <option value="deepseek-reasoner">DeepSeek Reasoner</option>
         </select>
         <ion-icon name="chevron-down-outline" style="font-size:12px; color:var(--text-tertiary); position:absolute; right:10px; pointer-events:none; z-index:0;"></ion-icon>
       </div>
+    </div>
+    
+    <div id="chat-header-actions" style="display:flex; gap:8px;">
+      <button class="btn btn-muted btn-sm" onclick="window.newChat && window.newChat()" title="新建对话">
+        <ion-icon name="add-outline" style="font-size:16px; margin:0;"></ion-icon>
+      </button>
+      <button class="btn btn-muted btn-sm" onclick="window.openHistoryModal && window.openHistoryModal()" title="历史记录">
+        <ion-icon name="time-outline" style="font-size:16px; margin:0;"></ion-icon>
+      </button>
     </div>
   </div>
 
@@ -32,7 +41,7 @@
     </div>
   </div>
 
-  <div class="chat-shortcuts">
+  <div class="chat-shortcuts" id="chat-shortcuts-container">
     <button class="shortcut-pill" onclick="fillChat('请帮我总结这篇文献的核心方法和主要结论')">总结文献</button>
     <button class="shortcut-pill" onclick="fillChat('提取这篇文献的核心数据和实验结果')">提取数据</button>
     <button class="shortcut-pill" onclick="fillChat('分析该研究的创新点和局限性')">分析创新点</button>
@@ -44,6 +53,48 @@
     <button id="chat-send"><ion-icon name="arrow-up"></ion-icon></button>
   </div>
 </div>
+
+<!-- 聊天历史弹窗 -->
+<div id="chat-history-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+  <div style="background:var(--bg-elevated); width:360px; max-height:80vh; display:flex; flex-direction:column; border-radius:var(--r-lg); box-shadow:var(--shadow-xl); border:1px solid var(--separator); transform:scale(0.95); animation:modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+    <div style="padding:16px; border-bottom:1px solid var(--separator); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:16px; font-weight:600;">历史会话</h3>
+      <ion-icon name="close-outline" style="font-size:20px; cursor:pointer; color:var(--text-tertiary);" onclick="window.closeHistoryModal && window.closeHistoryModal()"></ion-icon>
+    </div>
+    <div id="chat-history-list" style="flex:1; overflow-y:auto; padding:12px;">
+      <div style="text-align:center; padding:20px; color:var(--text-tertiary); font-size:13px;">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<style>
+.chat-session-item {
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  margin-bottom: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.chat-session-item:hover { background: var(--bg-secondary); }
+.chat-session-item.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  font-weight: 500;
+}
+[data-theme="dark"] .chat-session-item.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--blue-400);
+}
+.chat-session-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-session-del { padding: 4px; border-radius: 4px; display: none; color: var(--red-500); }
+.chat-session-item:hover .chat-session-del { display: flex; }
+.chat-session-del:hover { background: rgba(239, 68, 68, 0.1); }
+</style>
 
 <script>
 function fillChat(text) {

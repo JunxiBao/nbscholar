@@ -1,10 +1,13 @@
 """智能工具路由：AI 对话 / 翻译 / 引用格式转换"""
 import re
 import json
-from flask import Blueprint, request, current_app, Response, stream_with_context
+import threading
+from flask import Blueprint, request, current_app, Response, stream_with_context, g
 from openai import OpenAI
 from utils.response import ok, err
-from utils.auth_helper import optional_login
+from utils.auth_helper import optional_login, login_required
+from extensions import db
+from models import ChatSession, ChatMessage
 
 tools_bp = Blueprint('tools', __name__, url_prefix='/api/tools')
 
@@ -16,18 +19,64 @@ def _get_client():
     )
 
 
-# ===================== AI 文献助手（流式） =====================
+def _generate_title(app, session_id, first_msg):
+    with app.app_context():
+        try:
+            client = _get_client()
+            resp = client.chat.completions.create(
+                model='deepseek-chat',
+                messages=[
+                    {'role': 'system', 'content': '你是一个标题生成助手。请用10个字以内的简体中文概括用户的意图或问题，只输出标题本身，不要加书名号。'},
+                    {'role': 'user', 'content': first_msg}
+                ],
+                max_tokens=20,
+                temperature=0.3
+            )
+            title = resp.choices[0].message.content.strip()
+            session = ChatSession.query.get(session_id)
+            if session:
+                session.title = title
+                db.session.commit()
+        except Exception as e:
+            app.logger.error(f'Title generation error: {e}')
+
+
 @tools_bp.route('/chat', methods=['POST'])
 @optional_login
 def chat():
-    data     = request.get_json(silent=True) or {}
-    messages = data.get('messages', [])
-    model    = data.get('model', 'deepseek-chat')
+    data       = request.get_json(silent=True) or {}
+    messages   = data.get('messages', [])
+    model      = data.get('model', 'deepseek-chat')
+    session_id = data.get('session_id')
 
     if not messages:
         return err('消息不能为空')
 
-    # 系统提示
+    user_id = getattr(g, 'user_id', None)
+    is_first_msg = False
+
+    if user_id:
+        if not session_id:
+            session = ChatSession(user_id=user_id)
+            db.session.add(session)
+            db.session.commit()
+            session_id = session.id
+            is_first_msg = True
+        else:
+            session = ChatSession.query.filter_by(id=session_id, user_id=user_id).first()
+            if not session:
+                session_id = None
+        
+        if session_id:
+            last_user_msg = messages[-1]['content']
+            db.session.add(ChatMessage(session_id=session_id, role='user', content=last_user_msg))
+            session.updated_at = db.func.now()
+            db.session.commit()
+            
+            if is_first_msg:
+                app = current_app._get_current_object()
+                threading.Thread(target=_generate_title, args=(app, session_id, last_user_msg)).start()
+
     system = {
         'role': 'system',
         'content': (
@@ -38,6 +87,10 @@ def chat():
     full_messages = [system] + messages
 
     def generate():
+        if is_first_msg and session_id:
+            yield f"data: {json.dumps({'_session_id': session_id})}\n\n"
+            
+        full_reply = ""
         try:
             client = _get_client()
             stream = client.chat.completions.create(
@@ -48,8 +101,13 @@ def chat():
             for chunk in stream:
                 delta = chunk.choices[0].delta
                 if delta.content:
+                    full_reply += delta.content
                     yield f"data: {json.dumps({'content': delta.content}, ensure_ascii=False)}\n\n"
             yield "data: [DONE]\n\n"
+            
+            if user_id and session_id and full_reply:
+                db.session.add(ChatMessage(session_id=session_id, role='assistant', content=full_reply))
+                db.session.commit()
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)}, ensure_ascii=False)}\n\n"
             yield "data: [DONE]\n\n"
@@ -63,6 +121,34 @@ def chat():
             'Access-Control-Allow-Origin':'*',
         }
     )
+
+
+@tools_bp.route('/chat/sessions', methods=['GET'])
+@login_required
+def get_sessions():
+    sessions = ChatSession.query.filter_by(user_id=g.user_id).order_by(ChatSession.updated_at.desc()).all()
+    return ok([s.to_dict() for s in sessions])
+
+
+@tools_bp.route('/chat/sessions/<int:session_id>', methods=['GET'])
+@login_required
+def get_session_history(session_id):
+    session = ChatSession.query.filter_by(id=session_id, user_id=g.user_id).first()
+    if not session:
+        return err('会话不存在', 404)
+    msgs = session.messages.order_by(ChatMessage.created_at.asc()).all()
+    return ok([m.to_dict() for m in msgs])
+
+
+@tools_bp.route('/chat/sessions/<int:session_id>', methods=['DELETE'])
+@login_required
+def delete_session(session_id):
+    session = ChatSession.query.filter_by(id=session_id, user_id=g.user_id).first()
+    if not session:
+        return err('会话不存在', 404)
+    db.session.delete(session)
+    db.session.commit()
+    return ok(msg='已删除')
 
 
 # ===================== 翻译 / 润色 =====================

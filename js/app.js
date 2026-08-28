@@ -141,22 +141,26 @@ function initSettings() {
     });
   }
 
-  // 修改密码逻辑
-  const updatePwdBtn = document.getElementById('settings-update-pwd-btn');
-  if (updatePwdBtn) {
-    updatePwdBtn.onclick = async () => {
-      const p1 = document.getElementById('settings-new-pwd').value;
-      const p2 = document.getElementById('settings-confirm-pwd').value;
-      if (!p1 || p1.length < 6) return showToast('新密码长度不能少于 6 位');
-      if (p1 !== p2) return showToast('两次输入的密码不一致');
-      
-      try {
-        const res = await Auth.updatePassword(p1);
-        showToast(res.msg || '密码修改成功，请重新登录');
-        setTimeout(() => Auth.logout(), 1500);
-      } catch (err) {
-        showToast('修改失败：' + err.message);
-      }
+  // 头像上传逻辑
+  const avWrapper = document.getElementById('settings-avatar-wrapper');
+  const avInput = document.getElementById('settings-avatar-input');
+  if (avWrapper && avInput) {
+    avWrapper.onclick = () => avInput.click();
+    avInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Str = event.target.result;
+        try {
+          await Auth.updateProfile({ avatar_url: base64Str });
+          showToast('头像已更新');
+          if (window.updateUserInfoUI) window.updateUserInfoUI();
+        } catch (err) {
+          showToast('头像更新失败：' + err.message);
+        }
+      };
+      reader.readAsDataURL(file);
     };
   }
 
@@ -210,20 +214,80 @@ function initSettings() {
   if (window.updateUserInfoUI) window.updateUserInfoUI();
 }
 
-window.editInstitution = async () => {
+// ===== 个人资料修改弹窗逻辑 =====
+let currentEditField = null;
+
+window.closeEditModal = () => {
+  const m = document.getElementById('edit-profile-modal');
+  if (m) m.style.display = 'none';
+};
+
+window.openEditModal = (field, title, defaultValue) => {
+  currentEditField = field;
+  document.getElementById('edit-profile-title').textContent = title;
+  const input = document.getElementById('edit-profile-input');
+  input.value = defaultValue;
+  document.getElementById('edit-profile-modal').style.display = 'flex';
+  setTimeout(() => input.focus(), 100);
+};
+
+document.getElementById('edit-profile-save-btn')?.addEventListener('click', async () => {
+  const val = document.getElementById('edit-profile-input').value.trim();
+  if (!val && currentEditField !== 'institution') return showToast('内容不能为空');
+  
+  if (currentEditField === 'age') {
+    if (!/^\d+$/.test(val)) return showToast('年龄必须为数字');
+  }
+
+  try {
+    await Auth.updateProfile({ [currentEditField]: val });
+    showToast('修改成功');
+    window.closeEditModal();
+    if (window.updateUserInfoUI) window.updateUserInfoUI();
+  } catch (err) {
+    showToast('修改失败：' + err.message);
+  }
+});
+
+window.editInstitution = () => {
   const user = Auth.getUser();
-  if (!user) return;
-  const newInst = prompt('请输入您的新所属机构：', user.institution || '');
-  if (newInst === null || newInst.trim() === user.institution) return;
+  if (user) window.openEditModal('institution', '修改所属机构', user.institution || '');
+};
+
+window.editAge = () => {
+  const user = Auth.getUser();
+  if (user) window.openEditModal('age', '修改年龄', user.age || '');
+};
+
+// ===== 修改密码弹窗逻辑 =====
+window.closePwdModal = () => {
+  const m = document.getElementById('edit-pwd-modal');
+  if (m) m.style.display = 'none';
+};
+
+window.openPwdModal = () => {
+  document.getElementById('edit-new-pwd').value = '';
+  document.getElementById('edit-confirm-pwd').value = '';
+  document.getElementById('edit-pwd-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('edit-new-pwd').focus(), 100);
+};
+
+document.getElementById('edit-pwd-save-btn')?.addEventListener('click', async () => {
+  const p1 = document.getElementById('edit-new-pwd').value;
+  const p2 = document.getElementById('edit-confirm-pwd').value;
+  
+  if (!p1 || p1.length < 6) return showToast('新密码长度不能少于 6 位');
+  if (p1 !== p2) return showToast('两次输入的密码不一致');
   
   try {
-    await Auth.updateProfile({ institution: newInst.trim() });
-    showToast('所属机构已更新');
-    if (window.updateUserInfoUI) window.updateUserInfoUI();
-  } catch (e) {
-    showToast('更新失败：' + e.message);
+    const res = await Auth.updatePassword(p1);
+    showToast(res.msg || '密码修改成功，请重新登录');
+    window.closePwdModal();
+    setTimeout(() => Auth.logout(), 1500);
+  } catch (err) {
+    showToast('修改失败：' + err.message);
   }
-};
+});
 
 // ===== 侧边栏收藏数更新 =====
 window.updateNavFavCount = async function() {
@@ -260,6 +324,27 @@ function showToast(msg, duration = 2500) {
 }
 
 // ===== 动态更新用户信息 UI =====
+function _generateTextAvatar(name) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 120;
+  canvas.height = 120;
+  const ctx = canvas.getContext('2d');
+  
+  const colors = ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#059669', '#ea580c'];
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+  ctx.fillStyle = colors[sum % colors.length];
+  ctx.fillRect(0, 0, 120, 120);
+  
+  ctx.font = 'bold 54px sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name.charAt(0).toUpperCase(), 60, 64);
+  
+  return canvas.toDataURL('image/png');
+}
+
 window.updateUserInfoUI = function() {
   if (!window.Auth) return;
   const user = Auth.getUser();
@@ -271,10 +356,9 @@ window.updateUserInfoUI = function() {
   let avatar = user.avatar_url;
   // 如果保存的是以 /api 开头的相对路径，需要拼接成完整 URL
   if (avatar && avatar.startsWith('/api')) {
-    // 假设 API_BASE 在 api.js 中全局定义
     if (typeof API_BASE !== 'undefined') avatar = API_BASE + avatar;
-  } else if (!avatar || !avatar.startsWith('data:')) {
-    avatar = 'statics/images/wang.png'; // 默认底图
+  } else if (!avatar || (!avatar.startsWith('data:') && !avatar.startsWith('http'))) {
+    avatar = _generateTextAvatar(name);
   }
 
   // Sidebar
@@ -289,14 +373,9 @@ window.updateUserInfoUI = function() {
   const mAvatar = document.getElementById('mobile-avatar');
   const mIcon = document.getElementById('mobile-avatar-icon');
   if (mAvatar && mIcon) {
-    if (user.avatar_url) {
-      mAvatar.src = avatar;
-      mAvatar.style.display = 'block';
-      mIcon.style.display = 'none';
-    } else {
-      mAvatar.style.display = 'none';
-      mIcon.style.display = 'block';
-    }
+    mAvatar.src = avatar;
+    mAvatar.style.display = 'block';
+    mIcon.style.display = 'none';
   }
 
   // Home Page
@@ -310,25 +389,19 @@ window.updateUserInfoUI = function() {
   // Settings Page
   const set_Name = document.getElementById('settings-name');
   if (set_Name) set_Name.textContent = name;
-  const set_Acc = document.getElementById('settings-account');
-  if (set_Acc) set_Acc.textContent = `账号: ${user.account || '未设置'}`;
   const set_Inst = document.getElementById('settings-institution');
   if (set_Inst) set_Inst.textContent = inst;
+  const set_Age = document.getElementById('settings-age');
+  if (set_Age) set_Age.textContent = user.age || '-';
   
   const set_AvImg = document.getElementById('settings-avatar-img');
   const set_AvIcon = document.getElementById('settings-avatar-icon');
   const set_AvWrapper = document.getElementById('settings-avatar-wrapper');
   if (set_AvImg && set_AvIcon && set_AvWrapper) {
-    if (user.avatar_url) {
-      set_AvImg.src = avatar;
-      set_AvImg.style.display = 'block';
-      set_AvIcon.style.display = 'none';
-      set_AvWrapper.style.background = 'transparent';
-    } else {
-      set_AvImg.style.display = 'none';
-      set_AvIcon.style.display = 'block';
-      set_AvWrapper.style.background = 'var(--blue-600)';
-    }
+    set_AvImg.src = avatar;
+    set_AvImg.style.display = 'block';
+    set_AvIcon.style.display = 'none';
+    set_AvWrapper.style.background = 'transparent';
   }
 };
 

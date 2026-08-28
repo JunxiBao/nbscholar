@@ -132,14 +132,18 @@ const JournalAPI = {
 const ToolsAPI = {
   translate(text, type)       { return apiPost('/api/tools/translate', { text, type }); },
   cite(citation, format)      { return apiPost('/api/tools/cite', { citation, format }); },
+  getChatSessions()           { return apiGet('/api/tools/chat/sessions'); },
+  getChatHistory(id)          { return apiGet(`/api/tools/chat/sessions/${id}`); },
+  deleteChatSession(id)       { return apiDelete(`/api/tools/chat/sessions/${id}`); },
 
   /**
    * 流式 AI 对话（SSE）
-   * @param {Array} messages  消息列表 [{role, content}]
-   * @param {Function} onChunk 收到每个 chunk 时的回调 (content: string) => void
+   * @param {Array} messages   消息列表 [{role, content}]
+   * @param {number} session_id 可选会话 ID
+   * @param {Function} onChunk 收到每个 chunk 时的回调 (content: string, newSessionId?: number) => void
    * @param {Function} onDone  完成时的回调
    */
-  async chatStream(messages, onChunk, onDone) {
+  async chatStream(messages, session_id, onChunk, onDone) {
     const token = localStorage.getItem('nbscholar_token');
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -147,7 +151,7 @@ const ToolsAPI = {
     const res = await fetch(`${API_BASE}/api/tools/chat`, {
       method:  'POST',
       headers,
-      body:    JSON.stringify({ messages }),
+      body:    JSON.stringify({ messages, session_id }),
     });
 
     const reader  = res.body.getReader();
@@ -168,6 +172,7 @@ const ToolsAPI = {
         if (payload === '[DONE]') { onDone?.(); return; }
         try {
           const obj = JSON.parse(payload);
+          if (obj._session_id) onChunk('', obj._session_id); // 传递新建的 session_id
           if (obj.content) onChunk(obj.content);
           if (obj.error)   onChunk(`\n[错误] ${obj.error}`);
         } catch {}

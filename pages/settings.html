@@ -5,13 +5,16 @@
   <div class="section-label fade-up">账户信息</div>
   <div class="list-group fade-up" id="settings-user-info">
     <div class="list-row">
-      <div class="list-icon" id="settings-avatar-wrapper" style="background:var(--blue-600);overflow:hidden;border-radius:50%;">
+      <div class="list-icon" id="settings-avatar-wrapper" style="position:relative; background:var(--blue-600);overflow:hidden;border-radius:50%;cursor:pointer;">
         <ion-icon name="person-outline" id="settings-avatar-icon"></ion-icon>
         <img id="settings-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+        <div style="position:absolute; bottom:0; left:0; width:100%; height:30%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;">
+          <ion-icon name="pencil" style="color:white; font-size:12px;"></ion-icon>
+        </div>
+        <input type="file" id="settings-avatar-input" accept="image/*" style="display:none;" />
       </div>
       <div class="list-text">
         <div class="list-title" id="settings-name">加载中...</div>
-        <div class="list-subtitle" id="settings-account"></div>
       </div>
     </div>
     <div class="list-row" onclick="window.editInstitution && window.editInstitution()">
@@ -22,21 +25,21 @@
       </div>
       <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
     </div>
-  </div>
-
-  <!-- 安全设置 -->
-  <div class="section-label fade-up">安全设置</div>
-  <div class="list-group fade-up" style="padding:16px;">
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      <input type="password" id="settings-new-pwd" placeholder="请输入新密码（至少6位）"
-        style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" 
-        onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
-      <input type="password" id="settings-confirm-pwd" placeholder="请再次确认新密码"
-        style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;color:var(--text-primary);background:var(--bg-secondary);outline:none;box-sizing:border-box;transition:border-color 0.15s;" 
-        onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
-      <button class="btn btn-primary" id="settings-update-pwd-btn" style="border-radius:var(--r-md); width:100%;">
-        更新密码
-      </button>
+    <div class="list-row" onclick="window.editAge && window.editAge()">
+      <ion-icon name="calendar-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
+      <div class="list-text">
+        <div class="list-title" id="settings-age">-</div>
+        <div class="list-subtitle">年龄</div>
+      </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
+    </div>
+    <div class="list-row" onclick="window.openPwdModal && window.openPwdModal()">
+      <ion-icon name="lock-closed-outline" style="color:var(--text-tertiary);font-size:20px;flex-shrink:0;"></ion-icon>
+      <div class="list-text">
+        <div class="list-title">修改密码</div>
+        <div class="list-subtitle">重置您的登录凭证</div>
+      </div>
+      <ion-icon name="chevron-forward" class="list-chevron"></ion-icon>
     </div>
   </div>
 
@@ -100,6 +103,39 @@
       <div style="display:flex; gap:12px;">
         <button class="btn btn-secondary" style="flex:1; border-radius:var(--r-md);" onclick="window.closeDeleteModal && window.closeDeleteModal()">取消</button>
         <button class="btn" style="flex:1; background:var(--red-500); color:white; border:none; border-radius:var(--r-md); box-shadow:0 2px 4px rgba(239,68,68,0.2);" id="delete-modal-confirm-btn">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通用编辑弹窗 -->
+  <div id="edit-profile-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:var(--bg-elevated); width:320px; border-radius:var(--r-lg); padding:24px; box-shadow:var(--shadow-xl); border:1px solid var(--separator); transform:scale(0.95); animation:modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <h3 style="margin:0 0 16px 0; font-size:17px; color:var(--text-primary); font-weight:600;" id="edit-profile-title">修改</h3>
+      <input type="text" id="edit-profile-input" 
+        style="width:100%; border:1px solid var(--border-input); border-radius:var(--r-md); padding:10px 12px; font-size:14px; color:var(--text-primary); background:var(--bg-secondary); outline:none; box-sizing:border-box; margin-bottom:24px; transition:border-color 0.15s;" 
+        onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
+      <div style="display:flex; gap:12px;">
+        <button class="btn btn-secondary" style="flex:1; border-radius:var(--r-md);" onclick="window.closeEditModal && window.closeEditModal()">取消</button>
+        <button class="btn btn-primary" style="flex:1; border-radius:var(--r-md);" id="edit-profile-save-btn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修改密码弹窗 -->
+  <div id="edit-pwd-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:var(--bg-elevated); width:320px; border-radius:var(--r-lg); padding:24px; box-shadow:var(--shadow-xl); border:1px solid var(--separator); transform:scale(0.95); animation:modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <h3 style="margin:0 0 16px 0; font-size:17px; color:var(--text-primary); font-weight:600;">修改密码</h3>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+        <input type="password" id="edit-new-pwd" placeholder="新密码（至少6位）"
+          style="width:100%; border:1px solid var(--border-input); border-radius:var(--r-md); padding:10px 12px; font-size:14px; color:var(--text-primary); background:var(--bg-secondary); outline:none; box-sizing:border-box; transition:border-color 0.15s;" 
+          onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
+        <input type="password" id="edit-confirm-pwd" placeholder="确认新密码"
+          style="width:100%; border:1px solid var(--border-input); border-radius:var(--r-md); padding:10px 12px; font-size:14px; color:var(--text-primary); background:var(--bg-secondary); outline:none; box-sizing:border-box; transition:border-color 0.15s;" 
+          onfocus="this.style.borderColor='var(--blue-500)'" onblur="this.style.borderColor='var(--border-input)'" />
+      </div>
+      <div style="display:flex; gap:12px;">
+        <button class="btn btn-secondary" style="flex:1; border-radius:var(--r-md);" onclick="window.closePwdModal && window.closePwdModal()">取消</button>
+        <button class="btn btn-primary" style="flex:1; border-radius:var(--r-md);" id="edit-pwd-save-btn">更新</button>
       </div>
     </div>
   </div>
