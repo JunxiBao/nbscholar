@@ -316,7 +316,7 @@ async function revokeApproval(id) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
+                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')
             },
             body: JSON.stringify({status: 'pending'})
         });
@@ -341,7 +341,7 @@ async function approveAdmin(id, status) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')}
+                'Authorization': 'Bearer ' + localStorage.getItem('superAdminToken')
             },
             body: JSON.stringify({status: status})
         });
