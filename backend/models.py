@@ -1,6 +1,11 @@
 """SQLAlchemy 数据模型"""
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from extensions import db
+
+
+def beijing_now():
+    """获取当前准确的北京时间 (UTC+8)"""
+    return datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None)
 
 
 class User(db.Model):
@@ -14,7 +19,7 @@ class User(db.Model):
     age         = db.Column(db.Integer, nullable=True)
     gender      = db.Column(db.String(10), default='')
     avatar_url  = db.Column(db.String(500), default='')
-    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at  = db.Column(db.DateTime, default=beijing_now)
 
     # 关系
     histories   = db.relationship('SearchHistory', backref='user', lazy='dynamic',
@@ -55,7 +60,7 @@ class Paper(db.Model):
     impact_factor = db.Column(db.Float, nullable=True)
     citations   = db.Column(db.Integer, default=0)
     url         = db.Column(db.String(500), default='')
-    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at  = db.Column(db.DateTime, default=beijing_now)
 
     def to_dict(self):
         return {
@@ -83,7 +88,7 @@ class SearchHistory(db.Model):
     keyword    = db.Column(db.String(300), nullable=False)
     source     = db.Column(db.String(100), default='')
     result_cnt = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=beijing_now)
 
     def to_dict(self):
         return {
@@ -101,7 +106,7 @@ class Favorite(db.Model):
     id         = db.Column(db.Integer, primary_key=True)
     user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     paper_id   = db.Column(db.Integer, db.ForeignKey('papers.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=beijing_now)
 
     paper      = db.relationship('Paper')
 
@@ -163,7 +168,7 @@ class TrainingEvent(db.Model):
     enrolled_cnt = db.Column(db.Integer, default=0)
     description  = db.Column(db.Text, default='')
     color        = db.Column(db.String(20), default='#2563EB')
-    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at   = db.Column(db.DateTime, default=beijing_now)
 
     enrollments  = db.relationship('Enrollment', backref='event', lazy='dynamic',
                                    cascade='all, delete-orphan')
@@ -193,7 +198,7 @@ class Enrollment(db.Model):
     user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     event_id   = db.Column(db.Integer, db.ForeignKey('training_events.id'), nullable=False)
     status     = db.Column(db.String(20), default='enrolled')  # enrolled/cancelled/attended
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=beijing_now)
 
     __table_args__ = (
         db.UniqueConstraint('user_id', 'event_id', name='uq_user_event'),
@@ -209,33 +214,39 @@ class Enrollment(db.Model):
 
 
 class ChatSession(db.Model):
+    """AI 对话会话"""
     __tablename__ = 'chat_sessions'
 
     id         = db.Column(db.Integer, primary_key=True)
     user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
-    title      = db.Column(db.String(100), default='新对话')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    title      = db.Column(db.String(200), default='新对话')
+    tool_type  = db.Column(db.String(50), default='chat')  # 'chat', 'translate', 'ref_format', etc.
+    created_at = db.Column(db.DateTime, default=beijing_now)
+    updated_at = db.Column(db.DateTime, default=beijing_now, onupdate=beijing_now)
     
     messages   = db.relationship('ChatMessage', backref='session', lazy='dynamic',
-                                 cascade='all, delete-orphan')
+                                 cascade='all, delete-orphan',
+                                 order_by='ChatMessage.created_at.asc()')
 
     def to_dict(self):
         return {
             'id':         self.id,
             'title':      self.title,
+            'tool_type':  self.tool_type,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M'),
         }
 
 
 class ChatMessage(db.Model):
+    """AI 对话单条消息"""
     __tablename__ = 'chat_messages'
 
     id         = db.Column(db.Integer, primary_key=True)
     session_id = db.Column(db.Integer, db.ForeignKey('chat_sessions.id'), nullable=False, index=True)
     role       = db.Column(db.String(20), nullable=False)  # user 或 assistant
     content    = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=beijing_now)
 
     def to_dict(self):
         return {
@@ -252,11 +263,11 @@ class AdminUser(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
     account     = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password    = db.Column(db.String(255), nullable=False)
-    role        = db.Column(db.String(20), default='admin') # super_admin or admin
-    status      = db.Column(db.String(20), default='pending') # pending, approved, rejected
+    role        = db.Column(db.String(50), default='admin') # 'admin' 或 'super_admin'
+    status      = db.Column(db.String(20), default='pending') # 'pending', 'approved', 'rejected'
     name        = db.Column(db.String(60), default='')
-    remark      = db.Column(db.String(500), default='')
-    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    remark      = db.Column(db.String(255), default='')
+    created_at  = db.Column(db.DateTime, default=beijing_now)
 
     def to_dict(self):
         return {

@@ -1,7 +1,7 @@
 """学术检索路由（本地 papers 表全文/模糊搜索）"""
 from flask import Blueprint, request, g
 from sqlalchemy import or_
-from models import Paper, SearchHistory
+from models import Paper, SearchHistory, beijing_now
 from extensions import db
 from utils.response import ok, err
 from utils.auth_helper import optional_login
@@ -90,7 +90,7 @@ def search():
     if getattr(g, 'user_id', None) and total > 0:
         hist = SearchHistory.query.filter_by(user_id=g.user_id, keyword=q).first()
         if hist:
-            hist.created_at = datetime.utcnow()
+            hist.created_at = beijing_now()
             hist.result_cnt = total
             hist.source = source
         else:

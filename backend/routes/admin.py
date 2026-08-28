@@ -15,8 +15,8 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 @admin_bp.route('/pending', methods=['GET'])
 @super_admin_required
 def list_pending_admins():
-    """列出所有待审批和已拒绝的管理员账号"""
-    admins = AdminUser.query.filter(AdminUser.status.in_(['pending', 'rejected'])).order_by(AdminUser.created_at.desc()).all()
+    """列出所有待审批和已拒绝的管理员账号（排除超级管理员自身）"""
+    admins = AdminUser.query.filter(AdminUser.role == 'admin', AdminUser.status.in_(['pending', 'rejected'])).order_by(AdminUser.created_at.desc()).all()
     return ok({'admins': [a.to_dict() for a in admins]})
 
 
@@ -30,9 +30,9 @@ def approve_admin(admin_id):
     if status not in ['approved', 'rejected', 'pending']:
         return err('无效的状态值')
         
-    admin_user = AdminUser.query.get(admin_id)
+    admin_user = AdminUser.query.filter_by(id=admin_id, role='admin').first()
     if not admin_user:
-        return not_found('管理员账号不存在')
+        return not_found('待审批的管理员账号不存在')
         
     admin_user.status = status
     db.session.commit()
@@ -49,8 +49,8 @@ def list_all_admins():
 @admin_bp.route('/history', methods=['GET'])
 @super_admin_required
 def get_approval_history():
-    """获取审批记录"""
-    admins = AdminUser.query.filter(AdminUser.status != 'pending').order_by(AdminUser.created_at.desc()).all()
+    """获取审批记录（排除超级管理员自身）"""
+    admins = AdminUser.query.filter(AdminUser.role == 'admin', AdminUser.status.in_(['approved', 'rejected'])).order_by(AdminUser.created_at.desc()).all()
     return ok({'admins': [a.to_dict() for a in admins]})
 
 
