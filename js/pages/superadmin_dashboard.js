@@ -446,6 +446,7 @@ function updateIndicators() {
     const index = tabs.findIndex(t => t.dataset.tab === currentSuperTab);
     if (index !== -1) {
       indicator.style.transform = `translateX(${index * 100}%)`;
+      indicator.className = `tab-indicator ${currentSuperTab}`;
     }
   }
   const sidebarIndicator = document.getElementById('sidebar-indicator');
@@ -454,6 +455,7 @@ function updateIndicators() {
     if (activeNavItem) {
       sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
       sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
+      sidebarIndicator.className = `sidebar-indicator ${currentSuperTab}`;
     }
   }
 }

@@ -439,31 +439,29 @@ async function viewEnrollments(eventId) {
         });
         const data = await res.json();
         if(data.code === 0) {
-            const main = document.getElementById('main-content');
+            const container = document.getElementById('admin-tab-content');
             let html = `
               <!-- 顶部信息区域 -->
-              <div class="fade-up d1" style="background:var(--bg-elevated); border-bottom:1px solid var(--separator); padding:24px; margin:-24px -24px 24px -24px;">
-                <div style="max-width:1000px; margin:0 auto;">
-                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-                      <button onclick="loadAdminEvents()" class="btn btn-outline" style="padding:4px 8px; font-size:18px;"><ion-icon name="arrow-back-outline"></ion-icon></button>
-                      <h2 style="font-size:24px; font-weight:700; color:var(--text-primary); margin:0; letter-spacing:-0.5px;">报名名单</h2>
-                  </div>
-                  <p style="font-size:14px; color:var(--text-secondary); margin:0;">${data.data.event.title}</p>
+              <div class="fade-up d1" style="background:var(--bg-elevated); border-radius:var(--r-md); border:1px solid var(--separator); padding:20px; margin-bottom:24px;">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                    <button onclick="loadAdminEvents()" class="btn btn-outline" style="padding:4px 8px; font-size:18px;"><ion-icon name="arrow-back-outline"></ion-icon></button>
+                    <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin:0; letter-spacing:-0.5px;">报名名单</h2>
                 </div>
+                <p style="font-size:14px; color:var(--text-secondary); margin:0;">${data.data.event.title}</p>
               </div>
-                <div class="fade-up d2" style="max-width:1000px; margin:0 auto;">
-                    <div class="paper-card" style="padding:0; overflow:hidden;">
-                        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;">
-                            <thead style="background:var(--bg-header); border-bottom:1px solid var(--border-color);">
-                                <tr>
-                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">姓名</th>
-                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">账号</th>
-                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">机构</th>
-                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">报名时间</th>
-                                    <th style="padding:16px; font-weight:600; color:var(--text-secondary);">状态</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+              <div class="fade-up d2">
+                  <div class="paper-card" style="padding:0; overflow:hidden;">
+                      <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;">
+                          <thead style="background:var(--bg-header); border-bottom:1px solid var(--border-color);">
+                              <tr>
+                                  <th style="padding:16px; font-weight:600; color:var(--text-secondary);">姓名</th>
+                                  <th style="padding:16px; font-weight:600; color:var(--text-secondary);">账号</th>
+                                  <th style="padding:16px; font-weight:600; color:var(--text-secondary);">机构</th>
+                                  <th style="padding:16px; font-weight:600; color:var(--text-secondary);">报名时间</th>
+                                  <th style="padding:16px; font-weight:600; color:var(--text-secondary);">状态</th>
+                              </tr>
+                          </thead>
+                          <tbody>
             `;
             
             if(data.data.enrollments.length === 0) {
@@ -473,12 +471,15 @@ async function viewEnrollments(eventId) {
                 </td></tr>`;
             } else {
                 data.data.enrollments.forEach(en => {
+                    const userName = en.user ? (en.user.name || '未知') : '未知';
+                    const userAccount = en.user ? (en.user.account || '') : '';
+                    const userInst = en.user ? (en.user.institution || '') : '';
                     html += `
                                 <tr style="border-bottom:1px solid var(--border-color);">
-                                    <td style="padding:16px; color:var(--text-primary); font-weight:500;">${en.name}</td>
-                                    <td style="padding:16px; color:var(--text-secondary);">${en.account}</td>
-                                    <td style="padding:16px; color:var(--text-secondary);">${en.institution}</td>
-                                    <td style="padding:16px; color:var(--text-secondary);">${en.created_at}</td>
+                                    <td style="padding:16px; color:var(--text-primary); font-weight:500;">${userName}</td>
+                                    <td style="padding:16px; color:var(--text-secondary);">${userAccount}</td>
+                                    <td style="padding:16px; color:var(--text-secondary);">${userInst}</td>
+                                    <td style="padding:16px; color:var(--text-secondary);">${en.enrolled_at || ''}</td>
                                     <td style="padding:16px;"><span class="chip ${en.status === 'enrolled' ? 'chip-green' : 'chip-red'}">${en.status === 'enrolled' ? '已报名' : '已取消'}</span></td>
                                 </tr>
                     `;
@@ -486,7 +487,7 @@ async function viewEnrollments(eventId) {
             }
             
             html += `</tbody></table></div></div>`;
-            main.innerHTML = html;
+            container.innerHTML = html;
         } else {
             showToast((data.msg || '操作失败'), 'error');
         }
@@ -543,6 +544,7 @@ function updateIndicators() {
     const index = tabs.findIndex(t => t.dataset.tab === currentTab);
     if (index !== -1) {
       indicator.style.transform = `translateX(${index * 100}%)`;
+      indicator.className = `tab-indicator ${currentTab}`;
     }
   }
   const sidebarIndicator = document.getElementById('sidebar-indicator');
@@ -551,6 +553,7 @@ function updateIndicators() {
     if (activeNavItem) {
       sidebarIndicator.style.transform = `translateY(${activeNavItem.offsetTop}px)`;
       sidebarIndicator.style.height = `${activeNavItem.offsetHeight}px`;
+      sidebarIndicator.className = `sidebar-indicator ${currentTab}`;
     }
   }
 }

@@ -396,6 +396,12 @@
 .tab-btn.active[data-tab="tab-journal"] { color: #3B82F6; } /* Blue */
 .tab-btn.active[data-tab="tab-training"] { color: #8B5CF6; } /* Purple */
 
+/* 管理员 & 超管彩虹配置 */
+.tab-btn.active[data-tab="tab-admin-events"] { color: #3B82F6; } /* Blue */
+.tab-btn.active[data-tab="tab-admin-create"] { color: #8B5CF6; } /* Purple */
+.tab-btn.active[data-tab="pending"] { color: #F97316; } /* Orange */
+.tab-btn.active[data-tab="history"] { color: #10B981; } /* Green */
+
 /* 五彩缤纷的文字高亮配置 (Dark Mode) - 红橙黄绿蓝紫 */
 [data-theme="dark"] .tab-btn.active[data-tab="tab-home"] { color: #F87171; }
 [data-theme="dark"] .tab-btn.active[data-tab="tab-search"] { color: #FB923C; }
@@ -403,6 +409,12 @@
 [data-theme="dark"] .tab-btn.active[data-tab="tab-data"] { color: #34D399; }
 [data-theme="dark"] .tab-btn.active[data-tab="tab-journal"] { color: #60A5FA; }
 [data-theme="dark"] .tab-btn.active[data-tab="tab-training"] { color: #A78BFA; }
+
+/* 管理员 & 超管暗色模式 */
+[data-theme="dark"] .tab-btn.active[data-tab="tab-admin-events"] { color: #60A5FA; } /* Blue */
+[data-theme="dark"] .tab-btn.active[data-tab="tab-admin-create"] { color: #A78BFA; } /* Purple */
+[data-theme="dark"] .tab-btn.active[data-tab="pending"] { color: #FB923C; } /* Orange */
+[data-theme="dark"] .tab-btn.active[data-tab="history"] { color: #34D399; } /* Green */
 
 /* 底部滑块 Indicator */
 .tab-indicator {
@@ -422,12 +434,22 @@
 .tab-indicator.tab-journal { background: rgba(59,130,246,0.12); } /* Blue */
 .tab-indicator.tab-training { background: rgba(139,92,246,0.12); } /* Purple */
 
+.tab-indicator.tab-admin-events { background: rgba(59,130,246,0.12); } /* Blue */
+.tab-indicator.tab-admin-create { background: rgba(139,92,246,0.12); } /* Purple */
+.tab-indicator.pending { background: rgba(249,115,22,0.12); } /* Orange */
+.tab-indicator.history { background: rgba(16,185,129,0.12); } /* Green */
+
 [data-theme="dark"] .tab-indicator.tab-home { background: rgba(248,113,113,0.18); }
 [data-theme="dark"] .tab-indicator.tab-search { background: rgba(251,146,60,0.18); }
 [data-theme="dark"] .tab-indicator.tab-tools { background: rgba(250,204,21,0.18); }
 [data-theme="dark"] .tab-indicator.tab-data { background: rgba(52,211,153,0.18); }
 [data-theme="dark"] .tab-indicator.tab-journal { background: rgba(96,165,250,0.18); }
 [data-theme="dark"] .tab-indicator.tab-training { background: rgba(167,139,250,0.18); }
+
+[data-theme="dark"] .tab-indicator.tab-admin-events { background: rgba(96,165,250,0.18); }
+[data-theme="dark"] .tab-indicator.tab-admin-create { background: rgba(167,139,250,0.18); }
+[data-theme="dark"] .tab-indicator.pending { background: rgba(251,146,60,0.18); }
+[data-theme="dark"] .tab-indicator.history { background: rgba(52,211,153,0.18); }
 
 /* 悬浮红点通知 */
 .tab-dot {
