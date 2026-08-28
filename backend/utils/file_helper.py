@@ -31,3 +31,20 @@ def save_base64_image(b64_string: str, subfolder: str = 'avatars') -> str:
     except Exception as e:
         print(f"Error saving base64 image: {e}")
         return ''
+
+def delete_file_by_url(file_url: str):
+    """
+    根据 /api/uploads/ 的 URL 删除对应的本地文件。
+    """
+    if not file_url or not file_url.startswith('/api/uploads/'):
+        return
+    try:
+        rel_path = file_url[len('/api/uploads/'):]
+        if '..' in rel_path:
+            return
+        upload_dir = current_app.config.get('UPLOAD_FOLDER', 'uploads')
+        filepath = os.path.join(upload_dir, rel_path)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+    except Exception as e:
+        print(f"Error deleting file {file_url}: {e}")
