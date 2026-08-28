@@ -158,9 +158,9 @@ async function _loadEnrolledEvents() {
       html += `
         <div class="list-row" onclick="switchTab('tab-training')" style="align-items:center;">
           <div class="list-icon" style="background:${ev.color || 'var(--blue-600)'};"><ion-icon name="${iconName}"></ion-icon></div>
-          <div class="list-text" style="margin-right:12px;">
-            <div class="list-title" style="font-size:15px; font-weight:600; margin-bottom:4px; line-height:1.2;">${_esc(ev.title)}</div>
-            <div class="list-subtitle" style="font-size:12px; color:var(--text-secondary); line-height:1.2; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${timeStr} · ${_esc(ev.platform || ev.location || '待定')}</div>
+          <div class="list-text" style="margin-right:12px; display:flex; flex-direction:column; justify-content:center;">
+            <div class="list-title" style="font-size:15px; font-weight:600; margin-bottom:2px; line-height:1.2;">${_esc(ev.title)}</div>
+            <div class="list-subtitle" style="font-size:12px; color:var(--text-secondary); line-height:1.2; margin-top:0; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${timeStr} · ${_esc(ev.platform || ev.location || '待定')}</div>
           </div>
           <span class="chip chip-green" style="font-size:11px; flex-shrink:0;">已报名</span>
         </div>
