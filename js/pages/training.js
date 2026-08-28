@@ -3,14 +3,15 @@
 let _currentMonth = new Date().getMonth() + 1;
 let _currentYear  = new Date().getFullYear();
 let _allEvents    = [];
+let _selectedDay  = null;
+let _currentFilter = '全部';
 
 function initTraining() {
   // 月历导航
-  const prevBtn = document.querySelector('[onclick*="chevron-back"]')?.closest('button')
-               || document.querySelectorAll('button[style*="background:none"]')[0];
-  const nextBtn = document.querySelectorAll('button[style*="background:none"]')[1];
-  if (prevBtn) prevBtn.addEventListener('click', () => _changeMonth(-1));
-  if (nextBtn) nextBtn.addEventListener('click', () => _changeMonth(+1));
+  const prevBtn = document.getElementById('cal-prev-btn');
+  const nextBtn = document.getElementById('cal-next-btn');
+  if (prevBtn) prevBtn.onclick = () => _changeMonth(-1);
+  if (nextBtn) nextBtn.onclick = () => _changeMonth(+1);
 
   // 分类筛选
   document.querySelectorAll('.filter-chip[data-group="train-cat"]').forEach(chip => {
@@ -18,11 +19,15 @@ function initTraining() {
       document.querySelectorAll('.filter-chip[data-group="train-cat"]')
         .forEach(c => c.classList.remove('active'));
       this.classList.add('active');
-      _renderEventList(_allEvents, this.textContent.trim());
+      _currentFilter = this.textContent.trim();
+      _selectedDay = null; // 重置日期单选
+      _renderCalendar(_allEvents);
+      _renderEventList(_allEvents, _currentFilter);
     });
   });
 
-  // 加载活动
+  // 初始标题与加载
+  _updateCalendarTitle();
   _loadTrainingEvents();
 }
 
@@ -30,12 +35,22 @@ function _changeMonth(delta) {
   _currentMonth += delta;
   if (_currentMonth > 12) { _currentMonth = 1; _currentYear++; }
   if (_currentMonth < 1)  { _currentMonth = 12; _currentYear--; }
+  _selectedDay = null;
   _updateCalendarTitle();
+
+  const container = document.getElementById('training-calendar-days');
+  if (container) {
+    container.classList.remove('cal-slide-left', 'cal-slide-right');
+    void container.offsetWidth; // 触发回流重启动画
+    container.classList.add(delta > 0 ? 'cal-slide-left' : 'cal-slide-right');
+  }
+
   _loadTrainingEvents();
 }
 
 function _updateCalendarTitle() {
-  const titleEl = document.querySelector('[style*="font-size:16px;font-weight:600"]');
+  const titleEl = document.getElementById('cal-month-title') 
+               || document.querySelector('[style*="font-size:16px;font-weight:600"]');
   if (titleEl) titleEl.textContent = `${_currentYear}年 ${_currentMonth}月`;
 }
 
@@ -44,74 +59,141 @@ async function _loadTrainingEvents() {
     const { data } = await TrainingAPI.list({
       year: _currentYear,
       month: _currentMonth,
-      per_page: 20,
+      per_page: 50,
     });
-    _allEvents = data.events;
+    _allEvents = data.events || [];
     _renderCalendar(_allEvents);
-    _renderEventList(_allEvents, '全部');
+    _renderEventList(_allEvents, _currentFilter);
   } catch (e) {
     showToast(`加载培训活动失败：${e.message}`);
   }
 }
 
 function _renderCalendar(events) {
-  // 更新月历：找到有活动的日期并标记
-  const eventDays = new Set(
-    events.map(ev => new Date(ev.event_date).getDate())
-  );
+  const container = document.getElementById('training-calendar-days');
+  if (!container) return;
 
-  const dayEls = document.querySelectorAll('[style*="grid-template-columns:repeat(7"] div');
-  dayEls.forEach(el => {
-    const day = parseInt(el.textContent.trim(), 10);
-    if (!isNaN(day) && eventDays.has(day)) {
-      // 简单标记 - 加蓝点
-      if (!el.querySelector('.cal-dot')) {
-        el.style.position = 'relative';
-        const dot = document.createElement('div');
-        dot.className = 'cal-dot';
-        dot.style.cssText = 'width:4px;height:4px;border-radius:50%;background:var(--blue-600);'
-          + 'position:absolute;bottom:2px;left:50%;transform:translateX(-50%);';
-        el.appendChild(dot);
-      }
+  const firstDayOfWeek = new Date(_currentYear, _currentMonth - 1, 1).getDay(); // 0 是周日
+  const totalDays = new Date(_currentYear, _currentMonth, 0).getDate();
+
+  const now = new Date();
+  const isThisMonth = (now.getFullYear() === _currentYear && (now.getMonth() + 1) === _currentMonth);
+  const todayDate = now.getDate();
+
+  // 按日聚合活动
+  const eventsByDay = {};
+  events.forEach(ev => {
+    const d = new Date(ev.event_date);
+    if (d.getFullYear() === _currentYear && (d.getMonth() + 1) === _currentMonth) {
+      const dayNum = d.getDate();
+      if (!eventsByDay[dayNum]) eventsByDay[dayNum] = [];
+      eventsByDay[dayNum].push(ev);
     }
   });
+
+  let html = '';
+  // 填充月初空白
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    html += '<div></div>';
+  }
+
+  // 填充每一天
+  for (let d = 1; d <= totalDays; d++) {
+    const hasEvent = !!(eventsByDay[d] && eventsByDay[d].length > 0);
+    const isToday = isThisMonth && d === todayDate;
+    const isSelected = _selectedDay === d;
+
+    let numHtml = '';
+    if (isToday) {
+      numHtml = `<div style="width:30px;height:30px;background:var(--blue-600);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin:0 auto;box-shadow:var(--shadow-xs);">${d}</div>`;
+    } else if (isSelected) {
+      numHtml = `<div style="width:30px;height:30px;background:var(--blue-50);border:1.5px solid var(--blue-600);color:var(--blue-600);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin:0 auto;">${d}</div>`;
+    } else {
+      numHtml = `<div style="text-align:center;font-size:14px;color:${hasEvent ? 'var(--text-primary)' : 'var(--text-secondary)'};font-weight:${hasEvent ? '600' : '400'};height:30px;display:flex;align-items:center;justify-content:center;">${d}</div>`;
+    }
+
+    let dotHtml = '<div style="height:6px;margin-top:2px;"></div>';
+    if (hasEvent) {
+      const dotColor = isToday ? 'var(--blue-600)' : (eventsByDay[d][0].color || 'var(--blue-600)');
+      dotHtml = `<div style="width:5px;height:5px;border-radius:50%;background:${dotColor};margin:2px auto 0;"></div>`;
+    }
+
+    html += `
+      <div onclick="_selectDay(${d})" style="display:flex;flex-direction:column;align-items:center;padding:3px 0;cursor:pointer;user-select:none;border-radius:var(--r-md);transition:background 0.15s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
+        ${numHtml}
+        ${dotHtml}
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function _selectDay(day) {
+  if (_selectedDay === day) {
+    _selectedDay = null; // 取消选中
+  } else {
+    _selectedDay = day;
+  }
+  _renderCalendar(_allEvents);
+  _renderEventList(_allEvents, _currentFilter);
 }
 
 function _renderEventList(events, filter = '全部') {
-  // 找到活动列表容器（第一个 event-card 的父节点）
+  // 找到活动列表容器
   const sectionLabel = Array.from(document.querySelectorAll('.section-label'))
     .find(el => el.textContent.includes('近期活动'));
   if (!sectionLabel) return;
 
-  // 更新计数
-  const countSpan = sectionLabel.querySelector('span');
-  if (countSpan) countSpan.textContent = `共 ${events.length} 场`;
-
-  // 移除旧卡片
+  // 移除旧卡片或空提示
   let next = sectionLabel.nextElementSibling;
-  while (next && (next.classList.contains('event-card') || next.classList.contains('section-label'))) {
+  while (next && (next.classList.contains('event-card') || next.id === 'training-empty-tip')) {
     const toRemove = next;
     next = next.nextElementSibling;
-    if (!toRemove.textContent.includes('往期回放')) toRemove.remove();
-    else break;
+    toRemove.remove();
   }
 
-  // 筛选
+  // 筛选：分类筛选 + 日期筛选
   const TYPE_MAP = {
     '线上直播': '线上直播', '线下讲座': '线下讲座',
     '录播课程': '录播课程', '工作坊': '工作坊'
   };
-  const filtered = filter === '全部'
+  let filtered = filter === '全部'
     ? events
     : events.filter(ev => ev.event_type === (TYPE_MAP[filter] || filter));
 
-  // 插入新卡片
-  const insertTarget = document.querySelector('.section-label-action[onclick*="回放"]')?.closest('.section-label')
-    || sectionLabel.nextElementSibling;
+  if (_selectedDay !== null) {
+    filtered = filtered.filter(ev => {
+      const d = new Date(ev.event_date);
+      return d.getFullYear() === _currentYear && (d.getMonth() + 1) === _currentMonth && d.getDate() === _selectedDay;
+    });
+  }
 
+  // 更新计数
+  const countSpan = sectionLabel.querySelector('span');
+  if (countSpan) {
+    countSpan.textContent = _selectedDay !== null 
+      ? `${_currentMonth}月${_selectedDay}日 共 ${filtered.length} 场`
+      : `共 ${filtered.length} 场`;
+  }
+
+  if (filtered.length === 0) {
+    const emptyTip = document.createElement('div');
+    emptyTip.id = 'training-empty-tip';
+    emptyTip.className = 'paper-card fade-up';
+    emptyTip.style.cssText = 'text-align:center; padding:36px 16px; color:var(--text-tertiary); margin:0 16px 16px;';
+    emptyTip.innerHTML = `
+      <ion-icon name="calendar-outline" style="font-size:36px; color:var(--text-tertiary); margin-bottom:6px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
+      <div style="font-size:14px; font-weight:500; color:var(--text-secondary);">${_selectedDay !== null ? `${_currentMonth}月${_selectedDay}日暂无培训活动` : '本月暂无此类培训活动'}</div>
+    `;
+    sectionLabel.parentNode.insertBefore(emptyTip, sectionLabel.nextElementSibling);
+    return;
+  }
+
+  // 插入新卡片
   filtered.forEach((ev, i) => {
     const card = _renderEventCard(ev, i);
-    sectionLabel.parentNode.insertBefore(card, insertTarget || null);
+    sectionLabel.parentNode.insertBefore(card, sectionLabel.nextElementSibling);
   });
 }
 

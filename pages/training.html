@@ -4,11 +4,11 @@
 <div style="background:var(--bg-primary);border-bottom:1px solid var(--separator);">
   <!-- 月份导航 -->
   <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;">
-    <button style="background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:4px;display:flex;align-items:center;">
+    <button id="cal-prev-btn" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;display:flex;align-items:center;border-radius:var(--r-sm);" aria-label="上一月">
       <ion-icon name="chevron-back-outline" style="font-size:20px;"></ion-icon>
     </button>
-    <span style="font-size:16px;font-weight:600;color:var(--text-primary);">2026年 9月</span>
-    <button style="background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:4px;display:flex;align-items:center;">
+    <span id="cal-month-title" style="font-size:16px;font-weight:600;color:var(--text-primary);">2026年 9月</span>
+    <button id="cal-next-btn" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;display:flex;align-items:center;border-radius:var(--r-sm);" aria-label="下一月">
       <ion-icon name="chevron-forward-outline" style="font-size:20px;"></ion-icon>
     </button>
   </div>
@@ -24,47 +24,9 @@
     <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-secondary);font-weight:500;">六</div>
   </div>
 
-  <!-- 日期格子 -->
-  <div style="display:grid;grid-template-columns:repeat(7,1fr);padding:4px 12px 12px;gap:2px 0;">
-    <div></div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">1</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">2</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">3</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">4</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">5</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">6</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">7</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">8</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">9</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">10</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">11</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">12</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">13</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">14</div>
-    <!-- 15日有活动 -->
-    <div style="display:flex;flex-direction:column;align-items:center;padding:2px 0;">
-      <div style="width:32px;height:32px;background:var(--blue-600);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white;">15</div>
-      <div style="width:5px;height:5px;border-radius:50%;background:var(--blue-600);margin-top:2px;"></div>
-    </div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">16</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">17</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">18</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">19</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">20</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">21</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">22</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">23</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">24</div>
-    <!-- 25日有活动 -->
-    <div style="display:flex;flex-direction:column;align-items:center;padding:2px 0;">
-      <div style="width:32px;height:32px;background:var(--amber-50);border:1.5px solid var(--amber-500);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#92400E;">25</div>
-      <div style="width:5px;height:5px;border-radius:50%;background:var(--amber-500);margin-top:2px;"></div>
-    </div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">26</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">27</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">28</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">29</div>
-    <div style="text-align:center;padding:5px 0;font-size:14px;color:var(--text-secondary);">30</div>
+  <!-- 日期格子动态容器 -->
+  <div id="training-calendar-days" style="display:grid;grid-template-columns:repeat(7,1fr);padding:4px 12px 12px;gap:2px 0;min-height:200px;">
+    <!-- 由 JS 动态渲染 -->
   </div>
 </div>
 
