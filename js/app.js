@@ -161,6 +161,12 @@ function showToast(msg, duration = 2500) {
 
 // ===== 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
+  // 强制登录拦截：如果未登录，直接跳转到登录页
+  if (!window.Auth || !Auth.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+
   // 侧边栏导航
   document.querySelectorAll('.nav-item[data-tab]').forEach(el => {
     el.addEventListener('click', () => switchTab(el.dataset.tab));
