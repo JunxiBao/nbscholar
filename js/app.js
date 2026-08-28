@@ -159,6 +159,55 @@ function showToast(msg, duration = 2500) {
   el._t = setTimeout(() => { el.style.display = 'none'; }, duration);
 }
 
+// ===== 动态更新用户信息 UI =====
+window.updateUserInfoUI = function() {
+  if (!window.Auth) return;
+  const user = Auth.getUser();
+  if (!user) return;
+  
+  const name = user.name || user.account || '用户';
+  const inst = user.institution || '未绑定机构';
+  
+  let avatar = user.avatar_url;
+  // 如果保存的是以 /api 开头的相对路径，需要拼接成完整 URL
+  if (avatar && avatar.startsWith('/api')) {
+    // 假设 API_BASE 在 api.js 中全局定义
+    if (typeof API_BASE !== 'undefined') avatar = API_BASE + avatar;
+  } else if (!avatar || !avatar.startsWith('data:')) {
+    avatar = 'statics/images/wang.png'; // 默认底图
+  }
+
+  // Sidebar
+  const sName = document.getElementById('sidebar-name');
+  if (sName) sName.textContent = name;
+  const sInst = document.getElementById('sidebar-institution');
+  if (sInst) sInst.textContent = inst;
+  const sAvatar = document.getElementById('sidebar-avatar');
+  if (sAvatar) sAvatar.src = avatar;
+
+  // Mobile Topbar
+  const mAvatar = document.getElementById('mobile-avatar');
+  const mIcon = document.getElementById('mobile-avatar-icon');
+  if (mAvatar && mIcon) {
+    if (user.avatar_url) {
+      mAvatar.src = avatar;
+      mAvatar.style.display = 'block';
+      mIcon.style.display = 'none';
+    } else {
+      mAvatar.style.display = 'none';
+      mIcon.style.display = 'block';
+    }
+  }
+
+  // Home Page
+  const hName = document.getElementById('greeting-name');
+  if (hName) hName.textContent = name;
+  const hInst = document.getElementById('home-institution');
+  if (hInst) hInst.textContent = inst;
+  const hAvatar = document.getElementById('home-avatar');
+  if (hAvatar) hAvatar.src = avatar;
+};
+
 // ===== 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
   // 强制登录拦截：如果未登录，直接跳转到登录页
@@ -180,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
   switchTab('tab-home');
   
   if (window.updateNavFavCount) window.updateNavFavCount();
+  if (window.updateUserInfoUI) window.updateUserInfoUI();
 });
 
 function updateIndicators() {

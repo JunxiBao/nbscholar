@@ -9,6 +9,9 @@ function initHome() {
   const greetingEl = document.getElementById('greeting-text');
   if (greetingEl) greetingEl.textContent = greeting;
 
+  // 渲染动态用户信息
+  if (window.updateUserInfoUI) window.updateUserInfoUI();
+
   // 搜索跳转
   const inp = document.getElementById('hero-search');
   const btn = document.getElementById('hero-search-btn');

@@ -84,10 +84,10 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-user" onclick="toggleUserPopover(event)" style="cursor:pointer;">
-        <img class="avatar" src="statics/images/wang.png" alt="王" style="width:32px;height:32px;object-fit:cover;">
+        <img class="avatar" id="sidebar-avatar" src="statics/images/wang.png" alt="User" style="width:32px;height:32px;object-fit:cover;">
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:var(--text-primary);">王研究员</div>
-          <div style="font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">中国科学院</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);" id="sidebar-name">正在加载...</div>
+          <div style="font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebar-institution"></div>
         </div>
       </div>
     </div>
@@ -118,8 +118,9 @@
 
 
         <!-- 移动端/顶部用户图标 -->
-        <button class="topbar-btn" id="mobile-avatar" onclick="toggleUserPopover(event)" title="账户选项">
-          <ion-icon name="person-circle-outline"></ion-icon>
+        <button class="topbar-btn" id="mobile-avatar-btn" onclick="toggleUserPopover(event)" title="账户选项" style="padding:0; border-radius:50%; overflow:hidden;">
+          <img id="mobile-avatar" src="" style="width:32px; height:32px; object-fit:cover; display:none;" />
+          <ion-icon id="mobile-avatar-icon" name="person-circle-outline"></ion-icon>
         </button>
       </div>
     </header>
