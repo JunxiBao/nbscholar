@@ -40,9 +40,12 @@
     </div>
 
     <nav class="sidebar-nav">
-      <div class="sidebar-section">系统管理</div>
-      <div class="nav-item active" data-tab="tab-super-approvals">
-        <ion-icon name="shield-checkmark-outline"></ion-icon>账号审批
+      <div class="sidebar-section">账号审批</div>
+      <div class="nav-item active" data-tab="pending" onclick="switchSuperTab('pending')">
+        <ion-icon name="hourglass-outline"></ion-icon>待审批申请
+      </div>
+      <div class="nav-item" data-tab="history" onclick="switchSuperTab('history')">
+        <ion-icon name="time-outline"></ion-icon>审批记录
       </div>
     </nav>
   </aside>
@@ -99,14 +102,6 @@
             <div class="stat-val" id="stat-history-cnt" style="color:var(--green-600);">-</div>
             <div class="stat-lbl">已处理记录</div>
           </div>
-        </div>
-
-        <!-- 分段切换 -->
-        <div style="padding:16px 16px 0;" class="fade-up d2">
-          <ion-segment mode="ios" value="pending" id="super-segment" onchange="switchSuperTab(this.value)">
-            <ion-segment-button value="pending"><ion-label>待审批申请</ion-label></ion-segment-button>
-            <ion-segment-button value="history"><ion-label>审批记录</ion-label></ion-segment-button>
-          </ion-segment>
         </div>
 
         <div id="section-pending">

@@ -168,12 +168,14 @@ function checkAdminAuth() {
 // Dashboard Logic
 // ---------------------------------
 function switchTab(tabId) {
-    document.querySelectorAll('.nav-item').forEach(el => {
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.tab === tabId);
     });
     
-    const seg = document.getElementById('admin-segment');
-    if (seg && seg.value !== tabId) seg.value = tabId;
+    const topbarTitle = document.getElementById('topbar-title');
+    if (topbarTitle) {
+        topbarTitle.textContent = tabId === 'tab-admin-events' ? '已发布活动' : '发布新活动';
+    }
     
     if(tabId === 'tab-admin-events') loadAdminEvents();
     if(tabId === 'tab-admin-create') renderCreateForm();

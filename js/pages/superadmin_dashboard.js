@@ -122,6 +122,17 @@ let currentSuperTab = 'pending';
 function switchSuperTab(tabId) {
     currentSuperTab = tabId;
     
+    // 更新侧边栏导航高亮
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tabId);
+    });
+    
+    // 更新顶部标题
+    const topbarTitle = document.getElementById('topbar-title');
+    if (topbarTitle) {
+        topbarTitle.textContent = tabId === 'pending' ? '待审批申请' : '审批记录';
+    }
+    
     // 切换内容区域
     const secPending = document.getElementById('section-pending');
     const secHistory = document.getElementById('section-history');
