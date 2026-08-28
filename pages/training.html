@@ -1,32 +1,34 @@
 <!-- 公益培训报名 -->
 
-<!-- 月历 -->
-<div style="background:var(--bg-primary);border-bottom:1px solid var(--separator);">
-  <!-- 月份导航 -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;">
-    <button id="cal-prev-btn" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;display:flex;align-items:center;border-radius:var(--r-sm);" aria-label="上一月">
-      <ion-icon name="chevron-back-outline" style="font-size:20px;"></ion-icon>
-    </button>
-    <span id="cal-month-title" style="font-size:16px;font-weight:600;color:var(--text-primary);">2026年 9月</span>
-    <button id="cal-next-btn" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;display:flex;align-items:center;border-radius:var(--r-sm);" aria-label="下一月">
-      <ion-icon name="chevron-forward-outline" style="font-size:20px;"></ion-icon>
-    </button>
-  </div>
+<!-- 月历容器 -->
+<div style="padding: 16px 16px 4px;">
+  <div class="paper-card" style="padding: 0; overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--separator); background: var(--bg-elevated);">
+    <!-- 月份导航 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px; border-bottom: 1px solid var(--separator); background: var(--bg-header);">
+      <button id="cal-prev-btn" style="background:var(--bg-hover);border:none;cursor:pointer;color:var(--text-primary);padding:8px;display:flex;align-items:center;border-radius:50%;transition:background 0.2s;" aria-label="上一月">
+        <ion-icon name="chevron-back-outline" style="font-size:18px;"></ion-icon>
+      </button>
+      <span id="cal-month-title" style="font-size:17px;font-weight:700;color:var(--text-primary);letter-spacing:0.5px;">2026年 9月</span>
+      <button id="cal-next-btn" style="background:var(--bg-hover);border:none;cursor:pointer;color:var(--text-primary);padding:8px;display:flex;align-items:center;border-radius:50%;transition:background 0.2s;" aria-label="下一月">
+        <ion-icon name="chevron-forward-outline" style="font-size:18px;"></ion-icon>
+      </button>
+    </div>
 
-  <!-- 周标头 -->
-  <div style="display:grid;grid-template-columns:repeat(7,1fr);padding:0 12px;">
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-tertiary);">日</div>
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-tertiary);">一</div>
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-tertiary);">二</div>
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-tertiary);">三</div>
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-tertiary);">四</div>
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-tertiary);">五</div>
-    <div style="text-align:center;padding:4px 0;font-size:12px;color:var(--text-secondary);font-weight:500;">六</div>
-  </div>
+    <!-- 周标头 -->
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);padding:16px 12px 8px;">
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-tertiary);">日</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-secondary);">一</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-secondary);">二</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-secondary);">三</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-secondary);">四</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-secondary);">五</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-tertiary);">六</div>
+    </div>
 
-  <!-- 日期格子动态容器 -->
-  <div id="training-calendar-days" style="display:grid;grid-template-columns:repeat(7,1fr);padding:4px 12px 12px;gap:2px 0;min-height:200px;">
-    <!-- 由 JS 动态渲染 -->
+    <!-- 日期格子动态容器 -->
+    <div id="training-calendar-days" style="display:grid;grid-template-columns:repeat(7,1fr);padding:0 12px 16px;gap:8px 0;min-height:200px;">
+      <!-- 由 JS 动态渲染 -->
+    </div>
   </div>
 </div>
 

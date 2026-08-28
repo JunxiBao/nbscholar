@@ -458,7 +458,6 @@ async function viewEnrollments(eventId) {
                       <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;">
                           <thead style="background:var(--bg-header); border-bottom:1px solid var(--border-color);">
                               <tr>
-                                  <th style="padding:16px; font-weight:600; color:var(--text-secondary);">姓名</th>
                                   <th style="padding:16px; font-weight:600; color:var(--text-secondary);">账号</th>
                                   <th style="padding:16px; font-weight:600; color:var(--text-secondary);">机构</th>
                                   <th style="padding:16px; font-weight:600; color:var(--text-secondary);">报名时间</th>
@@ -469,19 +468,17 @@ async function viewEnrollments(eventId) {
             `;
             
             if(data.data.enrollments.length === 0) {
-                html += `<tr><td colspan="5" style="padding:40px; text-align:center; color:var(--text-tertiary);">
+                html += `<tr><td colspan="4" style="padding:40px; text-align:center; color:var(--text-tertiary);">
                     <ion-icon name="folder-open-outline" style="font-size:32px; display:block; margin:0 auto 8px; color:var(--text-tertiary);"></ion-icon>
                     暂无报名记录
                 </td></tr>`;
             } else {
                 data.data.enrollments.forEach(en => {
-                    const userName = en.user ? (en.user.name || '未知') : '未知';
-                    const userAccount = en.user ? (en.user.account || '') : '';
+                    const userAccount = en.user ? (en.user.account || '未知账号') : '未知账号';
                     const userInst = en.user ? (en.user.institution || '') : '';
                     html += `
                                 <tr style="border-bottom:1px solid var(--border-color);">
-                                    <td style="padding:16px; color:var(--text-primary); font-weight:500;">${userName}</td>
-                                    <td style="padding:16px; color:var(--text-secondary);">${userAccount}</td>
+                                    <td style="padding:16px; color:var(--text-primary); font-weight:500;">${userAccount}</td>
                                     <td style="padding:16px; color:var(--text-secondary);">${userInst}</td>
                                     <td style="padding:16px; color:var(--text-secondary);">${en.enrolled_at || ''}</td>
                                     <td style="padding:16px;"><span class="chip ${en.status === 'enrolled' ? 'chip-green' : 'chip-red'}">${en.status === 'enrolled' ? '已报名' : '已取消'}</span></td>

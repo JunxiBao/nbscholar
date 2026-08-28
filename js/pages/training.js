@@ -112,11 +112,8 @@ function _renderCalendar(events, animClass = '') {
 
   if (animClass) {
     container.classList.remove('cal-slide-left', 'cal-slide-right');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        container.classList.add(animClass);
-      });
-    });
+    void container.offsetWidth; // Trigger DOM reflow to restart animation
+    container.classList.add(animClass);
   }
 }
 
@@ -211,30 +208,31 @@ function _renderEventCard(ev, delay = 0) {
   card.style.display = 'flex';
   card.style.flexDirection = 'column';
   card.innerHTML = `
-    <div class="event-stripe" style="background:${ev.color};"></div>
-    <div class="event-body" style="flex:1; display:flex; flex-direction:column;">
-      <div class="event-date-row">
-        <div class="event-date-box" style="background:${ev.color};">
-          <div class="event-day">${day}</div>
-          <div class="event-month">${month}</div>
+    <div class="event-stripe" style="background:${ev.color}; height: 6px;"></div>
+    <div class="event-body" style="flex:1; display:flex; flex-direction:column; padding: 20px;">
+      <div class="event-date-row" style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div class="event-date-box" style="width: 52px; height: 52px; background: var(--bg-hover); border-radius: 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--separator);">
+          <div class="event-day" style="font-size:20px; font-weight:800; color:${ev.color}; line-height:1;">${day}</div>
+          <div class="event-month" style="font-size:11px; font-weight:600; color:var(--text-secondary); margin-top:2px;">${month}</div>
         </div>
         <div style="flex:1;">
-          <div style="font-size:13px;font-weight:500;color:var(--text-primary);">周${weekDay} · ${timeStr}</div>
-          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">
-            ${_esc(ev.event_type)} · ${_esc(ev.platform || ev.location || '')}
+          <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">周${weekDay} · ${timeStr}</div>
+          <div style="font-size:12px; color:var(--text-secondary); display:flex; align-items:center; gap:4px;">
+            <ion-icon name="location-outline"></ion-icon> ${_esc(ev.platform || ev.location || '未知地点')}
           </div>
         </div>
         <span class="chip ${chipClass}" style="flex-shrink:0;">${_esc(ev.event_type?.slice(0,2) || '')}</span>
       </div>
-      <div class="event-title" style="flex:1; margin-bottom:8px;">${_esc(ev.title)}</div>
-      <div class="event-info" style="margin-bottom:12px;">
-        <span><ion-icon name="person-outline"></ion-icon>${_esc(ev.speaker)} ${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</span>
-        <span><ion-icon name="people-outline"></ion-icon>${ev.enrolled_cnt} / ${ev.capacity} 人</span>
+      <div class="event-title" style="font-size:18px; font-weight:700; color:var(--text-primary); margin-bottom:8px; line-height:1.4;">${_esc(ev.title)}</div>
+      ${ev.description ? `<div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${_esc(ev.description)}</div>` : ''}
+      <div class="event-info" style="display:flex; gap:16px; font-size:13px; color:var(--text-secondary); margin-bottom:20px; flex-wrap:wrap;">
+        <span style="display:flex; align-items:center; gap:4px;"><ion-icon name="person-outline"></ion-icon> ${_esc(ev.speaker)} ${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</span>
+        <span style="display:flex; align-items:center; gap:4px;"><ion-icon name="people-outline"></ion-icon> ${ev.enrolled_cnt} / ${ev.capacity} 人</span>
       </div>
-      <div style="display:flex;">
-        <button class="btn enroll-btn" style="flex:1;background:${ev.color};color:white;"
+      <div style="display:flex; margin-top:auto;">
+        <button class="btn enroll-btn" style="flex:1; background:${ev.enrolled ? 'var(--bg-hover)' : ev.color}; color:${ev.enrolled ? 'var(--text-secondary)' : 'white'}; padding:12px; font-weight:600; font-size:15px; border-radius:var(--r-md); transition:all 0.2s;"
           data-event-id="${ev.id}" data-enrolled="${ev.enrolled ? 1 : 0}">
-          ${ev.enrolled ? '✓ 已报名' : '一键报名'}
+          ${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
         </button>
       </div>
     </div>
