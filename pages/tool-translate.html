@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>双语翻译与专业润色 - 甬学阁</title>
+
+  <!-- Ionic -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <!-- 图标库 -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+
+  <style>
+    html { background: var(--bg-base, #F5F5F7); }
+    html[data-theme="dark"] { background: #000000; color-scheme: dark; }
+    html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell" style="flex-direction: column;">
+  <!-- 顶栏 -->
+  <header class="topbar" style="padding-top: env(safe-area-inset-top, 0px); height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));">
+    <button class="topbar-btn" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='../index.html')" style="margin-right:8px;">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div class="topbar-page-title" style="display:block;">双语翻译与专业润色</div>
+  </header>
+
+  <main class="page-content" style="padding: 16px; display:flex; flex-direction:column; height: 100%;">
+    <div class="demo-panel" style="display:flex; flex-direction:column; height: 100%;">
+      <div class="demo-controls" style="display:flex; gap:12px; margin-bottom:16px;">
+        <select id="trans-type" class="demo-select">
+          <option value="zh2en">中译英</option>
+          <option value="en2zh">英译中</option>
+          <option value="polish">学术润色</option>
+        </select>
+        <button class="btn btn-primary" onclick="demoTranslate()">
+          <ion-icon name="language-outline"></ion-icon>
+          开始处理
+        </button>
+      </div>
+      <div class="trans-split" style="display:flex; gap:16px; flex:1; min-height:300px;">
+        <div class="trans-col" style="flex:1; display:flex; flex-direction:column; border:1px solid var(--separator); border-radius:var(--r-lg); background:var(--bg-elevated); box-shadow:var(--shadow-sm);">
+          <label class="trans-label" style="padding:10px 16px; font-size:13px; font-weight:600; color:var(--text-secondary); border-bottom:1px solid var(--separator); background:var(--bg-input);">原文</label>
+          <textarea id="trans-src" class="trans-textarea" style="flex:1; padding:16px; border:none; background:transparent; font-family:var(--font); font-size:14px; line-height:1.6; color:var(--text-primary); resize:none; outline:none;" placeholder="输入或粘贴需要翻译/润色的文本..."></textarea>
+        </div>
+        <div class="trans-col" style="flex:1; display:flex; flex-direction:column; border:1px solid var(--separator); border-radius:var(--r-lg); background:var(--bg-elevated); box-shadow:var(--shadow-sm);">
+          <label class="trans-label" style="padding:10px 16px; font-size:13px; font-weight:600; color:var(--text-secondary); border-bottom:1px solid var(--separator); background:var(--bg-input);">结果 <ion-spinner name="dots" id="trans-spinner" style="display:none;width:16px;height:16px;margin-left:8px;"></ion-spinner></label>
+          <div id="trans-res" class="trans-result-area" style="flex:1; padding:16px; border:none; background:transparent; font-family:var(--font); font-size:14px; line-height:1.6; color:var(--text-primary); overflow-y:auto; outline:none;">
+            <div class="trans-placeholder" style="color:var(--text-tertiary);">处理结果将在此显示...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast-message" style="display:none;">操作成功</div>
+
+<script src="../js/api.js"></script>
+<script>
+// 解析主题参数
+const params = new URLSearchParams(window.location.search);
+const theme = params.get('theme') || 'light';
+document.documentElement.setAttribute('data-theme', theme);
+
+// 工具函数
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.style.display = 'flex';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function _mdToHtml(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>');
+}
+
+// 翻译逻辑
+async function demoTranslate() {
+  const spinner = document.getElementById('trans-spinner');
+  const res     = document.getElementById('trans-res');
+  const type    = document.getElementById('trans-type').value;
+  const srcText = document.getElementById('trans-src').value.trim();
+
+  if (!srcText) { showToast('请输入需要翻译的文本'); return; }
+
+  spinner.style.display = 'inline-block';
+  res.innerHTML = '<div class="trans-placeholder">AI 正在处理，请稍候...</div>';
+
+  try {
+    const { data } = await ToolsAPI.translate(srcText, type);
+    spinner.style.display = 'none';
+    res.innerHTML = _mdToHtml(data.result);
+  } catch (e) {
+    spinner.style.display = 'none';
+    res.innerHTML = `<div class="trans-placeholder" style="color:var(--red-500);">翻译失败：${e.message}</div>`;
+  }
+}
+
+// Mobile layout adjustments
+if (window.innerWidth <= 768) {
+  const split = document.querySelector('.trans-split');
+  if (split) {
+    split.style.flexDirection = 'column';
+  }
+}
+window.addEventListener('resize', () => {
+  const split = document.querySelector('.trans-split');
+  if (split) {
+    split.style.flexDirection = window.innerWidth <= 768 ? 'column' : 'row';
+  }
+});
+</script>
+</body>
+</html>

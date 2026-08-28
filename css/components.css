@@ -665,7 +665,8 @@ html:not([data-theme="dark"]) .logo-dark { display: none; }
 }
 
 .tool-modal-header {
-  height: 52px;
+  height: calc(52px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   background: var(--bg-header);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -673,7 +674,8 @@ html:not([data-theme="dark"]) .logo-dark { display: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding-left: 16px;
+  padding-right: 16px;
   flex-shrink: 0;
 }
 

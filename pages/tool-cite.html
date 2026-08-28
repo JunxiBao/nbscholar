@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>引用格式批量转换 - 甬学阁</title>
+
+  <!-- Ionic -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <!-- 图标库 -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+
+  <style>
+    html { background: var(--bg-base, #F5F5F7); }
+    html[data-theme="dark"] { background: #000000; color-scheme: dark; }
+    html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell" style="flex-direction: column;">
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <button class="topbar-btn" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='../index.html')" style="margin-right:8px;">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div class="topbar-page-title" style="display:block;">引用格式批量转换</div>
+  </header>
+
+  <main class="page-content" style="padding: 16px; display:flex; flex-direction:column; height: 100%;">
+    <div class="demo-panel" style="display:flex; flex-direction:column; height: 100%;">
+      <div class="trans-col" style="height:150px; margin-bottom:16px;">
+        <label class="trans-label">输入 BibTeX 或 RIS</label>
+        <textarea id="cite-src" class="trans-textarea" placeholder="粘贴引用代码，或通过下方按钮上传文件..."></textarea>
+      </div>
+      <div class="demo-controls" style="margin-bottom:16px;">
+        <input type="file" id="cite-upload" accept=".bib,.ris" style="display:none;" onchange="handleCiteUpload(event)">
+        <button class="btn btn-secondary" onclick="document.getElementById('cite-upload').click()" style="margin-right:auto;">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          上传 .bib / .ris
+        </button>
+        <select id="cite-format" class="demo-select">
+          <option value="gbt">GB/T 7714-2015</option>
+          <option value="apa">APA 7th</option>
+          <option value="mla">MLA 9th</option>
+        </select>
+        <button class="btn btn-primary" onclick="demoCite()">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          批量转换
+        </button>
+      </div>
+      <div class="trans-col" style="flex:1;">
+        <label class="trans-label">转换结果 <ion-spinner name="dots" id="cite-spinner" style="display:none;width:16px;height:16px;margin-left:8px;"></ion-spinner></label>
+        <div id="cite-res" class="trans-result-area" style="font-family:serif; font-size:16px; line-height:1.8;">
+          <div class="trans-placeholder">格式化结果将在此显示...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast-message" style="display:none;">操作成功</div>
+
+<script src="../js/api.js"></script>
+<script>
+// 解析主题参数
+const params = new URLSearchParams(window.location.search);
+const theme = params.get('theme') || 'light';
+document.documentElement.setAttribute('data-theme', theme);
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.style.display = 'flex';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function _escTool(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function demoCite() {
+  const spinner = document.getElementById('cite-spinner');
+  const res     = document.getElementById('cite-res');
+  const srcText = document.getElementById('cite-src').value.trim();
+  const format  = document.getElementById('cite-format').value;
+
+  if (!srcText) { showToast('请输入 BibTeX 或 RIS 内容'); return; }
+
+  spinner.style.display = 'inline-block';
+  res.innerHTML = '<div class="trans-placeholder">正在解析并转换格式...</div>';
+
+  try {
+    const { data } = await ToolsAPI.cite(srcText, format);
+    spinner.style.display = 'none';
+    res.innerHTML = _escTool(data.result);
+  } catch (e) {
+    spinner.style.display = 'none';
+    res.innerHTML = `<div class="trans-placeholder" style="color:var(--red-500);">转换失败：${e.message}</div>`;
+  }
+}
+
+function handleCiteUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const input = document.getElementById('cite-src');
+    if (input) input.value = e.target.result;
+    showToast('引用文件加载成功');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+</script>
+</body>
+</html>

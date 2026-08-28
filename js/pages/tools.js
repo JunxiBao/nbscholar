@@ -194,190 +194,19 @@ function _mdToHtml(text) {
     .replace(/\n/g, '<br>');
 }
 
-// ===== 工具演示弹窗逻辑 =====
+// ===== 工具演示跳转逻辑 =====
 function openToolModal(toolId, title) {
-  const modal   = document.getElementById('tool-demo-modal');
-  const titleEl = document.getElementById('tool-modal-title');
-  if (!modal) return;
-
-  titleEl.textContent = title;
-
-  ['demo-translate', 'demo-vis', 'demo-cite'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-
-  const panel = document.getElementById(toolId);
-  if (panel) {
-    panel.style.display = toolId === 'demo-vis' ? 'flex' : 'block';
-    if (toolId === 'demo-vis') setTimeout(initEcharts, 300);
-  }
-
-  modal.classList.add('show');
-  
-  // Hide bottom menu (Use display:none for 100% compatibility in WeChat/mobile browsers)
-  const bottomTabs = document.getElementById('bottom-tabs');
-  if (bottomTabs) {
-    bottomTabs.style.display = 'none';
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  if (toolId === 'demo-translate') {
+    window.location.href = `pages/tool-translate.html?theme=${theme}`;
+  } else if (toolId === 'demo-vis') {
+    window.location.href = `pages/tool-vis.html?theme=${theme}`;
+  } else if (toolId === 'demo-cite') {
+    window.location.href = `pages/tool-cite.html?theme=${theme}`;
   }
 }
 
-function closeToolModal() {
-  const modal = document.getElementById('tool-demo-modal');
-  if (modal) modal.classList.remove('show');
-  if (echartInstance) { echartInstance.dispose(); echartInstance = null; }
-  
-  // Show bottom menu
-  const bottomTabs = document.getElementById('bottom-tabs');
-  if (bottomTabs) {
-    bottomTabs.style.display = ''; // Restore default
-  }
-}
 
-// ===================== 翻译（真实 API）=====================
-async function demoTranslate() {
-  const spinner = document.getElementById('trans-spinner');
-  const res     = document.getElementById('trans-res');
-  const type    = document.getElementById('trans-type').value;
-  const srcText = document.getElementById('trans-src').value.trim();
-
-  if (!srcText) { showToast('请输入需要翻译的文本'); return; }
-
-  spinner.style.display = 'inline-block';
-  res.innerHTML = '<div class="trans-placeholder">AI 正在处理，请稍候...</div>';
-
-  try {
-    const { data } = await ToolsAPI.translate(srcText, type);
-    spinner.style.display = 'none';
-    res.innerHTML = _mdToHtml(data.result);
-  } catch (e) {
-    spinner.style.display = 'none';
-    res.innerHTML = `<div class="trans-placeholder" style="color:var(--red-500);">翻译失败：${e.message}</div>`;
-  }
-}
-
-// ===================== 引用格式转换（真实 API）=====================
-async function demoCite() {
-  const spinner = document.getElementById('cite-spinner');
-  const res     = document.getElementById('cite-res');
-  const srcText = document.getElementById('cite-src').value.trim();
-  const format  = document.getElementById('cite-format').value;
-
-  if (!srcText) { showToast('请输入 BibTeX 或 RIS 内容'); return; }
-
-  spinner.style.display = 'inline-block';
-  res.innerHTML = '<div class="trans-placeholder">正在解析并转换格式...</div>';
-
-  try {
-    const { data } = await ToolsAPI.cite(srcText, format);
-    spinner.style.display = 'none';
-    res.innerHTML = _escTool(data.result);
-  } catch (e) {
-    spinner.style.display = 'none';
-    res.innerHTML = `<div class="trans-placeholder" style="color:var(--red-500);">转换失败：${e.message}</div>`;
-  }
-}
-
-// ===================== 数据可视化 =====================
-let echartInstance = null;
-let _visData = null;
-
-function initEcharts(type = 'line', data = null) {
-  const container = document.getElementById('echarts-container');
-  if (!container || !window.echarts) return;
-  if (echartInstance) echartInstance.dispose();
-
-  if (data) _visData = data;
-
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  echartInstance = echarts.init(container, isDark ? 'dark' : null);
-
-  const option = {
-    backgroundColor: 'transparent',
-    tooltip: { 
-      trigger: 'axis',
-      backgroundColor: isDark ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.95)',
-      borderColor: isDark ? '#334155' : '#e2e8f0',
-      textStyle: { color: isDark ? '#f8fafc' : '#1e293b', fontSize: 13 },
-      padding: [8, 12],
-      extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-radius: 8px;'
-    },
-    legend: { data: _visData ? _visData.legend : [] },
-    toolbox: {
-      show: true,
-      feature: {
-        restore: { show: true, title: '还原视图' },
-        saveAsImage: { 
-          show: true, 
-          title: '导出图片',
-          excludeComponents: ['toolbox', 'dataZoom']
-        }
-      }
-    },
-    dataZoom: [
-      { type: 'inside' },
-      { type: 'slider', bottom: 10 }
-    ],
-    xAxis: { type: 'category', data: _visData ? _visData.xAxis : [] },
-    yAxis: { type: 'value' },
-    series: _visData ? _visData.series.map(s => ({ ...s, type, smooth: true })) : [],
-  };
-  
-  if (!_visData) {
-    option.title = { text: '请上传 CSV 数据以生成图表', left: 'center', top: 'center', textStyle: { color: 'var(--text-tertiary)', fontSize: 14, fontWeight: 'normal' } };
-  }
-
-  echartInstance.setOption(option);
-}
-
-function demoChartType(type) { initEcharts(type); }
-
-function handleCSVUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result;
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-    if (lines.length < 2) {
-      showToast('CSV 文件格式错误或数据为空');
-      return;
-    }
-    const headers = lines[0].split(',');
-    const legend = headers.slice(1);
-    const xAxis = [];
-    const series = legend.map(name => ({ name, data: [] }));
-
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(',');
-      xAxis.push(parts[0]);
-      for (let j = 1; j < parts.length; j++) {
-        if (series[j-1]) {
-          series[j-1].data.push(parseFloat(parts[j]) || 0);
-        }
-      }
-    }
-    initEcharts('line', { legend, xAxis, series });
-    showToast('CSV 数据加载成功');
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function handleCiteUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const input = document.getElementById('cite-src');
-    if (input) input.value = e.target.result;
-    showToast('引用文件加载成功');
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-window.addEventListener('resize', () => { if (echartInstance) echartInstance.resize(); });
 
 function fillChat(text) {
   const inp = document.getElementById('chat-input');

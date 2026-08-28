@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>数据可视化轻工具 - 甬学阁</title>
+
+  <!-- Ionic -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <!-- 图标库 -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- Echarts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+
+  <style>
+    html { background: var(--bg-base, #F5F5F7); }
+    html[data-theme="dark"] { background: #000000; color-scheme: dark; }
+    html[data-theme="light"] { background: #F5F5F7; color-scheme: light; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell" style="flex-direction: column;">
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <button class="topbar-btn" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='../index.html')" style="margin-right:8px;">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div class="topbar-page-title" style="display:block;">数据可视化轻工具</div>
+  </header>
+
+  <main class="page-content" style="padding: 16px; display:flex; flex-direction:column; height: 100%;">
+    <div class="demo-panel" style="display:flex; flex-direction:column; height:100%;">
+      <div class="demo-controls" style="display:flex; gap:12px; margin-bottom:16px;">
+        <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+        <button class="btn btn-secondary" onclick="document.getElementById('csv-upload').click()">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          上传 CSV 数据
+        </button>
+        <div style="display:flex;gap:8px;margin-left:auto;">
+          <button class="btn btn-muted btn-sm" onclick="demoChartType('line')">折线图</button>
+          <button class="btn btn-muted btn-sm" onclick="demoChartType('bar')">柱状图</button>
+          <button class="btn btn-muted btn-sm" onclick="demoChartType('scatter')">散点图</button>
+        </div>
+      </div>
+      <div id="echarts-container" style="flex:1; width:100%; background:var(--bg-elevated); border-radius:var(--r-md); border:1px solid var(--separator); margin-top:16px; min-height:400px;"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast-message" style="display:none;">操作成功</div>
+
+<script>
+// 解析主题参数
+const params = new URLSearchParams(window.location.search);
+const theme = params.get('theme') || 'light';
+document.documentElement.setAttribute('data-theme', theme);
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.style.display = 'flex';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// 可视化逻辑
+let echartInstance = null;
+let _visData = null;
+
+function initEcharts(type = 'line', data = null) {
+  const container = document.getElementById('echarts-container');
+  if (!container || !window.echarts) return;
+  if (echartInstance) echartInstance.dispose();
+
+  if (data) _visData = data;
+
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  echartInstance = echarts.init(container, isDark ? 'dark' : null);
+
+  const option = {
+    backgroundColor: 'transparent',
+    tooltip: { 
+      trigger: 'axis',
+      backgroundColor: isDark ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.95)',
+      borderColor: isDark ? '#334155' : '#e2e8f0',
+      textStyle: { color: isDark ? '#f8fafc' : '#1e293b', fontSize: 13 },
+      padding: [8, 12],
+      extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-radius: 8px;'
+    },
+    legend: { data: _visData ? _visData.legend : [] },
+    toolbox: {
+      show: true,
+      feature: {
+        restore: { show: true, title: '还原视图' },
+        saveAsImage: { 
+          show: true, 
+          title: '导出图片',
+          excludeComponents: ['toolbox', 'dataZoom']
+        }
+      }
+    },
+    dataZoom: [
+      { type: 'inside' },
+      { type: 'slider', bottom: 10 }
+    ],
+    xAxis: { type: 'category', data: _visData ? _visData.xAxis : [] },
+    yAxis: { type: 'value' },
+    series: _visData ? _visData.series.map(s => ({ ...s, type, smooth: true })) : [],
+  };
+  
+  if (!_visData) {
+    option.title = { text: '请上传 CSV 数据以生成图表', left: 'center', top: 'center', textStyle: { color: 'var(--text-tertiary)', fontSize: 14, fontWeight: 'normal' } };
+  }
+
+  echartInstance.setOption(option);
+}
+
+function demoChartType(type) { initEcharts(type); }
+
+function handleCSVUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    if (lines.length < 2) {
+      showToast('CSV 文件格式错误或数据为空');
+      return;
+    }
+    const headers = lines[0].split(',');
+    const legend = headers.slice(1);
+    const xAxis = [];
+    const series = legend.map(name => ({ name, data: [] }));
+
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',');
+      xAxis.push(parts[0]);
+      for (let j = 1; j < parts.length; j++) {
+        if (series[j-1]) {
+          series[j-1].data.push(parseFloat(parts[j]) || 0);
+        }
+      }
+    }
+    initEcharts('line', { legend, xAxis, series });
+    showToast('CSV 数据加载成功');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+window.addEventListener('resize', () => { if (echartInstance) echartInstance.resize(); });
+setTimeout(initEcharts, 300);
+</script>
+</body>
+</html>
