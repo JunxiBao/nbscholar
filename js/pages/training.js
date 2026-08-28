@@ -28,6 +28,7 @@ function initTraining() {
 
   // 初始标题与加载
   _updateCalendarTitle();
+  _renderCalendar([]); // 立即渲染日历框架，防止白屏
   _loadTrainingEvents();
 }
 
@@ -39,7 +40,7 @@ function _changeMonth(delta) {
   _updateCalendarTitle();
 
   const animClass = delta > 0 ? 'cal-slide-left' : 'cal-slide-right';
-  _renderCalendar(_allEvents, animClass);
+  _renderCalendar([], animClass); // 立即渲染新月份（暂无事件圆点）
   _loadTrainingEvents();
 }
 
@@ -135,13 +136,12 @@ function _renderEventList(events, filter = '全部') {
     .find(el => el.textContent.includes('近期活动'));
   if (!sectionLabel) return;
 
-  // 移除旧卡片或空提示
-  let next = sectionLabel.nextElementSibling;
-  while (next && (next.classList.contains('event-card') || next.id === 'training-empty-tip')) {
-    const toRemove = next;
-    next = next.nextElementSibling;
-    toRemove.remove();
-  }
+  // 获取网格容器
+  const gridContainer = document.getElementById('training-events-grid');
+  if (!gridContainer) return;
+  
+  // 清空容器
+  gridContainer.innerHTML = '';
 
   // 筛选：分类筛选 + 日期筛选
   const TYPE_MAP = {
@@ -176,14 +176,14 @@ function _renderEventList(events, filter = '全部') {
       <ion-icon name="calendar-outline" style="font-size:36px; color:var(--text-tertiary); margin-bottom:6px; display:block; margin-left:auto; margin-right:auto;"></ion-icon>
       <div style="font-size:14px; font-weight:500; color:var(--text-secondary);">${_selectedDay !== null ? `${_currentMonth}月${_selectedDay}日暂无培训活动` : '本月暂无此类培训活动'}</div>
     `;
-    sectionLabel.parentNode.insertBefore(emptyTip, sectionLabel.nextElementSibling);
+    gridContainer.appendChild(emptyTip);
     return;
   }
 
   // 插入新卡片
   filtered.forEach((ev, i) => {
     const card = _renderEventCard(ev, i);
-    sectionLabel.parentNode.insertBefore(card, sectionLabel.nextElementSibling);
+    gridContainer.appendChild(card);
   });
 }
 
@@ -207,9 +207,12 @@ function _renderEventCard(ev, delay = 0) {
 
   const card = document.createElement('div');
   card.className = `event-card fade-up d${delay}`;
+  card.style.margin = '0'; // Override the margin from CSS to rely on grid gap
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
   card.innerHTML = `
     <div class="event-stripe" style="background:${ev.color};"></div>
-    <div class="event-body">
+    <div class="event-body" style="flex:1; display:flex; flex-direction:column;">
       <div class="event-date-row">
         <div class="event-date-box" style="background:${ev.color};">
           <div class="event-day">${day}</div>
@@ -223,17 +226,16 @@ function _renderEventCard(ev, delay = 0) {
         </div>
         <span class="chip ${chipClass}" style="flex-shrink:0;">${_esc(ev.event_type?.slice(0,2) || '')}</span>
       </div>
-      <div class="event-title">${_esc(ev.title)}</div>
-      <div class="event-info">
+      <div class="event-title" style="flex:1; margin-bottom:8px;">${_esc(ev.title)}</div>
+      <div class="event-info" style="margin-bottom:12px;">
         <span><ion-icon name="person-outline"></ion-icon>${_esc(ev.speaker)} ${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</span>
         <span><ion-icon name="people-outline"></ion-icon>${ev.enrolled_cnt} / ${ev.capacity} 人</span>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;">
         <button class="btn enroll-btn" style="flex:1;background:${ev.color};color:white;"
           data-event-id="${ev.id}" data-enrolled="${ev.enrolled ? 1 : 0}">
           ${ev.enrolled ? '✓ 已报名' : '一键报名'}
         </button>
-        <button class="btn btn-muted btn-sm" onclick="showToast('活动详情：${_esc(ev.title).replace(/'/g,"\\'")}')">详情</button>
       </div>
     </div>
   `;
