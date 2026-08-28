@@ -23,15 +23,27 @@ echo "=========================================="
 echo " 开始配置后端服务守护进程 (支持开机自启)"
 echo "=========================================="
 
-echo "=> [1/3] 正在安装 Gunicorn (生产级 Python Web 服务器)..."
-# 安装 gunicorn 用于在生产环境中稳定运行 Flask
-pip3 install gunicorn
+echo "=> [1/3] 正在配置 Python 环境与依赖..."
+# 阿里云/CentOS 默认自带 Python 3.6 太老，我们需要安装并使用 Python 3.9
+if command -v yum &> /dev/null; then
+    yum install -y python39
+    PYTHON_CMD="python3.9"
+elif command -v apt-get &> /dev/null; then
+    apt-get update
+    apt-get install -y python3.9 python3-pip
+    PYTHON_CMD="python3.9"
+else
+    PYTHON_CMD="python3"
+fi
 
-echo "=> [2/3] 正在生成 Systemd 服务配置..."
+# 获取系统中 Python 的路径
+PYTHON_PATH=$(which $PYTHON_CMD || which python3)
+
+echo "=> 正在安装项目依赖 (requirements.txt) 与 Gunicorn..."
+$PYTHON_PATH -m pip install -r $BACKEND_DIR/requirements.txt
+$PYTHON_PATH -m pip install gunicorn
+
 SERVICE_FILE="/etc/systemd/system/nbscholar-backend.service"
-
-# 获取系统中 Python3 的路径，并通过 -m gunicorn 模块方式启动，彻底避免 root 环境下找不到路径的问题
-PYTHON_PATH=$(which python3)
 
 cat > $SERVICE_FILE << EOF
 [Unit]
@@ -59,13 +71,26 @@ systemctl enable nbscholar-backend
 # 立即启动服务
 systemctl restart nbscholar-backend
 
-echo "=========================================="
-echo "✅ 后端开机自启部署完成！"
-echo "你的 Flask 后端现在已经作为一个系统级守护进程在后台运行。"
-echo "即使服务器重启，它也会自动恢复运行！"
-echo ""
-echo "常用命令提示："
-echo "查看运行状态: systemctl status nbscholar-backend"
-echo "查看实时日志: journalctl -u nbscholar-backend -f"
-echo "停止服务:     systemctl stop nbscholar-backend"
-echo "=========================================="
+echo "=> [4/4] 正在进行服务健康诊断..."
+# 等待 3 秒钟让服务充分启动并暴露出可能的崩溃问题
+sleep 3
+
+if systemctl is-active --quiet nbscholar-backend; then
+    echo "=========================================="
+    echo "✅ 后端服务诊断 [通过]: 服务正在后台健康运行！"
+    echo "即使服务器重启，它也会自动恢复运行。"
+    echo ""
+    echo "常用命令提示："
+    echo "查看运行状态: systemctl status nbscholar-backend"
+    echo "查看实时日志: journalctl -u nbscholar-backend -f"
+    echo "停止服务:     systemctl stop nbscholar-backend"
+    echo "=========================================="
+else
+    echo "=========================================="
+    echo "❌ 后端服务诊断 [失败]: 服务启动后异常退出！"
+    echo "以下是最新的报错日志，请检查代码或配置是否有误："
+    echo "------------------------------------------"
+    journalctl -u nbscholar-backend -n 30 --no-pager
+    echo "=========================================="
+    exit 1
+fi

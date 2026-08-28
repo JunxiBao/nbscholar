@@ -81,7 +81,30 @@ echo "=> 测试 Nginx 配置文件并设置开机自启..."
 nginx -t && systemctl restart nginx
 systemctl enable nginx
 
-echo "=========================================="
-echo "✅ 部署完成！"
-echo "👉 请在浏览器访问 http://$SERVER_IP 预览前端项目"
-echo "=========================================="
+echo "=> [5/5] 正在进行服务健康诊断..."
+sleep 2
+
+if systemctl is-active --quiet nginx; then
+    HTTP_CODE=\$(curl -s -o /dev/null -w "%{http_code}" http://localhost || echo "failed")
+    if [ "\$HTTP_CODE" = "200" ] || [ "\$HTTP_CODE" = "301" ] || [ "\$HTTP_CODE" = "304" ]; then
+        echo "=========================================="
+        echo "✅ 前端服务诊断 [通过]: Nginx 运行正常且能成功响应网页！"
+        echo "👉 请在浏览器访问 http://$SERVER_IP 预览前端项目"
+        echo "=========================================="
+    else
+        echo "=========================================="
+        echo "⚠️ 前端服务诊断 [警告]: Nginx 正在运行，但网页响应状态码异常 ($HTTP_CODE)。"
+        echo "请检查防火墙或文件权限设置。"
+        echo "=========================================="
+    fi
+else
+    echo "=========================================="
+    echo "❌ 前端服务诊断 [失败]: Nginx 启动失败！"
+    echo "以下是最新的报错日志："
+    echo "------------------------------------------"
+    tail -n 30 /var/log/nginx/error.log 2>/dev/null || echo "无法读取错误日志 /var/log/nginx/error.log"
+    echo "------------------------------------------"
+    journalctl -u nginx -n 20 --no-pager
+    echo "=========================================="
+    exit 1
+fi
