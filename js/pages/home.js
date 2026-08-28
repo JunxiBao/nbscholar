@@ -136,12 +136,19 @@ async function _loadEnrolledEvents() {
     let html = '';
     
     topEvents.forEach(ev => {
-      const dt = new Date(ev.start_time);
-      const m = String(dt.getMonth() + 1).padStart(2, '0');
-      const d = String(dt.getDate()).padStart(2, '0');
-      const hh = String(dt.getHours()).padStart(2, '0');
-      const mm = String(dt.getMinutes()).padStart(2, '0');
-      const timeStr = `${m}/${d} ${hh}:${mm}`;
+      // 修复 Safari 浏览器中日期解析产生 NaN 的问题
+      const safeTime = (ev.start_time || '').replace(/-/g, '/');
+      const dt = new Date(safeTime);
+      let timeStr = '';
+      if (!isNaN(dt.getTime())) {
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        const hh = String(dt.getHours()).padStart(2, '0');
+        const mm = String(dt.getMinutes()).padStart(2, '0');
+        timeStr = `${m}/${d} ${hh}:${mm}`;
+      } else {
+        timeStr = '时间待定';
+      }
       
       let iconName = 'videocam-outline';
       if (ev.event_type && !ev.event_type.includes('线上')) {
@@ -149,13 +156,13 @@ async function _loadEnrolledEvents() {
       }
 
       html += `
-        <div class="list-row" onclick="switchTab('tab-training')">
+        <div class="list-row" onclick="switchTab('tab-training')" style="align-items:center;">
           <div class="list-icon" style="background:${ev.color || 'var(--blue-600)'};"><ion-icon name="${iconName}"></ion-icon></div>
-          <div class="list-text">
-            <div class="list-title" style="font-size:14px;">${_esc(ev.title)}</div>
-            <div class="list-subtitle">${timeStr} · ${_esc(ev.platform || ev.location || '未知地点')}</div>
+          <div class="list-text" style="margin-right:12px;">
+            <div class="list-title" style="font-size:15px; font-weight:600; margin-bottom:4px; line-height:1.2;">${_esc(ev.title)}</div>
+            <div class="list-subtitle" style="font-size:12px; color:var(--text-secondary); line-height:1.2; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${timeStr} · ${_esc(ev.platform || ev.location || '待定')}</div>
           </div>
-          <span class="chip chip-green" style="font-size:11px;">已报名</span>
+          <span class="chip chip-green" style="font-size:11px; flex-shrink:0;">已报名</span>
         </div>
       `;
     });

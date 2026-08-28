@@ -248,14 +248,16 @@ function _renderEventCard(ev, delay = 0) {
       try {
         await TrainingAPI.cancelEnroll(evId);
         this.dataset.enrolled = '0';
-        this.textContent = '一键报名';
+        this.textContent = '立即报名';
+        this.style.background = 'var(--blue-600)';
         showToast('已取消报名');
       } catch (e) { showToast(e.message); }
     } else {
       try {
         await TrainingAPI.enroll(evId);
         this.dataset.enrolled = '1';
-        this.textContent = '✓ 已报名';
+        this.textContent = '✓ 已报名 (点击取消)';
+        this.style.background = 'var(--green-600)';
         showToast('报名成功！');
       } catch (e) { showToast(e.message); }
     }
