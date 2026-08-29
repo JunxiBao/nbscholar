@@ -1,5 +1,32 @@
 // ===== 公益培训 =====
 
+if (!document.getElementById('training-custom-styles')) {
+  const style = document.createElement('style');
+  style.id = 'training-custom-styles';
+  style.innerHTML = `
+    .event-details-wrapper.expanded {
+      grid-template-rows: 1fr !important;
+      opacity: 1 !important;
+      margin-bottom: 16px !important;
+    }
+    .event-desc-html img, .event-desc-html video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+    .event-desc-html p {
+      margin-top: 0;
+      margin-bottom: 0.5em;
+    }
+    .event-desc-html a {
+      color: var(--blue-600);
+      text-decoration: underline;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 let _currentMonth = new Date().getMonth() + 1;
 let _currentYear  = new Date().getFullYear();
 let _allEvents    = [];
@@ -202,6 +229,9 @@ function _renderEventCard(ev, delay = 0) {
   };
   const chipClass = typeColorMap[ev.event_type] || 'chip-gray';
 
+  const hasDesc = !!ev.description;
+  const rawDesc = ev.description || '';
+
   const card = document.createElement('div');
   card.className = `event-card fade-up d${delay}`;
   card.style.margin = '0'; // Override the margin from CSS to rely on grid gap
@@ -224,12 +254,27 @@ function _renderEventCard(ev, delay = 0) {
         <span class="chip ${chipClass}" style="flex-shrink:0;">${_esc(ev.event_type?.slice(0,2) || '')}</span>
       </div>
       <div class="event-title" style="font-size:18px; font-weight:700; color:var(--text-primary); margin-bottom:8px; line-height:1.4;">${_esc(ev.title)}</div>
-      ${ev.description ? `<div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${_esc(ev.description)}</div>` : ''}
+      
       <div class="event-info" style="display:flex; gap:16px; font-size:13px; color:var(--text-secondary); margin-bottom:20px; flex-wrap:wrap;">
         <span style="display:flex; align-items:center; gap:4px;"><ion-icon name="person-outline"></ion-icon> ${_esc(ev.speaker)} ${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</span>
         <span style="display:flex; align-items:center; gap:4px;"><ion-icon name="people-outline"></ion-icon> ${ev.enrolled_cnt} / ${ev.capacity} 人</span>
       </div>
-      <div style="display:flex; margin-top:auto;">
+
+      <div class="event-details-wrapper" style="display:grid; grid-template-rows:0fr; transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity:0; margin-bottom:0;">
+        <div class="event-details-inner" style="overflow:hidden;">
+          ${hasDesc ? `<div class="event-desc-html" style="font-size:14px; color:var(--text-primary); line-height:1.6; padding:12px 16px; background:var(--bg-elevated); border-radius:var(--r-md); border:1px solid var(--separator); margin-bottom:16px; word-break:break-word;">
+            ${rawDesc}
+          </div>` : ''}
+        </div>
+      </div>
+
+      <div style="display:flex; margin-top:auto; gap: 10px;">
+        ${hasDesc ? `
+        <button class="btn expand-btn" style="flex:0.4; background:var(--bg-hover); color:var(--text-primary); font-weight:600; font-size:14px; border-radius:var(--r-md); transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:4px; padding:12px 0;">
+          <span class="expand-text">详情</span>
+          <ion-icon name="chevron-down-outline" class="expand-icon" style="transition:transform 0.4s;"></ion-icon>
+        </button>
+        ` : ''}
         <button class="btn enroll-btn" style="flex:1; background:${ev.enrolled ? 'var(--green-600)' : 'var(--blue-600)'}; color:white; padding:12px; font-weight:600; font-size:15px; border-radius:var(--r-md); transition:all 0.2s;"
           data-event-id="${ev.id}" data-enrolled="${ev.enrolled ? 1 : 0}">
           ${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
@@ -237,6 +282,24 @@ function _renderEventCard(ev, delay = 0) {
       </div>
     </div>
   `;
+
+  const expandBtn = card.querySelector('.expand-btn');
+  if (expandBtn) {
+    expandBtn.addEventListener('click', function() {
+      const wrapper = card.querySelector('.event-details-wrapper');
+      const icon = this.querySelector('.expand-icon');
+      const text = this.querySelector('.expand-text');
+      if (wrapper.classList.contains('expanded')) {
+        wrapper.classList.remove('expanded');
+        icon.style.transform = 'rotate(0deg)';
+        text.textContent = '详情';
+      } else {
+        wrapper.classList.add('expanded');
+        icon.style.transform = 'rotate(180deg)';
+        text.textContent = '收起';
+      }
+    });
+  }
 
   // 报名按钮事件
   const enrollBtn = card.querySelector('.enroll-btn');

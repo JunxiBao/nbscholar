@@ -1,6 +1,7 @@
 // js/pages/admin_dashboard.js
 
 let _editId = null;
+let _quillEditor = null;
 
 const API_BASE = 'http://localhost:5000';
 
@@ -362,7 +363,7 @@ function renderCreateForm() {
 
           <div style="margin-bottom:20px;">
             <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">活动描述</label>
-            <textarea id="ce-desc" placeholder="输入活动详细描述..." style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;resize:none;height:90px;line-height:1.6;"></textarea>
+            <div id="ce-desc-editor" style="height:200px;"></div>
           </div>
 
           <button onclick="submitCreateEvent()" class="btn btn-primary btn-full">
@@ -371,6 +372,24 @@ function renderCreateForm() {
           </button>
         </div>
     `;
+
+    setTimeout(() => {
+        if (window.Quill) {
+            _quillEditor = new Quill('#ce-desc-editor', {
+                theme: 'snow',
+                placeholder: '输入活动详细描述，支持图文和多媒体...',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ]
+                }
+            });
+        }
+    }, 50);
 }
 
 async function submitCreateEvent() {
@@ -379,6 +398,14 @@ async function submitCreateEvent() {
     
     if(!dateVal) return showToast('请选择活动日期', 'error');
 
+    let descriptionVal = '';
+    if (_quillEditor) {
+        descriptionVal = _quillEditor.root.innerHTML;
+        if (_quillEditor.getText().trim() === '' && !descriptionVal.includes('<img') && !descriptionVal.includes('<video')) {
+            descriptionVal = '';
+        }
+    }
+
     const payload = {
         title: document.getElementById('ce-title').value.trim(),
         speaker: document.getElementById('ce-speaker').value.trim(),
@@ -386,7 +413,7 @@ async function submitCreateEvent() {
         event_date: `${dateVal} ${timeVal}`,
         capacity: document.getElementById('ce-capacity').value,
         event_type: document.getElementById('ce-type').value,
-        description: document.getElementById('ce-desc').value.trim()
+        description: descriptionVal
     };
     
     if(!payload.title) return showToast('请填写活动标题', 'error');
