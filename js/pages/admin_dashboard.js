@@ -59,6 +59,42 @@ window.showConfirm = function(title, msg) {
     });
 };
 
+// 注入 Quill 编辑器的优化样式
+if (!document.getElementById('admin-quill-styles')) {
+    const style = document.createElement('style');
+    style.id = 'admin-quill-styles';
+    style.innerHTML = `
+        .ql-toolbar.ql-snow {
+            border-top-left-radius: var(--r-md);
+            border-top-right-radius: var(--r-md);
+            border-color: var(--border-input) !important;
+            background: var(--bg-secondary);
+            padding: 12px 8px !important;
+        }
+        .ql-container.ql-snow {
+            border-bottom-left-radius: var(--r-md);
+            border-bottom-right-radius: var(--r-md);
+            border-color: var(--border-input) !important;
+            background: var(--bg-input);
+            font-family: var(--font-sans) !important;
+            font-size: 14px !important;
+        }
+        .ql-editor {
+            min-height: 200px;
+            color: var(--text-primary);
+            line-height: 1.8;
+            padding: 16px !important;
+        }
+        .ql-editor p { margin-bottom: 0.8em; }
+        .ql-editor.ql-blank::before {
+            color: var(--text-tertiary) !important;
+            font-style: normal !important;
+            left: 16px !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // ---------------------------------
 // Auth Logic
 // ---------------------------------
