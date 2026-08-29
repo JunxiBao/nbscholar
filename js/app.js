@@ -427,15 +427,19 @@ window.updateUserInfoUI = function() {
 };
 
 // ===== 初始化 =====
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // 强制登录拦截：如果未登录，直接跳转到登录页
   if (!window.Auth || !Auth.isLoggedIn()) {
     window.location.href = 'login.html';
     return;
   }
   
-  // 每次刷新鉴别账号是否还存在且正常，如被注销 api.js 会拦截并跳转
-  UserAPI.getMe().catch(() => {});
+  // 每次刷新阻塞式鉴别账号是否还存在且正常，如被注销 api.js 会拦截并抛出错误
+  try {
+      await UserAPI.getMe();
+  } catch (e) {
+      return; // 账号异常，停止加载后续页面内容
+  }
 
   // 侧边栏导航
   document.querySelectorAll('.nav-item[data-tab]').forEach(el => {

@@ -218,7 +218,7 @@ async function doAdminRegister() {
 function logoutAdmin() {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminInfo');
-    checkAdminAuth();
+    window.location.href = 'admin.html';
 }
 
 function parseJwt(token) {
@@ -238,18 +238,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
-    // 每次刷新前主动验证账号是否存在且正常
-    fetch(`${API_BASE}/api/admin/training`, {
-        headers: {'Authorization': 'Bearer ' + token}
-    }).then(async (res) => {
+    // 阻塞式主动验证账号是否存在且正常
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/training`, {
+            headers: {'Authorization': 'Bearer ' + token}
+        });
         if(res.status === 401) {
             const data = await res.json().catch(()=>({}));
             if (data.msg === 'ACCOUNT_REVOKED') await window.showAlert('您的管理员权限已经被注销/封禁，请联系超级管理员。', '账号异常');
             else if (data.msg === 'ACCOUNT_DELETED') await window.showAlert('您的账号不存在或已被删除。', '账号异常');
             else await window.showAlert('登录已失效或无权限，请重新登录。', '账号异常');
             logoutAdmin();
+            return;
         }
-    }).catch(()=>{});
+    } catch(e) {}
 
     checkAdminAuth();
 });
