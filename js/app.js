@@ -433,6 +433,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'login.html';
     return;
   }
+  
+  // 每次刷新鉴别账号是否还存在且正常，如被注销 api.js 会拦截并跳转
+  UserAPI.getMe().catch(() => {});
 
   // 侧边栏导航
   document.querySelectorAll('.nav-item[data-tab]').forEach(el => {

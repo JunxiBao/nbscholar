@@ -133,6 +133,19 @@ function checkAdminAuth() {
             }
         }
 
+        // 每次刷新前主动验证账号是否存在且正常
+        fetch(`${API_BASE}/api/admin/pending`, {
+            headers: {'Authorization': 'Bearer ' + token}
+        }).then(async (res) => {
+            if(res.status === 401) {
+                const data = await res.json().catch(()=>({}));
+                if (data.msg === 'ACCOUNT_REVOKED') alert('您的超级管理员权限已经被注销。');
+                else if (data.msg === 'ACCOUNT_DELETED') alert('您的账号不存在或已被删除。');
+                else alert('登录已失效或无权限，请重新登录。');
+                logoutAdmin();
+            }
+        }).catch(()=>{});
+
         document.getElementById('auth-layer').style.display = 'none';
         document.getElementById('app-shell').style.display = 'flex';
         updateUserInfoUI();

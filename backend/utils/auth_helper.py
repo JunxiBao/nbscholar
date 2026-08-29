@@ -39,6 +39,14 @@ def login_required(f):
             return unauthorized('token 无效或已过期')
         if 'user_id' not in payload:
             return unauthorized('此操作需要普通用户账号，您当前可能是管理员账号。')
+            
+        from models import User
+        user = User.query.get(payload['user_id'])
+        if not user:
+            return unauthorized('ACCOUNT_DELETED')
+        if getattr(user, 'status', 'approved') == 'rejected':
+            return unauthorized('ACCOUNT_REVOKED')
+            
         g.user_id = payload['user_id']
         return f(*args, **kwargs)
     return decorated
@@ -69,6 +77,13 @@ def admin_required(f):
             return unauthorized('无管理员权限')
         if payload.get('role') not in ['admin', 'super_admin']:
             return unauthorized('角色不匹配')
+            
+        from models import AdminUser
+        admin = AdminUser.query.get(payload['admin_id'])
+        if not admin:
+            return unauthorized('ACCOUNT_DELETED')
+        if getattr(admin, 'status', 'approved') == 'rejected':
+            return unauthorized('ACCOUNT_REVOKED')
         
         g.admin_id = payload['admin_id']
         g.role = payload['role']
@@ -90,6 +105,13 @@ def super_admin_required(f):
             return unauthorized('无管理员权限')
         if payload.get('role') != 'super_admin':
             return unauthorized('需要超级管理员权限')
+            
+        from models import AdminUser
+        admin = AdminUser.query.get(payload['admin_id'])
+        if not admin:
+            return unauthorized('ACCOUNT_DELETED')
+        if getattr(admin, 'status', 'approved') == 'rejected':
+            return unauthorized('ACCOUNT_REVOKED')
         
         g.admin_id = payload['admin_id']
         g.role = payload['role']

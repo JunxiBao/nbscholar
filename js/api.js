@@ -23,6 +23,11 @@ async function apiRequest(method, path, body = null, opts = {}) {
 
   if (!res.ok || data.code === -1) {
     if (res.status === 401) {
+      if (data.msg === 'ACCOUNT_REVOKED') {
+          alert('您的账号已经被注销/封禁，请联系管理员。');
+      } else if (data.msg === 'ACCOUNT_DELETED') {
+          alert('您的账号不存在或已被删除。');
+      }
       Auth.logout();
       throw new Error('未登录或登录已过期');
     }
