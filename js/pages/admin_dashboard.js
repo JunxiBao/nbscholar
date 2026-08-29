@@ -153,15 +153,43 @@ function logoutAdmin() {
     checkAdminAuth();
 }
 
+function parseJwt(token) {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+}
+
+let _authTimeout = null;
+
 function checkAdminAuth() {
     const token = localStorage.getItem('adminToken');
     if(token) {
+        const payload = parseJwt(token);
+        if (payload && payload.exp) {
+            const now = Math.floor(Date.now() / 1000);
+            const remain = payload.exp - now;
+            if (remain <= 0) {
+                logoutAdmin();
+                showToast('登录已过期，请重新登录', 'error');
+                return;
+            } else {
+                if (_authTimeout) clearTimeout(_authTimeout);
+                _authTimeout = setTimeout(() => {
+                    logoutAdmin();
+                    showToast('登录状态已过期，请重新登录', 'error');
+                }, remain * 1000);
+            }
+        }
+
         document.getElementById('auth-layer').style.display = 'none';
         document.getElementById('app-shell').style.display = 'flex';
         updateUserInfoUI();
         loadAdminEvents();
         setTimeout(updateIndicators, 100);
     } else {
+        if (_authTimeout) clearTimeout(_authTimeout);
         document.getElementById('auth-layer').style.display = 'flex';
         document.getElementById('app-shell').style.display = 'none';
     }
