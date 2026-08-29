@@ -186,3 +186,43 @@ def list_enrollments(event_id):
         'event': event.to_dict(),
         'enrollments': results
     })
+
+# ==========================================
+# 普通管理员路由：管理普通用户
+# ==========================================
+
+@admin_bp.route('/users', methods=['GET'])
+@admin_required
+def list_users():
+    """列出所有普通用户（包含待审批、已通过、已拒绝）"""
+    users = User.query.order_by(User.created_at.desc()).all()
+    return ok({'users': [u.to_dict() for u in users]})
+
+@admin_bp.route('/users/<int:user_id>/approve', methods=['PUT'])
+@admin_required
+def approve_user(user_id):
+    """审批普通用户账号"""
+    data = request.get_json(silent=True) or {}
+    status = data.get('status')
+    if status not in ['approved', 'rejected', 'pending']:
+        return err('无效的状态值')
+        
+    user = User.query.get(user_id)
+    if not user:
+        return not_found('用户不存在')
+        
+    user.status = status
+    db.session.commit()
+    return ok(msg=f'账号已更新为 {status}')
+
+@admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_user(user_id):
+    """管理员删除普通用户"""
+    user = User.query.get(user_id)
+    if not user:
+        return not_found('用户不存在')
+        
+    db.session.delete(user)
+    db.session.commit()
+    return ok(msg='用户已删除')

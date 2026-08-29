@@ -68,19 +68,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const institution = document.getElementById('regInstitution')?.value?.trim() || '';
       const age         = regForm.querySelector('input[type="number"]')?.value || null;
       const gender      = regForm.querySelector('select')?.value || '';
+      const remark      = document.getElementById('regRemark')?.value?.trim() || '';
 
       const btn = regForm.querySelector('.btn-submit');
       btn.disabled = true;
       btn.querySelector('span').textContent = '注册中...';
 
       try {
-        await _apiRegister({ account, password: pwd, institution, age, gender,
-                             avatar_url: _croppedDataUrl });
-        window.location.href = 'index.html';
+        const msg = await _apiRegister({ account, password: pwd, institution, age, gender,
+                             avatar_url: _croppedDataUrl, remark: remark });
+        _showLoginToast(msg);
+        toggleModule('login');
+        btn.disabled = false;
+        btn.querySelector('span').textContent = '提交注册申请';
+        regForm.reset();
+        document.getElementById('avatarImg').style.display = 'none';
+        document.querySelector('.avatar-preview ion-icon').style.display = 'block';
+        _croppedDataUrl = '';
       } catch (err) {
         _showLoginToast(err.message || '注册失败');
         btn.disabled = false;
-        btn.querySelector('span').textContent = '注册并进入系统';
+        btn.querySelector('span').textContent = '提交注册申请';
       }
     });
   }
@@ -106,8 +114,7 @@ async function _apiRegister(payload) {
   });
   const data = await res.json();
   if (!res.ok || data.code !== 0) throw new Error(data.msg || '注册失败');
-  localStorage.setItem('nbscholar_token', data.data.token);
-  localStorage.setItem('nbscholar_user',  JSON.stringify(data.data.user));
+  return data.msg || '注册成功，请等待管理员审核';
 }
 
 // ===== 注册校验（旧接口兼容） =====

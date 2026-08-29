@@ -263,6 +263,7 @@ function switchTab(tabId) {
     
     if(tabId === 'tab-admin-events') loadAdminEvents();
     if(tabId === 'tab-admin-create') renderCreateForm();
+    if(tabId === 'tab-admin-users') loadAdminUsers();
 }
 
 document.querySelectorAll('.nav-item').forEach(el => {
@@ -593,6 +594,127 @@ async function viewEnrollments(eventId) {
             
             html += `</tbody></table></div></div>`;
             container.innerHTML = html;
+        } else {
+            showToast((data.msg || '操作失败'), 'error');
+        }
+    } catch(e) {
+        showToast('网络错误', 'error');
+    }
+}
+
+async function loadAdminUsers() {
+    const container = document.getElementById('admin-tab-content');
+    if (!container) return;
+    container.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-tertiary);">加载用户列表中...</div>';
+    
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/users`, {
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
+        });
+        const data = await res.json();
+        if(data.code === 0) {
+            renderAdminUsers(data.data.users);
+        } else {
+            showToast((data.msg || '操作失败'), 'error');
+            container.innerHTML = `<div style="color:#EF4444; padding:20px; text-align:center;">${(data.msg || '操作失败')}</div>`;
+        }
+    } catch(e) {
+        showToast('网络错误', 'error');
+        container.innerHTML = '<div style="color:#EF4444; padding:20px; text-align:center;">网络连接错误</div>';
+    }
+}
+
+function renderAdminUsers(users) {
+    const container = document.getElementById('admin-tab-content');
+    if (!container) return;
+
+    let html = `
+      <div class="section-label fade-up d1">普通用户管理 <span style="font-weight:400;color:var(--text-secondary);">共 ${users.length} 人</span></div>
+      <div class="paper-card fade-up d2" style="padding:0; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;">
+          <thead style="background:var(--bg-header); border-bottom:1px solid var(--border-color);">
+            <tr>
+              <th style="padding:16px; font-weight:600; color:var(--text-secondary);">账号</th>
+              <th style="padding:16px; font-weight:600; color:var(--text-secondary);">状态</th>
+              <th style="padding:16px; font-weight:600; color:var(--text-secondary);">备注</th>
+              <th style="padding:16px; font-weight:600; color:var(--text-secondary);">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    if(users.length === 0) {
+        html += `<tr><td colspan="3" style="padding:40px; text-align:center; color:var(--text-tertiary);">暂无用户</td></tr>`;
+    } else {
+        users.forEach(u => {
+            let statusHtml = '';
+            if(u.status === 'pending') statusHtml = '<span class="chip chip-blue" style="background:#DBEAFE;color:#1D4ED8;">待审批</span>';
+            else if(u.status === 'approved') statusHtml = '<span class="chip chip-green" style="background:#D1FAE5;color:#047857;">已通过</span>';
+            else if(u.status === 'rejected') statusHtml = '<span class="chip chip-red" style="background:#FEE2E2;color:#B91C1C;">已拒绝</span>';
+            else statusHtml = `<span class="chip chip-gray">${u.status}</span>`;
+
+            html += `
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:16px; color:var(--text-primary); font-weight:500;">${u.account || ''}</td>
+                  <td style="padding:16px;">${statusHtml}</td>
+                  <td style="padding:16px; color:var(--text-secondary); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${u.remark || ''}">${u.remark || '-'}</td>
+                  <td style="padding:16px;">
+                    <div style="display:flex; gap:8px;">
+                      ${u.status === 'pending' ? `
+                        <button class="btn btn-primary btn-sm" onclick="approveUser(${u.id}, 'approved')">通过</button>
+                        <button class="btn btn-sm" style="border:1px solid var(--border-color); color:var(--text-primary); background:var(--bg-base);" onclick="approveUser(${u.id}, 'rejected')">拒绝</button>
+                      ` : `
+                        <button class="btn btn-sm" style="border:1px solid var(--border-color); color:var(--red-500); background:var(--bg-base);" onclick="adminDeleteUser(${u.id})">删除</button>
+                      `}
+                    </div>
+                  </td>
+                </tr>
+            `;
+        });
+    }
+
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
+}
+
+async function approveUser(id, status) {
+    if(status === 'rejected') {
+        const isOk = await showConfirm('确认拒绝', '确定要拒绝该用户的注册申请吗？');
+        if(!isOk) return;
+    }
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/users/${id}/approve`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+            },
+            body: JSON.stringify({status: status})
+        });
+        const data = await res.json();
+        if(data.code === 0) {
+            showToast('操作成功', 'success');
+            loadAdminUsers();
+        } else {
+            showToast((data.msg || '操作失败'), 'error');
+        }
+    } catch(e) {
+        showToast('网络错误', 'error');
+    }
+}
+
+async function adminDeleteUser(id) {
+    const isOk = await showConfirm('确认删除', '确定要删除该用户吗？此操作不可恢复。');
+    if(!isOk) return;
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+            method: 'DELETE',
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
+        });
+        const data = await res.json();
+        if(data.code === 0) {
+            showToast('删除成功', 'success');
+            loadAdminUsers();
         } else {
             showToast((data.msg || '操作失败'), 'error');
         }

@@ -95,6 +95,10 @@
       <div class="nav-item" data-tab="tab-admin-create">
         <ion-icon name="add-circle-outline"></ion-icon>发布活动
       </div>
+      <div class="sidebar-section" style="margin-top:16px;">系统管理</div>
+      <div class="nav-item" data-tab="tab-admin-users">
+        <ion-icon name="people-outline"></ion-icon>用户审批
+      </div>
     </nav>
 
     <div class="sidebar-footer">
@@ -146,7 +150,7 @@
     </main>
 
     <!-- ===== 底部标签栏 (移动端) ===== -->
-    <nav class="bottom-tabs" id="bottom-tabs" style="--tab-count: 2;">
+    <nav class="bottom-tabs" id="bottom-tabs" style="--tab-count: 3;">
       <div class="tab-indicator tab-admin-events" id="tab-indicator"></div>
       <button class="tab-btn active" data-tab="tab-admin-events"
               data-icon-outline="list-outline"
@@ -159,6 +163,12 @@
               data-icon-filled="add-circle">
         <ion-icon name="add-circle-outline"></ion-icon>
         <span>发布活动</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-admin-users"
+              data-icon-outline="people-outline"
+              data-icon-filled="people">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>用户审批</span>
       </button>
     </nav>
 

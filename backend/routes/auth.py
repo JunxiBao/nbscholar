@@ -41,12 +41,13 @@ def register():
         age         = data.get('age'),
         gender      = data.get('gender', ''),
         avatar_url  = save_base64_image(data.get('avatar_url', '')),
+        remark      = data.get('remark', ''),
+        status      = 'pending'
     )
     db.session.add(user)
     db.session.commit()
 
-    token = _make_token(user.id)
-    return ok({'token': token, 'user': user.to_dict()}, msg='注册成功')
+    return ok({'user': user.to_dict()}, msg='注册成功，请等待管理员审核')
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -61,6 +62,11 @@ def login():
     user = User.query.filter_by(account=account).first()
     if not user or not bcrypt.check_password_hash(user.password, password):
         return unauthorized('账号或密码错误')
+
+    if user.status == 'pending':
+        return unauthorized('账号审核中，请稍后再试')
+    if user.status == 'rejected':
+        return unauthorized('账号审核未通过')
 
     token = _make_token(user.id)
     return ok({'token': token, 'user': user.to_dict()}, msg='登录成功')

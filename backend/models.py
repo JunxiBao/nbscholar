@@ -19,6 +19,8 @@ class User(db.Model):
     age         = db.Column(db.Integer, nullable=True)
     gender      = db.Column(db.String(10), default='')
     avatar_url  = db.Column(db.String(500), default='')
+    status      = db.Column(db.String(20), default='pending') # 'pending', 'approved', 'rejected'
+    remark      = db.Column(db.String(255), default='')
     created_at  = db.Column(db.DateTime, default=beijing_now)
 
     # 关系
@@ -40,6 +42,8 @@ class User(db.Model):
             'age':         self.age,
             'gender':      self.gender,
             'avatar_url':  self.avatar_url,
+            'status':      self.status,
+            'remark':      self.remark,
         }
 
 
