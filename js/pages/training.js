@@ -4,11 +4,6 @@ if (!document.getElementById('training-custom-styles')) {
   const style = document.createElement('style');
   style.id = 'training-custom-styles';
   style.innerHTML = `
-    .event-details-wrapper.expanded {
-      grid-template-rows: 1fr !important;
-      opacity: 1 !important;
-      margin-bottom: 16px !important;
-    }
     .event-desc-html img, .event-desc-html video {
       max-width: 100%;
       height: auto;
@@ -22,6 +17,26 @@ if (!document.getElementById('training-custom-styles')) {
     .event-desc-html a {
       color: var(--blue-600);
       text-decoration: underline;
+    }
+    .event-desc-html strong, .event-desc-html b {
+      font-weight: bold !important;
+    }
+    .event-desc-html em, .event-desc-html i {
+      font-style: italic !important;
+    }
+    .event-desc-html u {
+      text-decoration: underline !important;
+    }
+    .event-desc-html s, .event-desc-html strike {
+      text-decoration: line-through !important;
+    }
+    .event-card-interactive {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .event-card-interactive:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
   `;
   document.head.appendChild(style);
@@ -230,10 +245,10 @@ function _renderEventCard(ev, delay = 0) {
   const chipClass = typeColorMap[ev.event_type] || 'chip-gray';
 
   const hasDesc = !!ev.description;
-  const rawDesc = ev.description || '';
+  const rawDesc = ev.description || '<div style="color:var(--text-tertiary);text-align:center;padding:40px;">暂无详细介绍</div>';
 
   const card = document.createElement('div');
-  card.className = `event-card fade-up d${delay}`;
+  card.className = `event-card event-card-interactive fade-up d${delay}`;
   card.style.margin = '0'; // Override the margin from CSS to rely on grid gap
   card.style.display = 'flex';
   card.style.flexDirection = 'column';
@@ -260,21 +275,7 @@ function _renderEventCard(ev, delay = 0) {
         <span style="display:flex; align-items:center; gap:4px;"><ion-icon name="people-outline"></ion-icon> ${ev.enrolled_cnt} / ${ev.capacity} 人</span>
       </div>
 
-      <div class="event-details-wrapper" style="display:grid; grid-template-rows:0fr; transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity:0; margin-bottom:0;">
-        <div class="event-details-inner" style="overflow:hidden;">
-          ${hasDesc ? `<div class="event-desc-html" style="font-size:14px; color:var(--text-primary); line-height:1.6; padding:12px 16px; background:var(--bg-elevated); border-radius:var(--r-md); border:1px solid var(--separator); margin-bottom:16px; word-break:break-word;">
-            ${rawDesc}
-          </div>` : ''}
-        </div>
-      </div>
-
       <div style="display:flex; margin-top:auto; gap: 10px;">
-        ${hasDesc ? `
-        <button class="btn expand-btn" style="flex:0.4; background:var(--bg-hover); color:var(--text-primary); font-weight:600; font-size:14px; border-radius:var(--r-md); transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:4px; padding:12px 0;">
-          <span class="expand-text">详情</span>
-          <ion-icon name="chevron-down-outline" class="expand-icon" style="transition:transform 0.4s;"></ion-icon>
-        </button>
-        ` : ''}
         <button class="btn enroll-btn" style="flex:1; background:${ev.enrolled ? 'var(--green-600)' : 'var(--blue-600)'}; color:white; padding:12px; font-weight:600; font-size:15px; border-radius:var(--r-md); transition:all 0.2s;"
           data-event-id="${ev.id}" data-enrolled="${ev.enrolled ? 1 : 0}">
           ${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
@@ -283,23 +284,111 @@ function _renderEventCard(ev, delay = 0) {
     </div>
   `;
 
-  const expandBtn = card.querySelector('.expand-btn');
-  if (expandBtn) {
-    expandBtn.addEventListener('click', function() {
-      const wrapper = card.querySelector('.event-details-wrapper');
-      const icon = this.querySelector('.expand-icon');
-      const text = this.querySelector('.expand-text');
-      if (wrapper.classList.contains('expanded')) {
-        wrapper.classList.remove('expanded');
-        icon.style.transform = 'rotate(0deg)';
-        text.textContent = '详情';
+  // 点击卡片展开模态框 (Hero Animation)
+  card.addEventListener('click', function(e) {
+    if (e.target.closest('.enroll-btn')) return; // 点报名按钮时不展开
+    
+    const rect = card.getBoundingClientRect();
+    
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:9998; opacity:0; transition:opacity 0.4s ease;';
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed; z-index:9999; background:var(--bg-card); border-radius:24px; box-shadow:var(--shadow-xl); overflow:hidden;
+      left:${rect.left}px; top:${rect.top}px; width:${rect.width}px; height:${rect.height}px; transform:translate(0,0);
+      transition:all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); display:flex; flex-direction:column; margin:0;
+    `;
+    
+    modal.innerHTML = \`
+      <div style="position:relative; flex:1; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden;">
+        <button class="modal-close-btn" style="position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; background:var(--bg-hover); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-secondary); z-index:10; transition:background 0.2s;">
+          <ion-icon name="close" style="font-size:20px;"></ion-icon>
+        </button>
+        <div style="height:8px; background:\${ev.color}; flex-shrink:0;"></div>
+        <div style="padding:32px 24px; display:flex; flex-direction:column; flex:1;">
+          <div style="display:flex; gap:12px; margin-bottom:12px;">
+            <span class="chip \${chipClass}">\${_esc(ev.event_type)}</span>
+          </div>
+          <div style="font-size:24px; font-weight:800; color:var(--text-primary); margin-bottom:16px; padding-right:40px; line-height:1.4;">\${_esc(ev.title)}</div>
+          
+          <div style="display:flex; flex-wrap:wrap; gap:20px; font-size:14px; color:var(--text-secondary); margin-bottom:24px; padding:16px; background:var(--bg-body); border-radius:12px; border:1px solid var(--separator);">
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="calendar-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> \${_currentYear}年\${month}\${day}日 \${timeStr}</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="location-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> \${_esc(ev.platform || ev.location || '未知地点')}</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="person-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> \${_esc(ev.speaker)} \${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="people-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> 已报名 \${ev.enrolled_cnt} / \${ev.capacity} 人</div>
+          </div>
+          
+          <div class="event-desc-html" style="font-size:15px; color:var(--text-primary); line-height:1.8; flex:1;">
+            \${rawDesc}
+          </div>
+          
+          <div style="margin-top:32px; flex-shrink:0;">
+            <button class="btn modal-enroll-btn" style="width:100%; background:\${ev.enrolled ? 'var(--green-600)' : 'var(--blue-600)'}; color:white; padding:16px; font-weight:600; font-size:16px; border-radius:var(--r-md); transition:all 0.2s; cursor:pointer;" data-enrolled="\${ev.enrolled ? 1 : 0}">
+              \${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
+            </button>
+          </div>
+        </div>
+      </div>
+    \`;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    // Force reflow for animation
+    void modal.offsetWidth;
+
+    // Animate to center
+    overlay.style.opacity = '1';
+    modal.style.left = '50%';
+    modal.style.top = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+    modal.style.width = '90vw';
+    modal.style.maxWidth = '800px';
+    modal.style.height = '85vh';
+
+    const closeModal = () => {
+      overlay.style.opacity = '0';
+      modal.style.left = \`\${rect.left}px\`;
+      modal.style.top = \`\${rect.top}px\`;
+      modal.style.transform = 'translate(0,0)';
+      modal.style.width = \`\${rect.width}px\`;
+      modal.style.height = \`\${rect.height}px\`;
+      
+      // Hide inner contents to prevent text reflow jumping
+      modal.querySelector('.event-desc-html').style.opacity = '0';
+      
+      setTimeout(() => {
+        overlay.remove();
+        modal.remove();
+      }, 500);
+    };
+
+    overlay.onclick = closeModal;
+    modal.querySelector('.modal-close-btn').onclick = closeModal;
+
+    // Enroll action in modal
+    const modalEnrollBtn = modal.querySelector('.modal-enroll-btn');
+    modalEnrollBtn.onclick = async function() {
+      if (!Auth.isLoggedIn()) { showToast('请先登录后报名'); return; }
+      const isEnrolled = this.dataset.enrolled === '1';
+      if (isEnrolled) {
+        try {
+          await TrainingAPI.cancelEnroll(ev.id);
+          showToast('已取消报名');
+          closeModal();
+          _loadTrainingEvents(); // refresh data and UI
+        } catch (e) { showToast(e.message); }
       } else {
-        wrapper.classList.add('expanded');
-        icon.style.transform = 'rotate(180deg)';
-        text.textContent = '收起';
+        try {
+          await TrainingAPI.enroll(ev.id);
+          showToast('报名成功！');
+          closeModal();
+          _loadTrainingEvents(); // refresh data and UI
+        } catch (e) { showToast(e.message); }
       }
-    });
-  }
+    };
+  });
 
   // 报名按钮事件
   const enrollBtn = card.querySelector('.enroll-btn');

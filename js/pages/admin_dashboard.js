@@ -384,7 +384,7 @@ function renderCreateForm() {
               </select>
             </div>
             <div style="flex:1;">
-              <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">人数上限</label>
+              <label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:6px;">人数上限 *</label>
               <input type="number" id="ce-capacity" value="100" style="width:100%;border:1px solid var(--border-input);border-radius:var(--r-md);padding:10px 12px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--bg-input);outline:none;box-sizing:border-box;" />
             </div>
           </div>
@@ -400,6 +400,16 @@ function renderCreateForm() {
           </button>
         </div>
     `;
+
+    // 默认填入当前日期
+    const dateInput = document.getElementById('ce-date');
+    if (dateInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+    }
 
     setTimeout(() => {
         if (window.Quill) {
@@ -422,9 +432,14 @@ function renderCreateForm() {
 
 async function submitCreateEvent() {
     const dateVal = document.getElementById('ce-date').value.trim();
-    const timeVal = document.getElementById('ce-time').value.trim() || '00:00';
+    const timeVal = document.getElementById('ce-time').value.trim();
+    const capacityVal = document.getElementById('ce-capacity').value.trim();
+    const titleVal = document.getElementById('ce-title').value.trim();
     
+    if(!titleVal) return showToast('请填写活动标题', 'error');
     if(!dateVal) return showToast('请选择活动日期', 'error');
+    if(!timeVal) return showToast('请选择活动开始时间', 'error');
+    if(!capacityVal) return showToast('请填写人数上限', 'error');
 
     let descriptionVal = '';
     if (_quillEditor) {
@@ -435,16 +450,14 @@ async function submitCreateEvent() {
     }
 
     const payload = {
-        title: document.getElementById('ce-title').value.trim(),
+        title: titleVal,
         speaker: document.getElementById('ce-speaker').value.trim(),
         affiliation: document.getElementById('ce-affil').value.trim(),
         event_date: `${dateVal} ${timeVal}`,
-        capacity: document.getElementById('ce-capacity').value,
+        capacity: capacityVal,
         event_type: document.getElementById('ce-type').value,
         description: descriptionVal
     };
-    
-    if(!payload.title) return showToast('请填写活动标题', 'error');
 
     try {
         const res = await fetch(`${API_BASE}/api/admin/training`, {
