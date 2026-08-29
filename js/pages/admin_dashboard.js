@@ -663,8 +663,10 @@ function renderAdminUsers(users) {
                       ${u.status === 'pending' ? `
                         <button class="btn btn-primary btn-sm" onclick="approveUser(${u.id}, 'approved')">通过</button>
                         <button class="btn btn-sm" style="border:1px solid var(--border-color); color:var(--text-primary); background:var(--bg-base);" onclick="approveUser(${u.id}, 'rejected')">拒绝</button>
+                      ` : u.status === 'approved' ? `
+                        <button class="btn btn-sm" style="border:1px solid var(--border-color); color:var(--red-500); background:var(--bg-base);" onclick="approveUser(${u.id}, 'rejected', true)">注销</button>
                       ` : `
-                        <button class="btn btn-sm" style="border:1px solid var(--border-color); color:var(--red-500); background:var(--bg-base);" onclick="adminDeleteUser(${u.id})">删除</button>
+                        <button class="btn btn-sm" style="border:1px solid var(--border-color); color:var(--green-600); background:var(--bg-base);" onclick="approveUser(${u.id}, 'approved', false, true)">恢复</button>
                       `}
                     </div>
                   </td>
@@ -677,9 +679,13 @@ function renderAdminUsers(users) {
     container.innerHTML = html;
 }
 
-async function approveUser(id, status) {
+async function approveUser(id, status, isRevoke=false, isRestore=false) {
     if(status === 'rejected') {
-        const isOk = await showConfirm('确认拒绝', '确定要拒绝该用户的注册申请吗？');
+        const msg = isRevoke ? '确定要注销该用户的访问权限吗？此操作将使该用户无法登录。' : '确定要拒绝该用户的注册申请吗？';
+        const isOk = await showConfirm(isRevoke ? '确认注销' : '确认拒绝', msg);
+        if(!isOk) return;
+    } else if (isRestore) {
+        const isOk = await showConfirm('确认恢复', '确定要恢复该用户的正常访问权限吗？');
         if(!isOk) return;
     }
     try {
@@ -703,25 +709,7 @@ async function approveUser(id, status) {
     }
 }
 
-async function adminDeleteUser(id) {
-    const isOk = await showConfirm('确认删除', '确定要删除该用户吗？此操作不可恢复。');
-    if(!isOk) return;
-    try {
-        const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
-            method: 'DELETE',
-            headers: {'Authorization': 'Bearer ' + localStorage.getItem('adminToken')}
-        });
-        const data = await res.json();
-        if(data.code === 0) {
-            showToast('删除成功', 'success');
-            loadAdminUsers();
-        } else {
-            showToast((data.msg || '操作失败'), 'error');
-        }
-    } catch(e) {
-        showToast('网络错误', 'error');
-    }
-}
+
 
 function _generateTextAvatar(name) {
   const canvas = document.createElement('canvas');

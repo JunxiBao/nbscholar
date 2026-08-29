@@ -214,15 +214,3 @@ def approve_user(user_id):
     user.status = status
     db.session.commit()
     return ok(msg=f'账号已更新为 {status}')
-
-@admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
-@admin_required
-def admin_delete_user(user_id):
-    """管理员删除普通用户"""
-    user = User.query.get(user_id)
-    if not user:
-        return not_found('用户不存在')
-        
-    db.session.delete(user)
-    db.session.commit()
-    return ok(msg='用户已删除')
