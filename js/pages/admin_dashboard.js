@@ -59,6 +59,38 @@ window.showConfirm = function(title, msg) {
     });
 };
 
+window.showAlert = function(msg, title = '系统提示') {
+    return new Promise(resolve => {
+        let overlay = document.getElementById('custom-alert-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'custom-alert-overlay';
+            overlay.style.cssText = 'display:flex; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(4px);';
+            overlay.innerHTML = `
+                <div class="paper-card fade-up" style="width:90%; max-width:320px; padding:24px; display:flex; flex-direction:column; gap:16px; border:none; box-shadow:0 10px 30px rgba(0,0,0,0.2); background:var(--bg-base); border-radius:12px; margin:auto;">
+                    <h3 id="custom-alert-title" style="margin:0; font-size:18px; font-weight:600; color:var(--text-primary);"></h3>
+                    <p id="custom-alert-msg" style="margin:0; font-size:14px; color:var(--text-secondary); line-height:1.5;"></p>
+                    <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                        <button id="custom-alert-ok" class="btn btn-primary" style="padding:8px 24px; border-radius:6px; background:var(--blue-600); color:#fff; border:none; cursor:pointer;">我知道了</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        } else {
+            overlay.style.display = 'flex';
+        }
+        
+        document.getElementById('custom-alert-title').textContent = title;
+        document.getElementById('custom-alert-msg').textContent = msg;
+        
+        const btnOk = document.getElementById('custom-alert-ok');
+        btnOk.onclick = () => {
+            overlay.style.display = 'none';
+            resolve();
+        };
+    });
+};
+
 // 注入 Quill 编辑器的优化样式
 if (!document.getElementById('admin-quill-styles')) {
     const style = document.createElement('style');
@@ -212,9 +244,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).then(async (res) => {
         if(res.status === 401) {
             const data = await res.json().catch(()=>({}));
-            if (data.msg === 'ACCOUNT_REVOKED') alert('您的管理员权限已经被注销/封禁，请联系超级管理员。');
-            else if (data.msg === 'ACCOUNT_DELETED') alert('您的账号不存在或已被删除。');
-            else alert('登录已失效或无权限，请重新登录。');
+            if (data.msg === 'ACCOUNT_REVOKED') await window.showAlert('您的管理员权限已经被注销/封禁，请联系超级管理员。', '账号异常');
+            else if (data.msg === 'ACCOUNT_DELETED') await window.showAlert('您的账号不存在或已被删除。', '账号异常');
+            else await window.showAlert('登录已失效或无权限，请重新登录。', '账号异常');
             logoutAdmin();
         }
     }).catch(()=>{});
