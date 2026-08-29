@@ -181,6 +181,14 @@ $VENV_PIP install --upgrade pip
 $VENV_PIP install -r $BACKEND_DIR/requirements.txt || { echo "❌ 依赖安装失败，请检查上面 pip 的报错！"; exit 1; }
 $VENV_PIP install gunicorn || { echo "❌ Gunicorn 安装失败！"; exit 1; }
 
+echo "=> 正在执行数据库变更/迁移脚本 (如果存在 update_db.py)..."
+if [ -f "$BACKEND_DIR/update_db.py" ]; then
+    $VENV_PYTHON $BACKEND_DIR/update_db.py || echo "⚠️ 数据库更新脚本执行报错，请注意检查，但将继续部署"
+    echo "✅ 数据库迁移检测完成"
+else
+    echo "未检测到额外数据库更新脚本，跳过此步"
+fi
+
 echo "=> [4/5] 正在生成 Systemd 服务配置..."
 SERVICE_FILE="/etc/systemd/system/nbscholar-backend.service"
 
