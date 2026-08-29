@@ -295,7 +295,7 @@ function _renderEventCard(ev, delay = 0) {
     
     const modal = document.createElement('div');
     modal.style.cssText = `
-      position:fixed; z-index:9999; background:var(--bg-card); border-radius:24px; box-shadow:var(--shadow-xl); overflow:hidden;
+      position:fixed; z-index:9999; background:var(--bg-elevated); border-radius:24px; box-shadow:var(--shadow-xl); overflow:hidden;
       left:${rect.left}px; top:${rect.top}px; width:${rect.width}px; height:${rect.height}px; transform:translate(0,0);
       transition:all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); display:flex; flex-direction:column; margin:0;
     `;
@@ -348,15 +348,25 @@ function _renderEventCard(ev, delay = 0) {
     modal.style.height = '85vh';
 
     const closeModal = () => {
-      overlay.style.opacity = '0';
-      modal.style.left = `${rect.left}px`;
-      modal.style.top = `${rect.top}px`;
-      modal.style.transform = 'translate(0,0)';
-      modal.style.width = `${rect.width}px`;
-      modal.style.height = `${rect.height}px`;
+      // 重新获取卡片当前位置，防止用户在弹窗期间滚动了背景导致位置偏移
+      const currentRect = card.getBoundingClientRect();
       
-      // Hide inner contents to prevent text reflow jumping
-      modal.querySelector('.event-desc-html').style.opacity = '0';
+      overlay.style.opacity = '0';
+      modal.style.opacity = '0'; // 整体淡出，完美过渡回原卡片
+      
+      // 固定内部容器尺寸，防止缩小过程中的排版错乱（Layout Thrashing）
+      const inner = modal.firstElementChild;
+      if (inner) {
+          inner.style.width = modal.offsetWidth + 'px';
+          inner.style.height = modal.offsetHeight + 'px';
+          inner.style.overflow = 'hidden';
+      }
+      
+      modal.style.left = `${currentRect.left}px`;
+      modal.style.top = `${currentRect.top}px`;
+      modal.style.transform = 'translate(0,0)';
+      modal.style.width = `${currentRect.width}px`;
+      modal.style.height = `${currentRect.height}px`;
       
       setTimeout(() => {
         overlay.remove();
