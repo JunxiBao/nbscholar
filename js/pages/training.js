@@ -300,37 +300,37 @@ function _renderEventCard(ev, delay = 0) {
       transition:all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); display:flex; flex-direction:column; margin:0;
     `;
     
-    modal.innerHTML = \`
+    modal.innerHTML = `
       <div style="position:relative; flex:1; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden;">
         <button class="modal-close-btn" style="position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; background:var(--bg-hover); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-secondary); z-index:10; transition:background 0.2s;">
           <ion-icon name="close" style="font-size:20px;"></ion-icon>
         </button>
-        <div style="height:8px; background:\${ev.color}; flex-shrink:0;"></div>
+        <div style="height:8px; background:${ev.color}; flex-shrink:0;"></div>
         <div style="padding:32px 24px; display:flex; flex-direction:column; flex:1;">
           <div style="display:flex; gap:12px; margin-bottom:12px;">
-            <span class="chip \${chipClass}">\${_esc(ev.event_type)}</span>
+            <span class="chip ${chipClass}">${_esc(ev.event_type)}</span>
           </div>
-          <div style="font-size:24px; font-weight:800; color:var(--text-primary); margin-bottom:16px; padding-right:40px; line-height:1.4;">\${_esc(ev.title)}</div>
+          <div style="font-size:24px; font-weight:800; color:var(--text-primary); margin-bottom:16px; padding-right:40px; line-height:1.4;">${_esc(ev.title)}</div>
           
           <div style="display:flex; flex-wrap:wrap; gap:20px; font-size:14px; color:var(--text-secondary); margin-bottom:24px; padding:16px; background:var(--bg-body); border-radius:12px; border:1px solid var(--separator);">
-            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="calendar-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> \${_currentYear}年\${month}\${day}日 \${timeStr}</div>
-            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="location-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> \${_esc(ev.platform || ev.location || '未知地点')}</div>
-            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="person-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> \${_esc(ev.speaker)} \${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</div>
-            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="people-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> 已报名 \${ev.enrolled_cnt} / \${ev.capacity} 人</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="calendar-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> ${_currentYear}年${month}${day}日 ${timeStr}</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="location-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> ${_esc(ev.platform || ev.location || '未知地点')}</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="person-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> ${_esc(ev.speaker)} ${_esc(ev.affiliation ? '（' + ev.affiliation + '）' : '')}</div>
+            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:200px;"><ion-icon name="people-outline" style="font-size:18px; color:var(--blue-500);"></ion-icon> 已报名 ${ev.enrolled_cnt} / ${ev.capacity} 人</div>
           </div>
           
           <div class="event-desc-html" style="font-size:15px; color:var(--text-primary); line-height:1.8; flex:1;">
-            \${rawDesc}
+            ${rawDesc}
           </div>
           
           <div style="margin-top:32px; flex-shrink:0;">
-            <button class="btn modal-enroll-btn" style="width:100%; background:\${ev.enrolled ? 'var(--green-600)' : 'var(--blue-600)'}; color:white; padding:16px; font-weight:600; font-size:16px; border-radius:var(--r-md); transition:all 0.2s; cursor:pointer;" data-enrolled="\${ev.enrolled ? 1 : 0}">
-              \${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
+            <button class="btn modal-enroll-btn" style="width:100%; background:${ev.enrolled ? 'var(--green-600)' : 'var(--blue-600)'}; color:white; padding:16px; font-weight:600; font-size:16px; border-radius:var(--r-md); transition:all 0.2s; cursor:pointer;" data-enrolled="${ev.enrolled ? 1 : 0}">
+              ${ev.enrolled ? '✓ 已报名 (点击取消)' : '立即报名'}
             </button>
           </div>
         </div>
       </div>
-    \`;
+    `;
 
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
@@ -349,11 +349,11 @@ function _renderEventCard(ev, delay = 0) {
 
     const closeModal = () => {
       overlay.style.opacity = '0';
-      modal.style.left = \`\${rect.left}px\`;
-      modal.style.top = \`\${rect.top}px\`;
+      modal.style.left = `${rect.left}px`;
+      modal.style.top = `${rect.top}px`;
       modal.style.transform = 'translate(0,0)';
-      modal.style.width = \`\${rect.width}px\`;
-      modal.style.height = \`\${rect.height}px\`;
+      modal.style.width = `${rect.width}px`;
+      modal.style.height = `${rect.height}px`;
       
       // Hide inner contents to prevent text reflow jumping
       modal.querySelector('.event-desc-html').style.opacity = '0';
